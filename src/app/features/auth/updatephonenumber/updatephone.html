@@ -1,0 +1,14 @@
+<div class="update-phone-container">
+  <h2>Update Phone Number</h2>
+  <form [formGroup]="phoneForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label>Phone Number</label>
+      <input type="text" formControlName="phoneNumber" placeholder="Enter your phone number"/>
+      <small *ngIf="phoneForm.get('phoneNumber')?.touched && phoneForm.get('phoneNumber')?.invalid">
+        Phone number invalid
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="phoneForm.invalid">Update Phone</button>
+  </form>
+</div>

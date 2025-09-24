@@ -1,0 +1,24 @@
+<div class="auth-container">
+  <h2>Cài đặt 2FA</h2>
+
+  <div *ngIf="otpauthUrl">
+    <p>Quét QR code này bằng Google Authenticator hoặc Microsoft Authenticator:</p>
+    <img [src]="'https://api.qrserver.com/v1/create-qr-code/?data=' + otpauthUrl + '&size=200x200'" alt="QR Code" />
+    <p>Mã bí mật: <strong>{{ secretKey }}</strong></p>
+  </div>
+
+  <form [formGroup]="totpForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label>Nhập mã 6 chữ số từ app</label>
+      <input type="text" formControlName="token" maxlength="6"/>
+      <small *ngIf="totpForm.get('token')?.touched && totpForm.get('token')?.invalid">
+        Mã không hợp lệ
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="totpForm.invalid">Bật 2FA</button>
+  </form>
+
+  <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</div>

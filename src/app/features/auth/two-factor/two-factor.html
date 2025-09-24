@@ -1,0 +1,18 @@
+<div class="auth-container">
+  <h2>Xác thực 2FA</h2>
+
+  <form [formGroup]="tokenForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label>Nhập mã 6 chữ số từ Google Authenticator</label>
+      <input type="text" formControlName="token" maxlength="6" />
+      <small *ngIf="tokenForm.get('token')?.touched && tokenForm.get('token')?.invalid">
+        Mã không hợp lệ
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="tokenForm.invalid">Xác nhận</button>
+  </form>
+
+  <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</div>

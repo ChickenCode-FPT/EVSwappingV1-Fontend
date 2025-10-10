@@ -1,0 +1,19 @@
+<!-- src/app/map/components/map.component.html -->
+<!-- SSR fallback -->
+<div *ngIf="!isBrowser" class="w-full h-[600px] flex items-center justify-center bg-gray-100 text-gray-700">
+  <p>Map will load on browser…</p>
+</div>
+
+<!-- Layout 2 cột: map trái, list phải -->
+<div *ngIf="isBrowser" class="layout">
+  <div id="map" class="map-pane"></div>
+
+  <app-station-list
+    [stations]="stations"
+    [userLocation]="start"
+    [findingNearest]="findingNearest"
+    [geoStatusMsg]="geoStatusMsg"
+    (requestNearest)="goToNearestStation()"
+    (selectStation)="onSelectStation($event)"
+  ></app-station-list>
+</div>

@@ -14,6 +14,7 @@ import { ResetPasswordComponent } from './features/auth/reset-password/reset-pas
 import { Setup2FAComponent } from './features/auth/setup-2fa/setup-2fa';
 import { TwoFactorComponent } from './features/auth/two-factor/two-factor';
 import { Disable2FAComponent } from './features/auth/disable-two-factor/disable-two-factor';
+import { MapComponent } from './features/station/components/map.component';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -36,6 +37,6 @@ export const routes: Routes = [
     { path: 'reset-password', component: ResetPasswordComponent}, 
     { path: '2fa-setup', component: Setup2FAComponent}, 
     { path: 'two-factor', component: TwoFactorComponent},
-    { path: 'disable-2fa', component: Disable2FAComponent }
-
+    { path: 'disable-2fa', component: Disable2FAComponent },
+    { path: 'map', component: MapComponent }
 ];

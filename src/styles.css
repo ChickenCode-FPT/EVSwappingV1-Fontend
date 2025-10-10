@@ -1,4 +1,74 @@
 /* You can add global styles to this file, and also import other style files */
-
+@import 'mapbox-gl/dist/mapbox-gl.css';
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* ===== Mapbox Custom Control Popup (Global Style) ===== */
+.mapboxgl-ctrl.custom-control.route-info-box {
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  padding: 14px 16px !important;
+  width: 240px !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 13px !important;
+  color: #333 !important;
+}
+
+.route-info-title {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.route-info-content {
+  margin-bottom: 10px;
+}
+
+.info-row {
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-weight: bold;
+  color: #111827;
+}
+
+.route-status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.route-btn {
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.route-btn-primary {
+  background-color: #f59e0b;
+  color: #fff;
+}
+
+.route-btn-primary:hover {
+  background-color: #d97706;
+}
+
+.route-btn-secondary {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.route-btn-secondary:hover {
+  background-color: #2563eb;
+}
+

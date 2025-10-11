@@ -1,0 +1,40 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="card">
+  <h3>Đặt lịch sạc/đổi pin</h3>
+
+  <div class="row">
+    <label>User ID</label>
+    <input type="text" formControlName="userId" placeholder="user-123">
+    <small class="invalid" *ngIf="f.userId.touched && f.userId.invalid">Bắt buộc</small>
+  </div>
+
+  <div class="row">
+    <label>Trạm</label>
+    <input type="number" formControlName="stationId" placeholder="Nhập StationId">
+    <small class="hint">Hoặc bind sẵn khi chọn trạm từ danh sách.</small>
+    <small class="invalid" *ngIf="f.stationId.touched && f.stationId.invalid">Bắt buộc</small>
+  </div>
+
+  <div class="row">
+    <label>Model pin (tuỳ chọn)</label>
+    <input type="number" formControlName="batteryModelId" placeholder="VD: 1">
+  </div>
+
+  <div class="row">
+    <label>Thời điểm hẹn (tuỳ chọn)</label>
+    <input type="datetime-local" formControlName="scheduledAtLocal">
+    <small class="hint">Nếu bỏ trống sẽ đặt lịch ngay.</small>
+  </div>
+
+  <div class="row">
+    <label>Ghi chú</label>
+    <textarea rows="3" formControlName="notes" placeholder="Yêu cầu thêm..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" type="submit" [disabled]="submitting">
+      {{ submitting ? 'Đang tạo…' : 'Tạo lịch' }}
+    </button>
+  </div>
+
+  <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+</form>

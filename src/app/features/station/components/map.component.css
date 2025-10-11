@@ -1,3 +1,4 @@
+/* src\app\features\station\components\map.component.css */
 #map {
   width: 100%;
   height: 100vh;
@@ -71,73 +72,48 @@
   z-index: 9999;
 }
 
-/* ===== Custom Popup on Map (Route Info Box) ===== */
-.route-info-box {
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  padding: 14px 16px;
-  width: 240px;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  color: #333;
+/* ===== Modal overlay (phải nằm trong file CSS của MapComponent) ===== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 10000; /* cao hơn .mapboxgl-ctrl (9999) */
 }
 
-.route-info-title {
-  margin: 0 0 6px 0;
-  font-size: 15px;
-  font-weight: bold;
-  color: #1e293b;
-  text-align: left;
+.modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;                /* center */
+  max-width: 560px;
+  width: calc(100% - 32px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.2);
+  outline: none;
+  z-index: 10001;              /* trên backdrop + map controls */
+  display: flex;
+  flex-direction: column;
 }
 
-.route-info-content {
-  margin-bottom: 10px;
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+}
+.modal-body {
+  padding: 12px 16px 16px;
+  max-height: min(80vh, 720px);
+  overflow: auto;
 }
 
-.info-row {
-  margin-bottom: 4px;
-}
-
-.info-value {
-  font-weight: bold;
-  color: #111827;
-}
-
-.route-status {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #666;
-  font-style: italic;
-}
-
-/* Buttons inside popup */
-.route-btn {
-  width: 100%;
+.icon-btn {
+  appearance: none;
   border: none;
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin-top: 8px;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 13px;
-  transition: background-color 0.2s ease;
 }
 
-.route-btn-primary {
-  background-color: #f59e0b;
-  color: #fff;
-}
-
-.route-btn-primary:hover {
-  background-color: #d97706;
-}
-
-.route-btn-secondary {
-  background-color: #3b82f6;
-  color: #fff;
-}
-
-.route-btn-secondary:hover {
-  background-color: #2563eb;
-}
+/* (giữ nguyên các rule layout/map-pane hiện có) */

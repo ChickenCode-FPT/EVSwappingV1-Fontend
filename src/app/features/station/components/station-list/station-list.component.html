@@ -31,7 +31,7 @@
   <div class="status" *ngIf="geoStatusMsg">{{ geoStatusMsg }}</div>
 
   <div class="list">
-    <div class="item" *ngFor="let s of filtered">
+    <div class="item" *ngFor="let s of filtered; trackBy: trackById">
       <div class="item-main">
         <div class="title">
           <span class="name">{{ s.name }}</span>
@@ -39,6 +39,7 @@
             {{ s.status === 1 ? 'Online' : 'Offline' }}
           </span>
         </div>
+
         <div class="meta">
           <div>📍 {{ s.address || '—' }}</div>
           <div>🔋 Pin sẵn có: <b>{{ s.availableBatteries }}</b> / {{ s.capacity }}</div>
@@ -47,8 +48,14 @@
             <span *ngIf="s.durationMin !== undefined">⏱ {{ s.durationMin }} min</span>
           </div>
         </div>
+
         <div class="actions">
           <button class="btn-secondary" (click)="onSelect(s)">Đi đến trạm này</button>
+          <button class="btn-secondary"
+                  [disabled]="!canReserve(s)"
+                  (click)="onReserve(s)">
+            Đặt lịch
+          </button>
           <button class="btn-link" (click)="toggleExpand(s)">
             {{ expandedId === s.stationId ? 'Thu gọn' : 'Chi tiết' }}
           </button>
@@ -59,7 +66,39 @@
         <div><b>Mã:</b> {{ s.stationId }}</div>
         <div><b>Điện thoại:</b> {{ s.phone || '—' }}</div>
         <div><b>Tọa độ:</b> [{{ s.longitude }}, {{ s.latitude }}]</div>
-        <div class="tips">Gợi ý: Nhấn “Đi đến trạm này” để vẽ route và cập nhật thời gian di chuyển.</div>
+
+        <!-- Khu vực chọn model pin còn hàng -->
+        <div class="models">
+          <div class="models-header">
+            <b>Model pin còn hàng</b>
+            <button class="btn-mini" (click)="refreshModels(s.stationId)">↻</button>
+          </div>
+
+          <ng-container *ngIf="getEntry(s.stationId) as entry">
+            <div *ngIf="entry.loading" class="hint">Đang tải model…</div>
+            <div *ngIf="entry.error" class="error">{{ entry.error }}</div>
+
+            <div *ngIf="!entry.loading && !entry.error">
+              <ng-container *ngIf="entry.options.length > 0; else noModel">
+                <label>Chọn model:</label>
+                <select class="select" [(ngModel)]="entry.selected">
+                  <option *ngFor="let opt of entry.options" [value]="opt.id">
+                    Model #{{ opt.id }} ({{ opt.count }})
+                  </option>
+                </select>
+                <small class="hint">Số trong ngoặc là số lượng pin Full còn trong trạm.</small>
+              </ng-container>
+              <ng-template #noModel>
+                <div class="hint">Chưa có model nào còn hàng tại trạm.</div>
+              </ng-template>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="tips">
+          Gợi ý: Chọn model (nếu cần) rồi nhấn “Đặt lịch”.
+          Nếu không chọn, hệ thống có thể chọn bất kỳ model còn hàng.
+        </div>
       </div>
     </div>
   </div>

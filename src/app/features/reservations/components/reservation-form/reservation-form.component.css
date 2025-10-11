@@ -1,0 +1,9 @@
+.card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #fff; max-width: 520px; }
+.row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+label { font-weight: 600; }
+input, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+.hint { color: #666; }
+.invalid { color: #c0392b; }
+.actions { margin-top: 12px; }
+.btn-primary { padding: 10px 16px; border: none; border-radius: 8px; background: #0d6efd; color: #fff; cursor: pointer; }
+.error { margin-top: 10px; color: #b00020; }

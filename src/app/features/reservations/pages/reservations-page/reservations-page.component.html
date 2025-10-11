@@ -1,0 +1,42 @@
+<section class="wrap">
+  <h2>Đặt lịch</h2>
+
+  <app-reservation-form
+    [userId]="userId"
+    [stationId]="defaultStationId"
+    [batteryModelId]="defaultBatteryModelId"
+    (created)="onCreated($event)">
+  </app-reservation-form>
+
+  <div class="messages">
+    <div class="info" *ngIf="infoMsg">{{ infoMsg }}</div>
+    <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  </div>
+
+  <h3>Danh sách đặt lịch của tôi</h3>
+  <div *ngIf="loading">Đang tải…</div>
+
+  <div class="list" *ngIf="!loading">
+    <div class="item" *ngFor="let it of items">
+      <div class="left">
+        <div class="title">
+          <span>#{{ it.reservationId }}</span>
+          <span class="badge" [class]="badgeClass(it.status)">{{ it.status }}</span>
+        </div>
+        <div class="meta">
+          <div>Trạm: <b>{{ it.stationName || it.stationId }}</b></div>
+          <div>Model pin: {{ it.batteryModelId ?? '—' }}</div>
+          <div>Tạo lúc: {{ toLocal(it.createdAt) }}</div>
+          <div>Lịch hẹn: {{ toLocal(it.scheduledAt) }}</div>
+        </div>
+      </div>
+      <div class="right">
+        <button class="btn-danger" (click)="cancel(it)" [disabled]="it.status !== 'Pending'">
+          Hủy
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="items.length === 0 && !loading" class="empty">Chưa có đặt lịch nào</div>
+  </div>
+</section>

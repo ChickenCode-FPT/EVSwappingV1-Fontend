@@ -1,3 +1,4 @@
+// src/app/map/services/map.service.ts
 import { Injectable } from '@angular/core';
 import {
   ROUTE_LAYER_ID,
@@ -59,7 +60,7 @@ export class MapService {
         },
         paint: {
           'line-width': 4,
-          'line-color': '#3b82f6', // xanh lá cây mặc định
+          'line-color': '#22c55e', // xanh lá cây mặc định
         },
       });
     }

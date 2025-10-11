@@ -15,28 +15,30 @@ import { Setup2FAComponent } from './features/auth/setup-2fa/setup-2fa';
 import { TwoFactorComponent } from './features/auth/two-factor/two-factor';
 import { Disable2FAComponent } from './features/auth/disable-two-factor/disable-two-factor';
 import { MapComponent } from './features/station/components/map.component';
+import { ReservationsPageComponent } from './features/reservations/pages/reservations-page/reservations-page.component';
+
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
 @Component({ template: '<h2>Contact Page</h2>', standalone: true })
 export class Contact {}
 
-
 export const routes: Routes = [
-    { path: '', component: Home },
-    { path: 'home', component: Home },
-    { path: 'login', component: LoginComponent },
-    { path: 'about', component: About },
-    { path: 'contact', component: Contact },
-    { path: 'register', component: RegisterComponent },
-    { path: 'admin/dashboard', component: AdminDashboardComponent },
-    { path: 'admin/users', component: UsersComponent },
-    { path: 'update-phone', component: UpdatePhoneComponent },
-    { path: 'google-callback', component: GoogleCallbackComponent },
-    { path: 'forgot-password', component:ForgotPasswordComponent },
-    { path: 'reset-password', component: ResetPasswordComponent}, 
-    { path: '2fa-setup', component: Setup2FAComponent}, 
-    { path: 'two-factor', component: TwoFactorComponent},
-    { path: 'disable-2fa', component: Disable2FAComponent },
-    { path: 'map', component: MapComponent }
+  { path: '', component: Home },
+  { path: 'home', component: Home },
+  { path: 'login', component: LoginComponent },
+  { path: 'about', component: About },
+  { path: 'contact', component: Contact },
+  { path: 'register', component: RegisterComponent },
+  { path: 'admin/dashboard', component: AdminDashboardComponent },
+  { path: 'admin/users', component: UsersComponent },
+  { path: 'update-phone', component: UpdatePhoneComponent },
+  { path: 'google-callback', component: GoogleCallbackComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
+  { path: '2fa-setup', component: Setup2FAComponent },
+  { path: 'two-factor', component: TwoFactorComponent },
+  { path: 'disable-2fa', component: Disable2FAComponent },
+  { path: 'station', component: MapComponent },
+  { path: 'reservations', component: ReservationsPageComponent }
 ];

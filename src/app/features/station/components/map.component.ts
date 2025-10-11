@@ -1,15 +1,13 @@
-// src\app\features\station\components\map.component.ts
+// src/app/station/components/map.component.ts
 import { Component, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-
 import { GeolocationService } from '../services/geolocation.service';
 import { StationApi } from '../services/station.api';
 import { Station } from '../models/station.model';
 import { decodePolyline, buildRouteGeoJson } from '../utils/map-utils';
 import { MapService } from '../services/map.service';
-
 import {
   MAPBOX_TOKEN,
   MAPBOX_STYLE,
@@ -17,14 +15,17 @@ import {
   MAPBOX_DEFAULT_ZOOM,
 } from '../tokens/mapbox.token';
 import { environment } from '../../../../environments/environment';
-
-// Panel danh sách trạm (standalone)
 import { StationListComponent } from './station-list/station-list.component';
+
+// 👇 THÊM: import form đặt lịch (standalone)
+import { ReservationFormComponent } from '../../../features/reservations/components/reservation-form/reservation-form.component';
+import { ReservationDto } from '../../../features/reservations/models/reservation.types';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CommonModule, FormsModule, StationListComponent],
+  // 👇 THÊM ReservationFormComponent vào imports
+  imports: [CommonModule, FormsModule, StationListComponent, ReservationFormComponent],
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
   providers: [
@@ -223,6 +224,46 @@ export class MapComponent implements AfterViewInit {
     });
   }
 
+  /** ===================================================================================== */
+
+  // Popup state
+  showReservation = false;
+  selectedStationId?: number;
+  selectedBatteryModelId: number | null = null;
+  currentUserId = 'user-123'; // TODO: lấy từ auth thật
+
+  openReservation(e: { station: Station; batteryModelId: number | null }) {
+    this.selectedStationId = e.station.stationId;
+    this.selectedBatteryModelId = e.batteryModelId ?? null;
+    this.showReservation = true;
+
+    // focus vào modal để bắt Esc
+    queueMicrotask(() => {
+      const el = document.querySelector('.modal') as HTMLElement | null;
+      el?.focus();
+    });
+  }
+
+  closeReservation() {
+    this.showReservation = false;
+  }
+
+  onReservationCreated(res: ReservationDto) {
+    this.closeReservation();
+    // Optional: cập nhật UI giảm availableBatteries
+    const idx = this.stations.findIndex((s) => s.stationId === this.selectedStationId);
+    if (idx >= 0 && (this.stations[idx].availableBatteries ?? 0) > 0) {
+      this.stations[idx] = {
+        ...this.stations[idx],
+        availableBatteries: (this.stations[idx].availableBatteries ?? 0) - 1,
+      };
+      this.touchStationsArrayForChangeDetection();
+    }
+    // TODO: toast/snackbar nếu muốn
+  }
+
+  /** ===================================================================================== */
+
   /** Backend trả về MỘT Station gần nhất → gọi route đến station đó */
   private async findNearestStationAndRoute() {
     if (!this.start) {
@@ -313,46 +354,46 @@ export class MapComponent implements AfterViewInit {
   }
 
   // ==== UI Control ở góc map ====
-  // ==== UI Control ở góc map ====
   private addRouteInfoControl() {
+    // Tạo khối control
     const ctrlDiv = document.createElement('div');
-    ctrlDiv.className = 'mapboxgl-ctrl custom-control route-info-box';
-
+    ctrlDiv.className =
+      'mapboxgl-ctrl custom-control bg-white rounded-xl shadow-lg p-4 text-sm font-sans min-w-[220px]';
     ctrlDiv.innerHTML = `
-    <h3 class="route-info-title">Nearest Station Route</h3>
-    <div class="route-info-content">
-      <div class="info-row">
-        📏 Distance:
-        <span id="ctrl-distance" class="info-value">${this.distanceKm} km</span>
+      <h2 class="font-bold text-gray-800 mb-2">Nearest Station Route</h2>
+      <div class="space-y-1 text-gray-600">
+        <div>📏 Distance:
+          <span id="ctrl-distance" class="font-medium text-gray-900">${this.distanceKm} km</span>
+        </div>
+        <div>⏱ Duration:
+          <span id="ctrl-duration" class="font-medium text-gray-900">${this.durationMin} min</span>
+        </div>
       </div>
-      <div class="info-row">
-        ⏱ Duration:
-        <span id="ctrl-duration" class="info-value">${this.durationMin} min</span>
+
+      <button id="ctrl-btn"
+        class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-3 rounded-lg shadow-sm">
+        Tìm trạm gần nhất
+      </button>
+
+      <div id="ctrl-status" class="mt-2 text-xs text-gray-500">
+        ${this.geoStatusMsg ?? ''}
       </div>
-    </div>
 
-    <button id="ctrl-btn" class="route-btn route-btn-primary">
-      Tìm trạm gần nhất
-    </button>
+      <button id="ctrl-retry" style="display:none"
+        class="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 rounded-lg shadow-sm text-sm">
+        Thử lại định vị
+      </button>
+    `;
 
-    <div id="ctrl-status" class="route-status">
-      ${this.geoStatusMsg ?? ''}
-    </div>
-
-    <button id="ctrl-retry" style="display:none" class="route-btn route-btn-secondary">
-      Thử lại định vị
-    </button>
-  `;
-
+    // Thêm vào Mapbox control container
     const customControl = {
       onAdd: () => ctrlDiv,
       onRemove: () => ctrlDiv.parentNode?.removeChild(ctrlDiv),
     };
-
     this.map.addControl(customControl, 'top-left');
     this.routeInfoControl = { ctrlDiv };
 
-    // Gắn sự kiện sau khi render
+    // Gắn sự kiện sau khi control render xong
     setTimeout(() => {
       const btn = ctrlDiv.querySelector<HTMLButtonElement>('#ctrl-btn');
       const retryBtn = ctrlDiv.querySelector<HTMLButtonElement>('#ctrl-retry');
@@ -362,6 +403,8 @@ export class MapComponent implements AfterViewInit {
           console.log('▶️ Nút "Tìm trạm gần nhất" được bấm');
           await this.goToNearestStation();
         });
+      } else {
+        console.warn('⚠️ Không tìm thấy #ctrl-btn trong DOM control');
       }
 
       if (retryBtn) {
@@ -370,7 +413,7 @@ export class MapComponent implements AfterViewInit {
           this.retryGeolocation();
         });
       }
-    }, 300);
+    }, 500);
   }
 
   private retryGeolocation() {

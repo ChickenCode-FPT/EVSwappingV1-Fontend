@@ -1,0 +1,15 @@
+.wrap { display: grid; gap: 16px; }
+.messages .info { color: #155724; background: #d4edda; padding: 8px; border-radius: 6px; }
+.messages .error { color: #721c24; background: #f8d7da; padding: 8px; border-radius: 6px; }
+
+.list { display: flex; flex-direction: column; gap: 10px; }
+.item { display: flex; justify-content: space-between; gap: 12px; border: 1px solid #eee; border-radius: 8px; padding: 12px; }
+.title { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.meta { color: #333; display: grid; gap: 2px; margin-top: 4px; }
+.btn-danger { padding: 8px 12px; background: #dc3545; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+.badge { border-radius: 10px; padding: 2px 8px; font-size: 12px; border: 1px solid #ccc; }
+.badge.pending { background: #fff3cd; border-color: #ffeeba; }
+.badge.success { background: #d4edda; border-color: #c3e6cb; }
+.badge.danger { background: #f8d7da; border-color: #f5c6cb; }
+.badge.muted { background: #e2e3e5; border-color: #d6d8db; }
+.empty { color: #666; font-style: italic; }

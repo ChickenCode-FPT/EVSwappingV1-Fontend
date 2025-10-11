@@ -26,7 +26,7 @@ export class GeolocationService {
 
       const tryGet = (attempt: number) => {
         statusCb?.(`${mode} 📡 Thử lấy vị trí… attempt ${attempt}/${retries}`);
-        // console.log(`${mode} 📡 Thử lấy vị trí… attempt ${attempt}/${retries}`);
+        console.log(`${mode} 📡 Thử lấy vị trí… attempt ${attempt}/${retries}`);
 
         navigator.geolocation.getCurrentPosition(
           pos => {
@@ -34,12 +34,12 @@ export class GeolocationService {
               pos.coords.longitude,
               pos.coords.latitude,
             ];
-            // console.log(`${mode} ✅ Thành công:`, coords);
+            console.log(`${mode} ✅ Thành công:`, coords);
             statusCb?.(`${mode} ✅ Lấy vị trí thành công`);
             resolve(coords);
           },
           err => {
-            // console.warn(`${mode} ❌ Lỗi attempt ${attempt}:`, err);
+            console.warn(`${mode} ❌ Lỗi attempt ${attempt}:`, err);
             if (attempt < retries) {
               setTimeout(() => tryGet(attempt + 1), delayMs);
             } else {
@@ -47,9 +47,9 @@ export class GeolocationService {
                 statusCb?.(
                   '⚠️ HighAccuracy fail sau nhiều lần → thử lại với LowAcc'
                 );
-                // console.warn(
-                //   '⚠️ HighAccuracy fail sau nhiều lần → fallback sang LowAcc'
-                // );
+                console.warn(
+                  '⚠️ HighAccuracy fail sau nhiều lần → fallback sang LowAcc'
+                );
                 this.getCurrentLocation(false, retries, delayMs, statusCb)
                   .then(resolve)
                   .catch(reject);
@@ -79,7 +79,7 @@ export class GeolocationService {
     useHighAccuracy: boolean = true
   ) {
     if (!navigator.geolocation) {
-      // console.warn('⚠️ Geolocation không hỗ trợ trên browser này');
+      console.warn('⚠️ Geolocation không hỗ trợ trên browser này');
       return;
     }
 
@@ -89,11 +89,11 @@ export class GeolocationService {
           pos.coords.longitude,
           pos.coords.latitude,
         ];
-        // console.log('📍 Vị trí thay đổi:', coords);
+        console.log('📍 Vị trí thay đổi:', coords);
         callback(coords);
       },
       err => {
-        // console.error('❌ Lỗi khi theo dõi vị trí:', err);
+        console.error('❌ Lỗi khi theo dõi vị trí:', err);
       },
       { enableHighAccuracy: useHighAccuracy, timeout: 10000, maximumAge: 0 }
     );

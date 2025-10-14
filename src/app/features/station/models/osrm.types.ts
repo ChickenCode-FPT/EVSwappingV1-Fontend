@@ -1,4 +1,6 @@
-// src/app/map/models/osrm.types.ts
+// src/app/features/station/models/osrm.types.ts
+export type VehicleProfile = 'car' | 'motorbike' | 'truck';
+
 export interface RouteResponse {
   code: string;
   routes: {

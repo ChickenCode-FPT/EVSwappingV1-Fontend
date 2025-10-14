@@ -1,4 +1,4 @@
-// src/app/map/models/station.types.ts
+// src\app\features\station\models\station.types.ts
 export interface NearestStationResponse {
   stations: {
     id: number;

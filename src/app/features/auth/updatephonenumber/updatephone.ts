@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../../core/auth.service';
+import { AuthService, LoginResponseDto } from '../../../core/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 })
 export class UpdatePhoneComponent {
   phoneForm: FormGroup;
-  email: string = '';
+  email = '';
 
   constructor(
     private fb: FormBuilder,
@@ -26,33 +26,50 @@ export class UpdatePhoneComponent {
       phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,15}$')]]
     });
 
-    const storedEmail = localStorage.getItem('email');
+    const storedEmail = localStorage.getItem('email') || localStorage.getItem('2faEmail');
     if (storedEmail) this.email = storedEmail;
   }
 
   onSubmit() {
-    if (this.phoneForm.valid) {
-      const phoneNumber = this.phoneForm.value.phoneNumber;
-
-      this.authService.updatePhone(this.email, phoneNumber).subscribe({
-        next: (res) => {
-          localStorage.setItem('token', res.token.token);
-          localStorage.setItem('refreshToken', res.token.refreshToken);
-          localStorage.setItem('refreshTokenExpiry', res.token.refreshTokenExpiry);
-            
-          console.log('token:', res.token.token);
-          const payload = JSON.parse(atob(res.token.token.split('.')[1]));
-          localStorage.setItem('fullname', payload.fullname);
-          localStorage.setItem('roles', payload.roles);
-
-          this.snackBar.open('Phone updated successfully!', 'Close', { duration: 3000 });
-          this.router.navigate(['/home']);
-        },
-        error: (err) => {
-          this.snackBar.open('Update failed', 'Close', { duration: 3000, panelClass: ['snackbar-error'] });
-          console.error(err);
-        }
-      });
+    if (this.phoneForm.invalid) {
+      this.phoneForm.markAllAsTouched();
+      return;
     }
+    if (!this.email) {
+      this.snackBar.open('Không tìm thấy email. Vui lòng đăng nhập lại.', 'Đóng', { duration: 3000, panelClass: ['snackbar-error'] });
+      return;
+    }
+
+    const phoneNumber = this.phoneForm.value.phoneNumber as string;
+
+    this.authService.updatePhone(this.email, phoneNumber).subscribe({
+      next: (res: LoginResponseDto) => {
+        const t = res.token;
+
+        localStorage.setItem('token', t.token);
+        localStorage.setItem('refreshToken', t.refreshToken);
+        localStorage.setItem('refreshTokenExpiry', t.refreshTokenExpiry);
+
+        try {
+          const payload = JSON.parse(atob(t.token.split('.')[1]));
+          if (payload?.fullname) localStorage.setItem('fullname', payload.fullname);
+
+          const roles = Array.isArray(payload?.roles)
+            ? payload.roles.join(',')
+            : (payload?.roles ?? '');
+          if (roles) localStorage.setItem('roles', roles);
+        } catch (e) {
+          console.warn('Không thể decode JWT payload', e);
+        }
+
+        this.snackBar.open('Cập nhật số điện thoại thành công!', 'Đóng', { duration: 3000 });
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        console.error(err);
+        const msg = err?.error?.detail || err?.error?.title || 'Cập nhật thất bại';
+        this.snackBar.open(msg, 'Đóng', { duration: 3000, panelClass: ['snackbar-error'] });
+      }
+    });
   }
 }

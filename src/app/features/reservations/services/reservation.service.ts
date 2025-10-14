@@ -1,5 +1,6 @@
+// src\app\features\reservations\services\reservation.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { CreateReservationRequest, ReservationDto } from '../models/reservation.types';
 import { Observable } from 'rxjs';
@@ -14,12 +15,11 @@ export class ReservationService {
     return this.http.post<ReservationDto>(this.base, payload);
   }
 
-  cancel(reservationId: number, userId: string): Observable<void> {
-    const params = new HttpParams().set('userId', userId);
-    return this.http.delete<void>(`${this.base}/${reservationId}`, { params });
+  cancel(reservationId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${reservationId}`);
   }
 
-  getByUser(userId: string): Observable<ReservationDto[]> {
-    return this.http.get<ReservationDto[]>(`${this.base}/user/${encodeURIComponent(userId)}`);
+  getMine(): Observable<ReservationDto[]> {
+    return this.http.get<ReservationDto[]>(`${this.base}/me`);
   }
 }

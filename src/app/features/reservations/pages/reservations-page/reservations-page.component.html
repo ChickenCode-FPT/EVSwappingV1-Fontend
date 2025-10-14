@@ -1,42 +1,128 @@
-<section class="wrap">
-  <h2>Đặt lịch</h2>
+<section class="page">
+  <header class="page__head">
+    <div>
+      <h1 class="title">Đặt lịch</h1>
+      <p class="subtitle">Chọn trạm & khung giờ, theo dõi trạng thái đặt lịch của bạn theo thời gian thực.</p>
+    </div>
+    <div class="toolbar">
+      <div class="input">
+        <input
+          type="search"
+          placeholder="Tìm theo #id, trạm, model…"
+          [ngModel]="q()"
+          (ngModelChange)="q.set($event)" />
+        <button class="btn btn--ghost" (click)="q.set('')">✕</button>
+      </div>
 
-  <app-reservation-form
-    [userId]="userId"
-    [stationId]="defaultStationId"
-    [batteryModelId]="defaultBatteryModelId"
-    (created)="onCreated($event)">
-  </app-reservation-form>
+      <select class="select" [ngModel]="status()" (ngModelChange)="onStatusChange($event)">
+        <option value="All">Tất cả</option>
+        <option value="Pending">Đang chờ</option>
+        <option value="Completed">Hoàn tất</option>
+        <option value="Cancelled">Đã hủy</option>
+        <option value="Expired">Hết hạn</option>
+      </select>
 
-  <div class="messages">
-    <div class="info" *ngIf="infoMsg">{{ infoMsg }}</div>
-    <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      <select class="select" [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)">
+        <option value="startDesc">Gần nhất</option>
+        <option value="startAsc">Cũ nhất</option>
+        <option value="status">Theo trạng thái</option>
+      </select>
+
+      <button class="btn btn--primary" (click)="reload()">↻ Làm mới</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel__head">
+        <h3>Tạo đặt lịch</h3>
+        <p class="muted">Hệ thống sẽ tự giữ pin phù hợp 15 phút trước giờ bắt đầu.</p>
+      </div>
+
+      <app-reservation-form
+        [stationId]="defaultStationId"
+        [vehicleId]="defaultVehicleId"
+        (created)="onCreated($event)">
+      </app-reservation-form>
+
+      <div class="messages">
+        <div class="msg msg--info" *ngIf="infoMsg()">{{ infoMsg() }}</div>
+        <div class="msg msg--error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <h3 class="section-title">Đặt lịch của tôi</h3>
+
+      <!-- skeleton -->
+      <div class="list" *ngIf="loading()">
+        <div class="card skeleton" *ngFor="let s of [1,2,3,4]">
+          <div class="skeleton__header"></div>
+          <div class="skeleton__line"></div>
+          <div class="skeleton__line short"></div>
+        </div>
+      </div>
+
+      <!-- list -->
+      <div class="list" *ngIf="!loading() && view().length">
+        <div class="card" *ngFor="let it of view(); trackBy: trackById">
+          <div class="card__head">
+            <div class="id">#{{ it.reservationId }}</div>
+            <span class="chip" [class]="badgeClass(it.status)">{{ it.status }}</span>
+          </div>
+
+          <div class="grid">
+            <div class="row"><span>Trạm</span><b>{{ it.stationId }}</b></div>
+            <div class="row"><span>Model pin</span><b>{{ it.reservedBatteryModelId ?? '—' }}</b></div>
+            <div class="row"><span>Bắt đầu</span><b>{{ toLocal(it.reservedFrom) }}</b></div>
+            <div class="row"><span>Kết thúc</span><b>{{ toLocal(it.reservedTo) }}</b></div>
+            <div class="row" *ngIf="it.allocation?.holdUntil">
+              <span>Giữ đến</span><b>{{ toLocal(it.allocation?.holdUntil) }}</b>
+            </div>
+          </div>
+
+          <div class="card__actions">
+            <button class="btn btn--danger"
+                    (click)="askCancel(it)"
+                    [disabled]="!isPendingStatus(it.status) || cancellingIds().has(it.reservationId)">
+              <ng-container *ngIf="!cancellingIds().has(it.reservationId); else spin">
+                Hủy lịch
+              </ng-container>
+              <ng-template #spin>
+                <span class="spinner"></span> Đang hủy…
+              </ng-template>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- empty state -->
+      <div class="empty" *ngIf="!loading() && view().length === 0">
+        <div class="empty__icon">📅</div>
+        <h4>Chưa có đặt lịch nào</h4>
+        <p>Hãy tạo một đặt lịch ở panel bên trái. Bạn có thể lọc theo trạng thái ở thanh công cụ.</p>
+        <button class="btn btn--outline" (click)="reload()">Tải lại</button>
+      </div>
+    </main>
   </div>
 
-  <h3>Danh sách đặt lịch của tôi</h3>
-  <div *ngIf="loading">Đang tải…</div>
-
-  <div class="list" *ngIf="!loading">
-    <div class="item" *ngFor="let it of items">
-      <div class="left">
-        <div class="title">
-          <span>#{{ it.reservationId }}</span>
-          <span class="badge" [class]="badgeClass(it.status)">{{ it.status }}</span>
-        </div>
-        <div class="meta">
-          <div>Trạm: <b>{{ it.stationName || it.stationId }}</b></div>
-          <div>Model pin: {{ it.batteryModelId ?? '—' }}</div>
-          <div>Tạo lúc: {{ toLocal(it.createdAt) }}</div>
-          <div>Lịch hẹn: {{ toLocal(it.scheduledAt) }}</div>
-        </div>
-      </div>
-      <div class="right">
-        <button class="btn-danger" (click)="cancel(it)" [disabled]="it.status !== 'Pending'">
-          Hủy
-        </button>
+  <!-- Confirm Cancel Modal -->
+  <div class="modal__backdrop" *ngIf="confirmOpen()" (click)="closeConfirm()"></div>
+  <div class="modal" *ngIf="confirmOpen()" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal__head">
+      <h4 id="confirmTitle">Xác nhận hủy đặt lịch</h4>
+      <button class="btn btn--ghost icon" aria-label="Đóng" (click)="closeConfirm()">✕</button>
+    </div>
+    <div class="modal__body" *ngIf="itemToCancel() as it">
+      <p>Bạn chắc chắn muốn hủy đặt lịch <b>#{{ it.reservationId }}</b>?</p>
+      <div class="grid small">
+        <div class="row"><span>Trạm</span><b>{{ it.stationId }}</b></div>
+        <div class="row"><span>Khung giờ</span><b>{{ toLocal(it.reservedFrom) }} → {{ toLocal(it.reservedTo) }}</b></div>
       </div>
     </div>
-
-    <div *ngIf="items.length === 0 && !loading" class="empty">Chưa có đặt lịch nào</div>
+    <div class="modal__actions">
+      <button class="btn" (click)="closeConfirm()">Để sau</button>
+      <button class="btn btn--danger" (click)="doCancel()">Hủy ngay</button>
+    </div>
   </div>
 </section>

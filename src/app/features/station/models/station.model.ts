@@ -1,3 +1,4 @@
+// src\app\features\station\models\station.model.ts
 export interface Station {
   /** ID của trạm (khóa chính) */ stationId: number;
   /** Tên trạm */ name: string;

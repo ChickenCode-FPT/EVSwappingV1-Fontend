@@ -14,28 +14,54 @@ import { ResetPasswordComponent } from './features/auth/reset-password/reset-pas
 import { Setup2FAComponent } from './features/auth/setup-2fa/setup-2fa';
 import { TwoFactorComponent } from './features/auth/two-factor/two-factor';
 import { Disable2FAComponent } from './features/auth/disable-two-factor/disable-two-factor';
+
+import { StaffDashboard } from './features/staff/staff-dashboard/staff-dashboard';
+import { BatteryWarehouse } from './features/staff/battery-warehouse/battery-warehouse';
+import { BatteryAdd } from './features/staff/battery-add/battery-add';
+import { BatteryModels } from './features/staff/battery-model/battery-model';
+import { BatteryTransaction } from './features/staff/battery-transaction/battery-transaction';
+import { BatteryTransactionDetail } from './features/staff/battery-transaction-detail/battery-transaction-detail';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
-export class About {}
+export class About { }
 
 @Component({ template: '<h2>Contact Page</h2>', standalone: true })
-export class Contact {}
+export class Contact { }
 
 
 export const routes: Routes = [
-    { path: '', component: Home },
-    { path: 'home', component: Home },
-    { path: 'login', component: LoginComponent },
-    { path: 'about', component: About },
-    { path: 'contact', component: Contact },
-    { path: 'register', component: RegisterComponent },
-    { path: 'admin/dashboard', component: AdminDashboardComponent },
-    { path: 'admin/users', component: UsersComponent },
-    { path: 'update-phone', component: UpdatePhoneComponent },
-    { path: 'google-callback', component: GoogleCallbackComponent },
-    { path: 'forgot-password', component:ForgotPasswordComponent },
-    { path: 'reset-password', component: ResetPasswordComponent}, 
-    { path: '2fa-setup', component: Setup2FAComponent}, 
-    { path: 'two-factor', component: TwoFactorComponent},
-    { path: 'disable-2fa', component: Disable2FAComponent }
+  { path: '', component: Home },
+  { path: 'home', component: Home },
+  { path: 'login', component: LoginComponent },
+  { path: 'about', component: About },
+  { path: 'contact', component: Contact },
+  { path: 'register', component: RegisterComponent },
+  { path: 'admin/dashboard', component: AdminDashboardComponent },
+  { path: 'admin/users', component: UsersComponent },
+  { path: 'update-phone', component: UpdatePhoneComponent },
+  { path: 'google-callback', component: GoogleCallbackComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
+  { path: '2fa-setup', component: Setup2FAComponent },
+  { path: 'two-factor', component: TwoFactorComponent },
+  { path: 'disable-2fa', component: Disable2FAComponent },
 
+  {
+    path: 'staff',
+    component: StaffDashboard,
+    children: [
+      { path: '', redirectTo: 'warehouse', pathMatch: 'full' },
+      { path: 'dashboard', component: BatteryWarehouse },
+      { path: 'battery/warehouse', component: BatteryWarehouse },
+      { path: 'battery/add', component: BatteryAdd },
+      { path: 'battery/model', component: BatteryModels },
+      { path: 'battery/transaction', component: BatteryTransaction },
+      { path: 'battery/transaction/:id', component: BatteryTransactionDetail },
+      {
+        path: 'transactions/confirm/:id',
+        component: BatteryTransactionDetail,
+        data: { mode: 'confirm' }
+      },
+    ]
+  },
+  { path: '**', redirectTo: '' },
 ];

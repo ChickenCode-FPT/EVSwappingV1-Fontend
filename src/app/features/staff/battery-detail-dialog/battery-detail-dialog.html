@@ -1,0 +1,91 @@
+<div class="modern-dialog">
+    <h2 mat-dialog-title class="dialog-title detail-header">
+        🔋 Chi Tiết Pin (Battery Details)
+    </h2>
+
+    <mat-dialog-content class="dialog-content">
+
+        <div class="details-grid">
+
+            <div class="info-group">
+                <div class="section-title info-section">Thông Tin Cơ Bản</div>
+
+                <div class="form-field-container">
+                    <span class="field-name field-label-text">Số Seri</span>
+                    <mat-form-field appearance="outline" class="full-width data-field">
+                        <mat-label>Serial Number</mat-label>
+                        <input matInput [value]="data.serialNumber" disabled class="data-value-input" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-field-container">
+                    <span class="field-name field-label-text">Mã Model</span>
+                    <mat-form-field appearance="outline" class="full-width data-field">
+                        <mat-label>Model Code</mat-label>
+                        <input matInput [value]="data.batteryModel.modelCode || 'N/A'" disabled
+                            class="data-value-input" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-field-container">
+                    <span class="field-name field-label-text">Nhà Sản Xuất</span>
+                    <mat-form-field appearance="outline" class="full-width data-field">
+                        <mat-label>Manufacturer</mat-label>
+                        <input matInput [value]="data.batteryModel.manufacturer || 'N/A'" disabled
+                            class="data-value-input" />
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="info-group">
+                <div class="section-title info-section">Hiệu Suất & Thống Kê</div>
+
+                <div class="form-field-container">
+                    <span class="field-name field-label-text">Trạng Thái Sức Khỏe (SoH)</span>
+                    <mat-form-field appearance="outline" class="full-width data-field soh-field">
+                        <mat-label>Current SoH</mat-label>
+                        <input matInput [value]="data.currentSoH + ' %'" disabled
+                            class="data-value-input highlight-soh" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-field-container">
+                    <span class="field-name field-label-text">Số Chu Kỳ Sạc</span>
+                    <mat-form-field appearance="outline" class="full-width data-field">
+                        <mat-label>Cycle Count</mat-label>
+                        <input matInput [value]="data.cycleCount" disabled class="data-value-input" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-field-container placeholder-field"></div>
+            </div>
+
+            <div class="info-group">
+                <div class="section-title info-section">Thông Tin Trạng Thái</div>
+
+                <div class="form-field-container">
+                    <span class="field-name field-label-text">Trạng Thái</span>
+                    <mat-form-field appearance="outline" class="full-width data-field status-field">
+                        <mat-label>Status</mat-label>
+                        <input matInput [value]="data.status" disabled class="data-value-input highlight-status" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-field-container">
+                    <span class="field-name field-label-text">Bảo Trì Gần Nhất</span>
+                    <mat-form-field appearance="outline" class="full-width data-field">
+                        <mat-label>Last Maintenance</mat-label>
+                        <input matInput [value]="data.lastMaintenance | date: 'mediumDate'" disabled
+                            class="data-value-input" />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="dialog-actions modern-actions">
+        <button mat-flat-button (click)="close()" class="close-button">
+            Đóng
+        </button>
+    </mat-dialog-actions>
+</div>

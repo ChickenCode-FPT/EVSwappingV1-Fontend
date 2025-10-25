@@ -1,0 +1,126 @@
+<div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  <h1 class="text-3xl font-extrabold text-gray-900 mb-6 flex items-center">
+    <i class="lucide-repeat-2 mr-3 text-indigo-600 h-8 w-8"></i>
+    Battery Swap Transactions
+  </h1>
+
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-4">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4 sm:mb-0 flex items-center">
+        <i class="lucide-search mr-2 text-indigo-600 h-5 w-5"></i>
+        Search & Sort
+      </h2>
+      <button
+        class="flex items-center px-4 py-2 border border-indigo-600 text-sm font-medium rounded-lg text-indigo-600 hover:bg-indigo-50 transition duration-150 ease-in-out w-full sm:w-auto"
+        (click)="toggleSort()"
+      >
+        <i class="h-5 w-5 mr-1" [ngClass]="sortOrder() === 'asc' ? 'lucide-arrow-up' : 'lucide-arrow-down'"></i>
+        Sort by Date ({{ sortOrder() | uppercase }})
+      </button>
+    </div>
+
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Type to search..."
+        (input)="searchTerm.set($any($event.target).value)"
+        class="block w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out text-base"
+        aria-label="Search transactions"
+      />
+      <i class="lucide-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"></i>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-lg rounded-xl p-6 relative">
+    <div class="flex justify-between items-center mb-4 border-b pb-4">
+      <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+        <i class="lucide-clipboard-list mr-2 text-indigo-600 h-5 w-5"></i>
+        Transactions (<span class="font-bold text-indigo-600 ml-1">{{ filteredTransactions().length }}</span> items)
+      </h2>
+    </div>
+
+    @if (loading()) {
+      <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+        <div class="w-12 h-12 border-4 border-t-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }
+
+    <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-indigo-50">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Customer</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Station</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Reservation</th>
+            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-auto">Swap Status</th>
+            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-auto">Payment</th>
+            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Price (₫)</th>
+            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-auto">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          @for (t of filteredTransactions(); track t.swapTransactionId) {
+            <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+              <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ t.customerName }}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ t.station.name }}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ t.reservation.reservedFrom | date:'short' }}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-center">
+                <span
+                  class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="t.swapStatus === 'Completed' ? 'bg-indigo-100 text-indigo-800' : 'bg-yellow-100 text-yellow-800'"
+                >
+                  {{ t.swapStatus }}
+                </span>
+              </td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-center">
+                <span
+                  [ngClass]="{
+                    'text-green-600 font-semibold': t.payment?.status === 'Completed',
+                    'text-red-600 font-semibold': t.payment?.status !== 'Completed'
+                  }"
+                >
+                  {{ t.payment?.status || 'Pending' }}
+                </span>
+              </td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{{ t.price | number }}</td>
+              
+              <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium flex justify-center space-x-2">
+                <button
+                  class="inline-flex items-center px-3 py-1.5 rounded-lg bg-white border border-indigo-500 text-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out text-sm font-medium"
+                  (click)="goToDetail(t.swapTransactionId)"
+                  aria-label="View transaction details"
+                  title="Xem Chi tiết"
+                >
+                  <i class="lucide-file-text h-4 w-4 mr-1"></i>
+                  Chi tiết
+                </button>
+
+                <button
+                  class="inline-flex items-center px-3 py-1.5 rounded-lg border transition duration-150 ease-in-out text-sm font-medium disabled:opacity-50"
+                  [ngClass]="t.swapStatus === 'Completed' || t.swapStatus === 'Cancelled' 
+                    ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-white border-green-500 text-green-600 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'"
+                  (click)="confirmSwap(t.swapTransactionId, t.swapStatus)"
+                  [disabled]="t.swapStatus === 'Completed' || t.swapStatus === 'Cancelled'"
+                  aria-label="Confirm swap completion"
+                  title="Xác nhận Đổi pin"
+                >
+                  <i class="lucide-zap h-4 w-4 mr-1"></i>
+                  Xác nhận
+                </button>
+              </td>
+            </tr>
+          }
+
+          @empty {
+            <tr>
+              <td colspan="7" class="px-4 py-6 text-center text-gray-500 italic">
+                Không có giao dịch phù hợp.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

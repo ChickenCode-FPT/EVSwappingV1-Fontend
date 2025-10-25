@@ -3,48 +3,55 @@
 
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
-    <!-- Email -->
     <div>
       <label>Email</label>
       <input type="email" formControlName="email" />
-      <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
-        <small *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</small>
-        <small *ngIf="registerForm.get('email')?.errors?.['email']">Invalid email</small>
-      </div>
+      @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+        @if (registerForm.get('email')?.errors?.['required']) {
+          <small>Email is required</small>
+        }
+        @if (registerForm.get('email')?.errors?.['email']) {
+          <small>Invalid email</small>
+        }
+      }
     </div>
 
-    <!-- Password -->
     <div>
       <label>Password</label>
       <input type="password" formControlName="password" />
-      <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
-        <small *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</small>
-        <small *ngIf="registerForm.get('password')?.errors?.['minlength']">
-          Password must be at least 6 characters
-        </small>
-      </div>
+      @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+        @if (registerForm.get('password')?.errors?.['required']) {
+          <small>Password is required</small>
+        }
+        @if (registerForm.get('password')?.errors?.['minlength']) {
+          <small>
+            Password must be at least 6 characters
+          </small>
+        }
+      }
     </div>
 
-    <!-- Full Name -->
     <div>
       <label>Full Name</label>
       <input type="text" formControlName="fullName" />
-      <div *ngIf="registerForm.get('fullName')?.touched && registerForm.get('fullName')?.invalid">
+      @if (registerForm.get('fullName')?.touched && registerForm.get('fullName')?.invalid) {
         <small>Full Name is required</small>
-      </div>
+      }
     </div>
 
-    <!-- Phone Number -->
     <div>
       <label>Phone Number</label>
       <input type="text" formControlName="phoneNumber" />
-      <div *ngIf="registerForm.get('phoneNumber')?.touched && registerForm.get('phoneNumber')?.invalid">
-        <small *ngIf="registerForm.get('phoneNumber')?.errors?.['required']">Phone Number is required</small>
-        <small *ngIf="registerForm.get('phoneNumber')?.errors?.['pattern']">Invalid Phone Number</small>
-      </div>
+      @if (registerForm.get('phoneNumber')?.touched && registerForm.get('phoneNumber')?.invalid) {
+        @if (registerForm.get('phoneNumber')?.errors?.['required']) {
+          <small>Phone Number is required</small>
+        }
+        @if (registerForm.get('phoneNumber')?.errors?.['pattern']) {
+          <small>Invalid Phone Number</small>
+        }
+      }
     </div>
 
-    <!-- Submit -->
     <button type="submit" [disabled]="registerForm.invalid">Register</button>
   </form>
 </div>

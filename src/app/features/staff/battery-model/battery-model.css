@@ -1,0 +1,139 @@
+/* battery-model.css */
+
+.bm-root {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* --- Controls and Filters Section --- */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.controls .left, 
+.controls .right {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.controls .left mat-form-field, 
+.controls .right mat-form-field {
+  width: 180px;
+}
+
+.controls .left .search {
+  width: 300px;
+  min-width: 250px;
+}
+
+/* --- Metadata Section --- */
+.meta {
+  margin-bottom: 16px;
+}
+
+.meta .count {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* --- Grid and Card Section --- */
+.grid .empty {
+  padding: 32px;
+  text-align: center;
+  color: #6c757d;
+  font-size: 1.2em;
+  border: 1px dashed #ced4da;
+  border-radius: 4px;
+  margin-top: 16px;
+}
+
+.grid .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.model-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.model-card:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.model-card mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0;
+}
+
+.model-card .card-title h3 {
+  margin: 0;
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.model-card .card-title .subtitle {
+  color: #6c757d;
+  font-size: 0.85em;
+  margin-top: 2px;
+}
+
+.model-card .capacity-chip {
+  background-color: #3f51b5;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.85em;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.model-card mat-card-content {
+  flex-grow: 1;
+}
+
+.model-card mat-card-content .chem {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #ff4081;
+}
+
+/* --- Custom Chip List Layout --- */
+.types {
+  margin-top: 8px;
+}
+
+.types .chip-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; 
+}
+
+.types .chip-list-container mat-chip {
+  /* Tùy chỉnh màu sắc chip bằng CSS Variables của Angular Material */
+  --mdc-chip-container-color: #e9ecef;
+  --mdc-chip-label-text-color: #343a40;
+  border-radius: 16px;
+  padding: 4px 8px;
+  cursor: default;
+}
+
+mat-card-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 0;
+  margin-top: auto;
+}

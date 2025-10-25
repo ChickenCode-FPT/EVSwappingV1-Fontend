@@ -1,0 +1,205 @@
+<div class="battery-add-container">
+  <div class="header-section">
+    <h2>
+      <span class="header-icon">🔋</span>
+      Add New Battery
+    </h2>
+    <p class="header-subtitle">Fill in the battery details to add to the warehouse</p>
+  </div>
+  
+  <form [formGroup]="batteryForm" (ngSubmit)="onSubmit()" class="modern-form">
+    
+    <div class="form-grid">
+      
+      <!-- Serial Number -->
+      <div class="form-group">
+        <label for="serialNumber">
+          <span class="label-icon">🏷️</span>
+          Serial Number
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            id="serialNumber" 
+            formControlName="serialNumber" 
+            type="text" 
+            class="form-control" 
+            placeholder="e.g., SN-BATT-001"
+            [class.error]="hasError('serialNumber')"
+            [class.success]="isValid('serialNumber')"
+          />
+          <span class="input-icon">📝</span>
+        </div>
+        <small class="error-message" *ngIf="hasError('serialNumber')">
+          ⚠️ {{ getErrorMessage('serialNumber') }}
+        </small>
+      </div>
+
+      <!-- Battery Model ID -->
+      <div class="form-group">
+        <label for="batteryModelId">
+          <span class="label-icon">🔧</span>
+          Battery Model ID
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            id="batteryModelId" 
+            formControlName="batteryModelId" 
+            type="text" 
+            class="form-control" 
+            placeholder="e.g., MODEL-A1"
+            [class.error]="hasError('batteryModelId')"
+            [class.success]="isValid('batteryModelId')"
+          />
+          <span class="input-icon">🆔</span>
+        </div>
+        <small class="error-message" *ngIf="hasError('batteryModelId')">
+          ⚠️ {{ getErrorMessage('batteryModelId') }}
+        </small>
+      </div>
+
+      <!-- State of Health -->
+      <div class="form-group">
+        <label for="currentSoH">
+          <span class="label-icon">💚</span>
+          State of Health (%)
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            id="currentSoH" 
+            type="number" 
+            formControlName="currentSoH" 
+            class="form-control" 
+            placeholder="0-100"
+            min="0" 
+            max="100"
+            [class.error]="hasError('currentSoH')"
+            [class.success]="isValid('currentSoH')"
+          />
+          <span class="input-icon">%</span>
+        </div>
+        <div class="health-indicator" *ngIf="batteryForm.get('currentSoH')?.value">
+          <div class="health-bar">
+            <div class="health-fill" [style.width.%]="batteryForm.get('currentSoH')?.value"></div>
+          </div>
+          <span class="health-text">{{ batteryForm.get('currentSoH')?.value }}%</span>
+        </div>
+        <small class="error-message" *ngIf="hasError('currentSoH')">
+          ⚠️ {{ getErrorMessage('currentSoH') }}
+        </small>
+      </div>
+
+      <!-- Cycle Count -->
+      <div class="form-group">
+        <label for="cycleCount">
+          <span class="label-icon">🔄</span>
+          Cycle Count
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            id="cycleCount" 
+            type="number" 
+            formControlName="cycleCount" 
+            class="form-control" 
+            placeholder="e.g., 500"
+            min="0"
+            [class.error]="hasError('cycleCount')"
+            [class.success]="isValid('cycleCount')"
+          />
+          <span class="input-icon">⚡</span>
+        </div>
+        <small class="hint-text" *ngIf="!batteryForm.get('cycleCount')?.touched">
+          💡 Number of charge/discharge cycles
+        </small>
+        <small class="error-message" *ngIf="hasError('cycleCount')">
+          ⚠️ {{ getErrorMessage('cycleCount') }}
+        </small>
+      </div>
+
+      <!-- Status -->
+      <div class="form-group">
+        <label for="status">
+          <span class="label-icon">📊</span>
+          Status
+          <span class="required">*</span>
+        </label>
+        <div class="select-wrapper">
+          <select 
+            id="status" 
+            formControlName="status" 
+            class="form-control"
+            [class.error]="hasError('status')"
+            [class.success]="isValid('status')"
+          >
+            <option value="" disabled selected>Select battery status</option>
+            <option value="FULL">🟢 FULL - Ready to use</option>
+            <option value="CHARGING">🔵 CHARGING - In progress</option>
+            <option value="MAINTENANCE">🟡 MAINTENANCE - Under service</option>
+            <option value="DISCHARGED">🔴 DISCHARGED - Needs charging</option>
+          </select>
+        </div>
+        <small class="error-message" *ngIf="hasError('status')">
+          ⚠️ {{ getErrorMessage('status') }}
+        </small>
+      </div>
+
+      <!-- Last Maintenance -->
+      <div class="form-group">
+        <label for="lastMaintenance">
+          <span class="label-icon">🛠️</span>
+          Last Maintenance Date
+        </label>
+        <div class="input-wrapper">
+          <input 
+            id="lastMaintenance" 
+            type="date" 
+            formControlName="lastMaintenance" 
+            class="form-control"
+            [class.success]="isValid('lastMaintenance')"
+          />
+          <span class="input-icon">📅</span>
+        </div>
+        <small class="hint-text">
+          💡 Optional - Leave blank if not applicable
+        </small>
+      </div>
+      
+    </div>
+
+    <!-- Form Summary -->
+    <div class="form-summary" *ngIf="batteryForm.valid">
+      <div class="summary-badge">
+        ✅ All required fields completed
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button 
+      type="submit" 
+      [disabled]="batteryForm.invalid || isSubmitting" 
+      [class.loading]="isSubmitting"
+      class="submit-btn"
+    >
+      <span class="btn-text">
+        <span class="btn-icon">➕</span>
+        {{ isSubmitting ? 'Adding Battery...' : 'Add Battery' }}
+      </span>
+    </button>
+
+    <!-- Success Message -->
+    <div class="success-banner" *ngIf="submitSuccess">
+      <span class="success-icon">✅</span>
+      <span>Battery added successfully! Redirecting...</span>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-banner" *ngIf="submitError">
+      <span class="error-icon">❌</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+  </form>
+</div>

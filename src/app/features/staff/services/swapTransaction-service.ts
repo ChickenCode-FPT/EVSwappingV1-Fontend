@@ -6,7 +6,7 @@ import { TransactionFull } from '../../models/transaction.model';
 
 @Injectable({ providedIn: 'root' })
 export class SwapTransactionService {
-  private apiUrl = `${environment.apiUrl}/swapTransactions`;
+  private apiUrl = `${environment.apiBase}/swapTransactions`;
 
   constructor(private http: HttpClient) {}
 

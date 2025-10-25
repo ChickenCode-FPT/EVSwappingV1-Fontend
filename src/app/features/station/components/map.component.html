@@ -1,0 +1,47 @@
+<!-- src\app\features\station\components\map.component.html -->
+<!-- SSR fallback -->
+<div *ngIf="!isBrowser" class="w-full h-[600px] flex items-center justify-center bg-gray-100 text-gray-700">
+  <p>Map will load on browser…</p>
+</div>
+
+<!-- Layout 2 cột: map trái, list phải -->
+<div *ngIf="isBrowser" class="layout">
+  <div id="map" class="map-pane"></div>
+
+  <app-station-list
+    [stations]="stations"
+    [userLocation]="start"
+    [findingNearest]="findingNearest"
+    [geoStatusMsg]="geoStatusMsg"
+    (requestNearest)="goToNearestStation()"
+    (selectStation)="onSelectStation($event)"
+    (reserve)="openReservation($event)"
+  ></app-station-list>
+</div>
+
+<!-- Modal đặt lịch -->
+<div class="modal-backdrop" *ngIf="showReservation" (click)="closeReservation()"></div>
+
+<div
+  class="modal"
+  *ngIf="showReservation"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="reserveTitle"
+  tabindex="0"
+  (keydown.escape)="closeReservation()"
+  (click)="$event.stopPropagation()"
+>
+  <div class="modal-header">
+    <h3 id="reserveTitle">Đặt lịch tại trạm #{{ selectedStationId }}</h3>
+    <button class="icon-btn" (click)="closeReservation()" aria-label="Đóng">✕</button>
+  </div>
+
+  <div class="modal-body">
+    <!-- ⬇️ Form mới: CHỈ truyền stationId, vehicleId là tuỳ chọn (nếu có) -->
+    <app-reservation-form
+      [stationId]="selectedStationId"
+      (created)="onReservationCreated($event)">
+    </app-reservation-form>
+  </div>
+</div>

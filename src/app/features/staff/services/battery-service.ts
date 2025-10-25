@@ -12,7 +12,7 @@ import { Battery } from '../../models/battery.model';
 export class BatteryService {
   private http = inject(HttpClient);
 
-  private api = environment.apiUrl;
+  private api = environment.apiBase;
 
   constructor() { }
 

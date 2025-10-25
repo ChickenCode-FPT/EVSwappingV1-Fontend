@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private apiUrl = `${environment.apiUrl}/payments`;
+  private apiUrl = `${environment.apiBase}/payments`;
 
   constructor(private http: HttpClient) {}
 

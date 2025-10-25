@@ -1,0 +1,119 @@
+/* src\app\features\station\components\map.component.css */
+#map {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.route-info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-family: Arial;
+  font-size: 14px;
+}
+
+.btn-primary {
+  margin-top: 5px;
+  padding: 4px 8px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-warning {
+  margin-top: 5px;
+  padding: 4px 8px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ✅ Cho phép click vào custom Mapbox control */
+.mapboxgl-ctrl.custom-control {
+  pointer-events: auto !important;
+  z-index: 9999; /* đảm bảo nằm trên canvas map */
+}
+
+/* Tuỳ chọn: tạo hiệu ứng hover */
+.mapboxgl-ctrl.custom-control button:hover {
+  filter: brightness(1.05);
+  transition: all 0.2s ease-in-out;
+}
+
+/* src/app/map/components/map.component.css */
+
+/* bỏ rule cũ #map { height: 100vh } và thay bằng layout mới: */
+.layout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.map-pane {
+  flex: 1 1 auto;
+  min-width: 0; /* quan trọng để map không bị co layout */
+  height: 100%;
+  position: relative;
+}
+
+/* control custom đã có ở phần trước */
+.mapboxgl-ctrl.custom-control {
+  pointer-events: auto !important;
+  z-index: 9999;
+}
+
+/* ===== Modal overlay (phải nằm trong file CSS của MapComponent) ===== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 10000; /* cao hơn .mapboxgl-ctrl (9999) */
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;                /* center */
+  max-width: 560px;
+  width: calc(100% - 32px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.2);
+  outline: none;
+  z-index: 10001;              /* trên backdrop + map controls */
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+}
+.modal-body {
+  padding: 12px 16px 16px;
+  max-height: min(80vh, 720px);
+  overflow: auto;
+}
+
+.icon-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* (giữ nguyên các rule layout/map-pane hiện có) */

@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class BatteryModelService {
   private http = inject(HttpClient);
-  private api = environment.apiUrl;
+  private api = environment.apiBase;
 
   async getBatteryModels(): Promise<BatteryModel[]> {
     try {

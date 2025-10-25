@@ -1,4 +1,133 @@
+/* src\styles.css */
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+@import 'mapbox-gl/dist/mapbox-gl.css';
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* ===== Mapbox Custom Control Popup (Global Style) ===== */
+.mapboxgl-ctrl.custom-control.route-info-box {
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  padding: 14px 16px !important;
+  width: 240px !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 13px !important;
+  color: #333 !important;
+}
+
+.route-info-title {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.route-info-content {
+  margin-bottom: 10px;
+}
+
+.info-row {
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-weight: bold;
+  color: #111827;
+}
+
+.route-status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.route-btn {
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.route-btn-primary {
+  background-color: #f59e0b;
+  color: #fff;
+}
+
+.route-btn-primary:hover {
+  background-color: #d97706;
+}
+
+.route-btn-secondary {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.route-btn-secondary:hover {
+  background-color: #2563eb;
+}
+
+/* ==== Mapbox custom control box ==== */
+.mapboxgl-ctrl.custom-control.route-info-box {
+  background: #fff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18) !important;
+  padding: 14px 16px !important;
+  width: 260px !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 13px !important;
+  color: #333 !important;
+}
+
+/* title + content */
+.route-info-title { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: #1f2937; }
+.route-info-content { margin: 8px 0 10px; }
+.info-row { margin-bottom: 4px; }
+.info-value { font-weight: 700; color: #111827; }
+
+/* status line */
+.route-status { margin-top: 8px; font-size: 12px; color: #666; font-style: italic; min-height: 16px; }
+
+/* action buttons (primary/secondary) */
+.route-btn {
+  width: 100%; border: 0; border-radius: 8px;
+  padding: 9px 10px; margin-top: 8px; cursor: pointer;
+  font-weight: 700; font-size: 13px; transition: background-color .2s ease;
+}
+.route-btn-primary { background: #f59e0b; color: #fff; }
+.route-btn-primary:hover { background: #d97706; }
+.route-btn-secondary { background: #3b82f6; color: #fff; }
+.route-btn-secondary:hover { background: #2563eb; }
+
+/* ==== profile buttons group (control + popup) ==== */
+.profile-group {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px;
+}
+.profile-btn {
+  border: 1px solid #e5e7eb; background: #f9fafb; color: #111827;
+  border-radius: 8px; padding: 8px 6px; cursor: pointer; font-weight: 700; font-size: 12px;
+  transition: all .15s ease;
+}
+.profile-btn:hover { background: #eef2ff; border-color: #c7d2fe; }
+.profile-btn.active { background: #10b981; color: #fff; border-color: #10b981; }
+
+/* ==== marker popup card ==== */
+.popup-card {
+  min-width: 220px; max-width: 280px;
+  font-family: Arial, sans-serif; font-size: 13px; color: #1f2937;
+}
+.popup-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #111827; }
+.popup-meta { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+.popup-actions { margin-top: 8px; }
+.popup-btn {
+  width: 100%; border: 0; border-radius: 8px; padding: 8px 10px; cursor: pointer;
+  font-weight: 700; font-size: 13px; background: #0ea5e9; color: #fff;
+}
+.popup-btn:hover { background: #0284c7; }

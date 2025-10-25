@@ -1,11 +1,13 @@
 import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
 @Component({
-    selector: 'app-home',
-    standalone: true,
-    templateUrl: './home.html',
-    styleUrl: './home.css'
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './home.html',
+  styleUrls: ['./home.css']  
 })
 export class Home {
-    protected readonly welcomeMessage = 'Welcome to the EV Swap Platform!';
+  protected readonly welcomeMessage = 'Welcome to the EV Swap Platform!';
 }

@@ -14,6 +14,9 @@ import { ResetPasswordComponent } from './features/auth/reset-password/reset-pas
 import { Setup2FAComponent } from './features/auth/setup-2fa/setup-2fa';
 import { TwoFactorComponent } from './features/auth/two-factor/two-factor';
 import { Disable2FAComponent } from './features/auth/disable-two-factor/disable-two-factor';
+import { MapComponent } from './features/station/components/map.component';
+import { ReservationsPageComponent } from './features/reservations/pages/reservations-page/reservations-page.component';
+
 
 import { StaffDashboard } from './features/staff/staff-dashboard/staff-dashboard';
 import { BatteryWarehouse } from './features/staff/battery-warehouse/battery-warehouse';
@@ -44,6 +47,8 @@ export const routes: Routes = [
   { path: '2fa-setup', component: Setup2FAComponent },
   { path: 'two-factor', component: TwoFactorComponent },
   { path: 'disable-2fa', component: Disable2FAComponent },
+  { path: 'station', component: MapComponent },
+  { path: 'reservations', component: ReservationsPageComponent },
 
   {
     path: 'staff',

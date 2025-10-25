@@ -11,7 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [
+   imports: [
     RouterOutlet,
     Header,
     Footer,
@@ -21,7 +21,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule
   ],
   templateUrl: './app.html',
-  styleUrls: ['./app.css']
+  styleUrl: './app.css'
 })
 export class App {
   protected readonly title = signal('my-angular-appV2');

@@ -1,0 +1,148 @@
+<div class="promote-container">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <header class="header">
+      <div class="header-left">
+        <button mat-icon-button (click)="goBack()" class="back-btn">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>Promote User Role</h1>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
+      <mat-card class="promote-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="title-icon">upgrade</mat-icon>
+            User Role Management
+          </mat-card-title>
+          <mat-card-subtitle>
+            Select a user and assign a new role
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div *ngIf="loading" class="loading-container">
+            <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+            <p>Loading users...</p>
+          </div>
+
+          <form [formGroup]="promoteForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+            <!-- User Search -->
+            <div class="form-section">
+              <h3>Select User</h3>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Search User</mat-label>
+                <input 
+                  type="text" 
+                  matInput 
+                  formControlName="userSearch"
+                  [matAutocomplete]="auto"
+                  placeholder="Type name or email...">
+                <mat-icon matPrefix>search</mat-icon>
+                <mat-autocomplete 
+                  #auto="matAutocomplete" 
+                  [displayWith]="displayUser"
+                  (optionSelected)="onUserSelected($event.option.value)">
+                  <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                    <div class="user-option">
+                      <div class="user-option-main">
+                        <strong>{{ user.fullName }}</strong>
+                        <span class="user-email">{{ user.email }}</span>
+                      </div>
+                      <div class="user-option-roles">
+                        <span class="role-chip" *ngFor="let role of user.roles">
+                          {{ role }}
+                        </span>
+                      </div>
+                    </div>
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="promoteForm.get('userSearch')?.hasError('required')">
+                  Please select a user
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Selected User Info -->
+            <div class="selected-user-info" *ngIf="selectedUser">
+              <h3>Selected User</h3>
+              <div class="user-card">
+                <div class="user-avatar">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <div class="user-details">
+                  <h4>{{ selectedUser.fullName }}</h4>
+                  <p class="user-email">{{ selectedUser.email }}</p>
+                  <p class="user-phone" *ngIf="selectedUser.phoneNumber">
+                    <mat-icon>phone</mat-icon>
+                    {{ selectedUser.phoneNumber }}
+                  </p>
+                  <div class="current-roles">
+                    <strong>Current Roles:</strong>
+                    <span class="role-badge" *ngFor="let role of selectedUser.roles">
+                      {{ role }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="form-section" *ngIf="selectedUser">
+              <h3>New Role</h3>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Select New Role</mat-label>
+                <mat-select formControlName="newRole" required>
+                  <mat-option *ngFor="let role of availableRoles" [value]="role.value">
+                    <div class="role-option">
+                      <strong>{{ role.label }}</strong>
+                      <span class="role-description">{{ role.description }}</span>
+                    </div>
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>badge</mat-icon>
+                <mat-error *ngIf="promoteForm.get('newRole')?.hasError('required')">
+                  Please select a new role
+                </mat-error>
+              </mat-form-field>
+
+              <div class="checkbox-section">
+                <mat-checkbox formControlName="replaceExistingRoles">
+                  Replace existing roles (instead of adding to current roles)
+                </mat-checkbox>
+                <p class="helper-text">
+                  <mat-icon>info</mat-icon>
+                  <span *ngIf="!promoteForm.get('replaceExistingRoles')?.value">
+                    The new role will be added to the user's existing roles
+                  </span>
+                  <span *ngIf="promoteForm.get('replaceExistingRoles')?.value">
+                    All existing roles will be removed and replaced with the new role
+                  </span>
+                </p>
+              </div>
+            </div>
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions align="end" *ngIf="!loading">
+          <button mat-button (click)="resetForm()" type="button" [disabled]="submitting">
+            Reset
+          </button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="onSubmit()"
+            [disabled]="!promoteForm.valid || submitting">
+            <mat-spinner *ngIf="submitting" diameter="20" class="button-spinner"></mat-spinner>
+            <mat-icon *ngIf="!submitting">check</mat-icon>
+            <span *ngIf="!submitting">Promote User</span>
+            <span *ngIf="submitting">Processing...</span>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </main>
+</div>

@@ -9,7 +9,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SidebarComponent } from '../../../shared/sidebar/sidenar';
+import { SidebarComponent } from '../../../shared/sidebar/sidebar';
 
 @Component({
   selector: 'app-users',

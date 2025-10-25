@@ -1,0 +1,35 @@
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f6fa;
+}
+
+/* Sidebar bên trái */
+app-sidebar {
+  width: 250px;
+  background: #001529;
+  color: #fff;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+/* Phần nội dung chính */
+.admin-content {
+  margin-left: 260px;
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.card {
+  padding: 1.5rem;
+  background: var(--surface-card, #fff);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.text-center {
+  text-align: center;
+}

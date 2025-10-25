@@ -2,10 +2,6 @@
   <app-sidebar></app-sidebar>
 
   <main class="main-content">
-    <header class="header">
-      <h1>Admin Dashboard</h1>
-    </header>
-
     <section class="stats">
       <div class="card" *ngFor="let item of stats" [style.borderTopColor]="item.color">
         <span class="icon">{{ item.icon }}</span>

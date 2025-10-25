@@ -1,25 +1,126 @@
 .sidebar {
-  width: 200px;
-  background-color: #1f2937;
-  color: white;
   height: 100vh;
-  padding: 1rem;
+  background: #ffffff;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-right: 1px solid #e5e7eb;
 }
-.sidebar .logo {
-  font-size: 1.5rem;
-  margin-bottom: 2rem;
+
+.sidebar.collapsed {
+  width: 64px;
 }
-.sidebar ul {
-  list-style: none;
+
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #1e40af;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn {
+  width: 100%;
+  color: #6b7280 !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #e5e7eb;
+  height: 48px;
+}
+
+.toggle-btn:hover {
+  background-color: #f3f4f6 !important;
+}
+
+.nav-list {
+  padding: 12px 0;
+}
+
+::ng-deep .sidebar .mat-mdc-list-item {
+  color: #4b5563 !important;
+  height: 48px;
+  margin: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .sidebar .mat-mdc-list-item:hover {
+  background-color: #f3f4f6 !important;
+  color: #1e40af !important;
+}
+
+::ng-deep .sidebar .mat-mdc-list-item.active {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+::ng-deep .sidebar .mat-icon {
+  color: #6b7280;
+}
+
+::ng-deep .sidebar .mat-mdc-list-item:hover .mat-icon {
+  color: #1e40af;
+}
+
+::ng-deep .sidebar .mat-mdc-list-item.active .mat-icon {
+  color: #fff;
+}
+
+::ng-deep .sidebar .submenu-panel {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  margin: 4px 8px;
+}
+
+::ng-deep .sidebar .mat-expansion-panel-header {
+  background-color: transparent !important;
+  color: #4b5563 !important;
+  padding: 0 16px;
+  height: 48px;
+  border-radius: 8px;
+}
+
+::ng-deep .sidebar .mat-expansion-panel-header:hover {
+  background-color: #f3f4f6 !important;
+  color: #1e40af !important;
+}
+
+::ng-deep .sidebar .mat-expansion-panel-body {
   padding: 0;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  margin-top: 4px;
 }
-.sidebar li {
-  margin: 1rem 0;
+
+::ng-deep .sidebar .submenu .mat-mdc-list-item {
+  padding-left: 56px;
+  height: 40px;
+  font-size: 14px;
 }
-.sidebar a {
-  color: white;
-  text-decoration: none;
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
 }
-.sidebar a:hover {
-  text-decoration: underline;
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }

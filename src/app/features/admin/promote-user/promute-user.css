@@ -1,0 +1,319 @@
+.promote-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 24px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Header */
+.header {
+  background: white;
+  padding: 20px 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.back-btn {
+  color: #3b82f6;
+}
+
+/* Content */
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.promote-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+::ng-deep .promote-card .mat-mdc-card-header {
+  padding: 24px 24px 0;
+}
+
+::ng-deep .promote-card .mat-mdc-card-content {
+  padding: 24px;
+}
+
+::ng-deep .promote-card .mat-mdc-card-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.title-icon {
+  vertical-align: middle;
+  margin-right: 8px;
+  color: #3b82f6;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 20px;
+}
+
+.loading-container p {
+  color: #7f8c8d;
+  font-size: 16px;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* User Option in Autocomplete */
+.user-option {
+  padding: 8px 0;
+}
+
+.user-option-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-email {
+  color: #7f8c8d;
+  font-size: 13px;
+}
+
+.user-option-roles {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.role-chip {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Selected User Card */
+.selected-user-info {
+  margin-bottom: 32px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-card {
+  display: flex;
+  gap: 20px;
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-avatar mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: white;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-details h4 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.user-details .user-email {
+  color: #7f8c8d;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.user-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.user-phone mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.current-roles {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.current-roles strong {
+  color: #2c3e50;
+}
+
+.role-badge {
+  background: #3b82f6;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Role Option in Select */
+.role-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.role-option strong {
+  color: #2c3e50;
+}
+
+.role-description {
+  color: #7f8c8d;
+  font-size: 12px;
+}
+
+/* Checkbox Section */
+.checkbox-section {
+  margin-top: 16px;
+}
+
+.helper-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px;
+  background: #f0f9ff;
+  border-radius: 8px;
+  color: #0369a1;
+  font-size: 13px;
+  border-left: 3px solid #0ea5e9;
+}
+
+.helper-text mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Button Spinner */
+.button-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+::ng-deep .button-spinner circle {
+  stroke: white;
+}
+
+/* Snackbar */
+::ng-deep .success-snackbar {
+  background-color: #27ae60 !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #e74c3c !important;
+  color: white !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .header {
+    padding: 16px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .user-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .current-roles {
+    justify-content: center;
+  }
+}

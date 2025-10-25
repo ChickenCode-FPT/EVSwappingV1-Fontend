@@ -1,6 +1,13 @@
 <!-- src\app\app.html -->
 <main class="main">
+<ng-container *ngIf="!isAdminPage()">
   <app-header></app-header>
-  <router-outlet></router-outlet>
+</ng-container>
+
+<router-outlet></router-outlet>
+
+<ng-container *ngIf="!isAdminPage()">
   <app-footer></app-footer>
+</ng-container>
+
 </main>

@@ -18,7 +18,8 @@ import { MapComponent } from './features/station/components/map.component';
 import { ReservationsPageComponent } from './features/reservations/pages/reservations-page/reservations-page.component';
 import { PromoteUserComponent } from './features/admin/promote-user/promote-user';
 import { BatteryHealthLogsComponent } from './features/admin/battery-health-log/battery-health';
-
+import { AssignStationStaffComponent } from './features/admin/station-staff/assign-station-staff';
+import { StationStaffListComponent } from './features/admin/station-staff-list/station-staff-list';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -45,4 +46,7 @@ export const routes: Routes = [
   { path: 'reservations', component: ReservationsPageComponent },
   { path: 'admin/users/promote', component: PromoteUserComponent },
   { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
+  { path: 'admin/users/assign-staff', component: AssignStationStaffComponent},
+  { path: 'admin/users/list-station-staff', component: StationStaffListComponent},
+
 ];

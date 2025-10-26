@@ -1,0 +1,88 @@
+<div class="main-content">
+  <app-sidebar></app-sidebar>
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+  <h2 class="page-title">
+    <i class="pi pi-building"></i> Station List
+  </h2>
+
+  <p-table [value]="stations" [loading]="loading" styleClass="p-datatable-gridlines p-datatable-striped">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Phone</th>
+        <th>Capacity</th>
+        <th>Available</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-station>
+      <tr>
+        <td>{{ station.stationId }}</td>
+        <td>{{ station.name }}</td>
+        <td>{{ station.address }}</td>
+        <td>{{ station.phone }}</td>
+        <td>{{ station.capacity }}</td>
+        <td>{{ station.availableBatteries }}</td>
+        <td>
+          <p-tag [value]="station.status === 1 ? 'Active' : 'Inactive'" [severity]="station.status === 1 ? 'success' : 'danger'"></p-tag>
+        </td>
+        <td>
+          <button pButton icon="pi pi-users" label="View Staff" class="p-button-rounded p-button-info"
+                  (click)="viewStaffs(station)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- ✅ Dialog hiển thị danh sách nhân viên -->
+  <p-dialog
+    header="Station Staffs"
+    [(visible)]="showDialog"
+    [modal]="true"
+    [style]="{ width: '80vw' }"
+    [closable]="true"
+    (onHide)="closeDialog()"
+  >
+    <ng-template pTemplate="content">
+      <div *ngIf="selectedStation">
+        <h3>{{ selectedStation.name }}</h3>
+        <p class="station-info">
+          📍 {{ selectedStation.address }} <br />
+          ☎ {{ selectedStation.phone }} <br />
+          🔋 Capacity: {{ selectedStation.capacity }} | Available: {{ selectedStation.availableBatteries }}
+        </p>
+      </div>
+
+      <p-table [value]="stationStaffs" [loading]="loadingStaffs" styleClass="p-datatable-gridlines p-datatable-striped">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Id</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-staff>
+          <tr>
+            <td>{{ staff.stationStaffId}}</td>
+            <td>{{ staff.userName }}</td>
+            <td>{{ staff.email }}</td>
+            <td><p-tag [value]="staff.role" severity="info"></p-tag></td>
+            <td>
+              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger" label="Remove" (click)="confirmRemove(staff)" ></button>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton label="Close" icon="pi pi-times" class="p-button-text" (click)="closeDialog()"></button>
+    </ng-template>
+  </p-dialog>
+</div>

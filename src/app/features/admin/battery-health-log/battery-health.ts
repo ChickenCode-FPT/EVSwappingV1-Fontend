@@ -112,7 +112,6 @@ export class BatteryHealthLogsComponent implements OnInit {
     this.http.get<any[]>('https://localhost:7292/api/BatteryHealthLogs')
       .subscribe({
         next: (data) => {
-          // Giả sử API trả về danh sách log có trường serialNumber
           const serialSet = new Set<string>();
 
           data.forEach(item => {

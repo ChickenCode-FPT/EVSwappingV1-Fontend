@@ -1,0 +1,80 @@
+/* ==== Layout ==== */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f6f7fb;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #1f2937;
+  color: white;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 2rem;
+}
+
+/* ==== Cards & Headings ==== */
+.content-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.content-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.page-title i {
+  color: #3b82f6;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.highlight {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* ==== Table ==== */
+:host ::ng-deep .p-table {
+  font-size: 0.95rem;
+}
+
+:host ::ng-deep .p-datatable-striped tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+:host ::ng-deep .p-tag {
+  font-size: 0.75rem;
+  border-radius: 8px;
+}
+
+:host ::ng-deep .p-button {
+  font-size: 0.85rem;
+}

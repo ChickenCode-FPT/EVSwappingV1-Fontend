@@ -29,10 +29,22 @@
     <a mat-list-item routerLink="/admin/users/battery-health" routerLinkActive="active">
       <span matListItemTitle *ngIf="!isCollapsed">Batteries Health</span>
     </a>
+       <mat-expansion-panel class="submenu-panel" *ngIf="!isCollapsed">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span>Station Staff</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-nav-list class="submenu">
+        <a mat-list-item routerLink="/admin/users/assign-staff" routerLinkActive="active">
+          Assign Staff
+        </a>
+        <a mat-list-item routerLink="/admin/users/list-station-staff" routerLinkActive="active">
+          List Station Staff
+        </a>
+      </mat-nav-list>
+    </mat-expansion-panel>
 
-    <a mat-list-item routerLink="/admin/reports" routerLinkActive="active">
-      <span matListItemTitle *ngIf="!isCollapsed">Reports</span>
-    </a>
 
     <a mat-list-item routerLink="/home" routerLinkActive="active">
       <span matListItemTitle *ngIf="!isCollapsed">Home</span>

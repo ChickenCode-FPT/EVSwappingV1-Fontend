@@ -23,7 +23,7 @@ export const environment = {
     defaultCenter: [106.7, 10.77] as [number, number], // trung tâm HCM
     defaultZoom: 13,
   },
-    osrm: {
+  osrm: {
     profiles: ['car', 'motorbike', 'truck'] as const,
     defaultProfile: 'car' as const,
   },

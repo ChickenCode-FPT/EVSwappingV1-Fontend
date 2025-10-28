@@ -1,4 +1,13 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal, WritableSignal } from '@angular/core';
+// src\app\features\reservations\pages\reservations-page\reservations-page.component.ts
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -15,33 +24,28 @@ type Status = ReservationDto['status'];
   standalone: true,
   imports: [CommonModule, HttpClientModule, FormsModule, ReservationFormComponent],
   templateUrl: './reservations-page.component.html',
-  styleUrls: ['./reservations-page.component.css']
+  styleUrls: ['./reservations-page.component.css'],
 })
 export class ReservationsPageComponent implements OnInit, OnDestroy {
   private api = inject(ReservationService);
   private subs = new Subscription();
 
-  // data + ui state
   items = signal<ReservationDto[]>([]);
   loading = signal(false);
   infoMsg = signal('');
   errorMsg = signal('');
 
-  // (tuỳ chọn) bind xuống ReservationForm
   defaultStationId?: number;
   defaultVehicleId?: number | null;
 
-  // filters
   q = signal('');
   status = signal<Status | 'All'>('All');
   sortBy = signal<'startAsc' | 'startDesc' | 'status'>('startDesc');
 
-  // ====== Cancel UI state ======
   confirmOpen = signal(false);
   itemToCancel = signal<ReservationDto | null>(null);
   cancellingIds: WritableSignal<Set<number>> = signal(new Set<number>());
 
-  // ===== Helpers: normalize & check status safely =====
   private normalizeStatus(s?: string | null) {
     return (s ?? '').trim().toLowerCase();
   }
@@ -49,7 +53,6 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
     return this.normalizeStatus(s) === 'pending';
   }
 
-  // derived list
   view = computed(() => {
     const text = this.q().trim().toLowerCase();
     const st = this.status();
@@ -57,13 +60,14 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
     let arr = [...this.items()];
 
     if (st !== 'All') {
-      arr = arr.filter(x => this.normalizeStatus(x.status) === this.normalizeStatus(st));
+      arr = arr.filter((x) => this.normalizeStatus(x.status) === this.normalizeStatus(st));
     }
     if (text) {
-      arr = arr.filter(x =>
-        String(x.stationId).includes(text) ||
-        String(x.reservationId).includes(text) ||
-        (x.reservedBatteryModelId != null && String(x.reservedBatteryModelId).includes(text))
+      arr = arr.filter(
+        (x) =>
+          String(x.stationId).includes(text) ||
+          String(x.reservationId).includes(text) ||
+          (x.reservedBatteryModelId != null && String(x.reservedBatteryModelId).includes(text))
       );
     }
     switch (sort) {
@@ -75,9 +79,10 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
         break;
       case 'status': {
         const order = ['pending', 'completed', 'cancelled', 'expired'];
-        arr.sort((a, b) =>
-          order.indexOf(this.normalizeStatus(a.status)) -
-          order.indexOf(this.normalizeStatus(b.status))
+        arr.sort(
+          (a, b) =>
+            order.indexOf(this.normalizeStatus(a.status)) -
+            order.indexOf(this.normalizeStatus(b.status))
         );
         break;
       }
@@ -96,7 +101,6 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
   reload(): void {
     this.loading.set(true);
     this.errorMsg.set('');
-    // reset any stuck cancelling flags
     this.cancellingIds.set(new Set<number>());
 
     const s = this.api.getMine().subscribe({
@@ -107,7 +111,7 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.errorMsg.set(err?.error?.detail || err?.error?.title || 'Không tải được danh sách.');
         this.loading.set(false);
-      }
+      },
     });
     this.subs.add(s);
   }
@@ -117,7 +121,6 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
     this.reload();
   }
 
-  // ===== Cancel flow =====
   askCancel(item: ReservationDto) {
     if (!this.isPendingStatus(item.status)) return;
     this.itemToCancel.set(item);
@@ -133,7 +136,6 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
     const item = this.itemToCancel();
     if (!item) return;
 
-    // mark as cancelling (disable button & show spinner)
     const s1 = new Set(this.cancellingIds());
     s1.add(item.reservationId);
     this.cancellingIds.set(s1);
@@ -148,7 +150,7 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
         const msg = err?.error?.detail || err?.error?.title || 'Hủy lịch thất bại.';
         this.errorMsg.set(msg);
         this.closeConfirm();
-      }
+      },
     });
 
     this.subs.add(sub);
@@ -159,18 +161,30 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  // handlers (tránh $event bị hiểu là Event khi strict template)
-  onStatusChange(v: 'All' | Status) { this.status.set(v); }
-  onSortChange(v: 'startAsc' | 'startDesc' | 'status') { this.sortBy.set(v); }
+  onStatusChange(v: 'All' | Status) {
+    this.status.set(v);
+  }
+  onSortChange(v: 'startAsc' | 'startDesc' | 'status') {
+    this.sortBy.set(v);
+  }
+  openPayment(res: ReservationDto) {
+    if (!res.paymentCheckoutUrl) return;
+    window.location.href = res.paymentCheckoutUrl;
+  }
 
   badgeClass(status: Status): string {
     const s = this.normalizeStatus(status);
     switch (s) {
-      case 'pending':   return 'badge badge--pending';
-      case 'completed': return 'badge badge--success';
-      case 'cancelled': return 'badge badge--danger';
-      case 'expired':   return 'badge badge--warn';
-      default:          return 'badge';
+      case 'pending':
+        return 'badge badge--pending';
+      case 'completed':
+        return 'badge badge--success';
+      case 'cancelled':
+        return 'badge badge--danger';
+      case 'expired':
+        return 'badge badge--warn';
+      default:
+        return 'badge';
     }
   }
 

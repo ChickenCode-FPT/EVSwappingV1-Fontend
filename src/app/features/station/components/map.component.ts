@@ -152,11 +152,8 @@ export class MapComponent implements AfterViewInit {
 
   private async initDriver() {
     try {
-      this.start = await this.geoService.getCurrentLocation(
-        true,
-        3,
-        2000,
-        (msg) => this.updateGeoStatus(msg)
+      this.start = await this.geoService.getCurrentLocation(true, 3, 2000, (msg) =>
+        this.updateGeoStatus(msg)
       );
 
       this.addOrUpdateDriverMarker();
@@ -171,9 +168,11 @@ export class MapComponent implements AfterViewInit {
         this.touchStationsArrayForChangeDetection();
       });
     } catch (err) {
-      console.error('❌ Không lấy được vị trí:', err);
+      console.error('Không lấy được vị trí:', err);
       this.geoError = true;
-      this.updateGeoStatus('❌ Không thể lấy vị trí hiện tại. Vui lòng kiểm tra quyền truy cập vị trí.');
+      this.updateGeoStatus(
+        'Không thể lấy vị trí hiện tại. Vui lòng kiểm tra quyền truy cập vị trí.'
+      );
     }
   }
 
@@ -182,14 +181,14 @@ export class MapComponent implements AfterViewInit {
 
     if (raw.includes('Thử lấy vị trí…')) {
       friendly = '📡 Đang thử lấy vị trí…';
-    } else if (raw.includes('✅ Lấy vị trí thành công')) {
-      friendly = '✅ Đã lấy vị trí!';
+    } else if (raw.includes('Lấy vị trí thành công')) {
+      friendly = 'Đã lấy vị trí!';
     } else if (raw.includes('HighAccuracy fail')) {
-      friendly = '⚠️ Độ chính xác cao thất bại, đang thử chế độ tiêu chuẩn…';
+      friendly = 'Độ chính xác cao thất bại, đang thử chế độ tiêu chuẩn…';
     } else if (raw.includes('Không thể lấy vị trí')) {
-      friendly = '❌ Không thể lấy vị trí. Hãy bật GPS/quyền truy cập vị trí và thử lại.';
+      friendly = 'Không thể lấy vị trí. Hãy bật GPS/quyền truy cập vị trí và thử lại.';
     } else if (raw.includes('không hỗ trợ')) {
-      friendly = '⚠️ Trình duyệt không hỗ trợ định vị. Hãy nhập vị trí thủ công.';
+      friendly = 'Trình duyệt không hỗ trợ định vị. Hãy nhập vị trí thủ công.';
     }
 
     this.geoStatusMsg = friendly;
@@ -266,11 +265,9 @@ export class MapComponent implements AfterViewInit {
     return wrap;
   }
 
-  /** ========================= ĐẶT LỊCH (modal) ========================= */
   showReservation = false;
   selectedStationId?: number;
 
-  // Mở modal đặt lịch: chỉ cần stationId (model pin & user được BE quyết định)
   openReservation(e: { station: Station; batteryModelId?: number | null }) {
     this.selectedStationId = e.station.stationId;
     this.showReservation = true;
@@ -287,7 +284,6 @@ export class MapComponent implements AfterViewInit {
 
   onReservationCreated(res: ReservationDto) {
     this.closeReservation();
-    // Optional: cập nhật availableBatteries nếu có
     const idx = this.stations.findIndex((s) => s.stationId === this.selectedStationId);
     if (idx >= 0 && (this.stations[idx].availableBatteries ?? 0) > 0) {
       this.stations[idx] = {
@@ -297,11 +293,10 @@ export class MapComponent implements AfterViewInit {
       this.touchStationsArrayForChangeDetection();
     }
   }
-  /** ==================================================================== */
 
   private async findNearestStationAndRoute() {
     if (!this.start) {
-      console.warn('⚠️ Chưa có vị trí người dùng.');
+      console.warn('Chưa có vị trí người dùng.');
       return;
     }
     if (!this.stations.length) {
@@ -311,7 +306,7 @@ export class MapComponent implements AfterViewInit {
     const [lng, lat] = this.start;
 
     try {
-      this.setFinding(true, '🔎 Đang tìm trạm gần nhất…');
+      this.setFinding(true, 'Đang tìm trạm gần nhất…');
       const nearestStation = await firstValueFrom(
         this.stationApi.getNearestStation(lng, lat, this.profile)
       );
@@ -329,10 +324,10 @@ export class MapComponent implements AfterViewInit {
         });
       }
 
-      this.setFinding(false, '✅ Đã tìm thấy trạm gần nhất.');
+      this.setFinding(false, 'Đã tìm thấy trạm gần nhất.');
     } catch (err) {
       console.error('❌ Lỗi khi tìm nearest station:', err);
-      this.setFinding(false, '❌ Lỗi tìm trạm gần nhất.');
+      this.setFinding(false, 'Lỗi tìm trạm gần nhất.');
     }
   }
 
@@ -362,13 +357,13 @@ export class MapComponent implements AfterViewInit {
         this.touchStationsArrayForChangeDetection();
       }
     } catch (err) {
-      console.error('❌ Lỗi lấy route từ backend:', err);
+      console.error('Lỗi lấy route từ backend:', err);
     }
   }
 
   async onSelectStation(station: Station) {
     if (!this.start) {
-      console.warn('⚠️ Chưa có vị trí người dùng.');
+      console.warn('Chưa có vị trí người dùng.');
       return;
     }
     const [lng, lat] = this.start;
@@ -398,8 +393,12 @@ export class MapComponent implements AfterViewInit {
         <button class="profile-btn" data-p="truck">Truck</button>
       </div>
       <div class="route-info-content">
-        <div class="info-row">📏 Distance: <span id="ctrl-distance" class="info-value">${this.distanceKm} km</span></div>
-        <div class="info-row">⏱ Duration: <span id="ctrl-duration" class="info-value">${this.durationMin} min</span></div>
+        <div class="info-row">📏 Distance: <span id="ctrl-distance" class="info-value">${
+          this.distanceKm
+        } km</span></div>
+        <div class="info-row">⏱ Duration: <span id="ctrl-duration" class="info-value">${
+          this.durationMin
+        } min</span></div>
       </div>
       <button id="ctrl-btn" class="route-btn route-btn-primary">Tìm trạm gần nhất</button>
       <div id="ctrl-status" class="route-status">${this.geoStatusMsg ?? ''}</div>

@@ -1,16 +1,11 @@
 // src\app\features\reservations\models\reservation.types.ts
-// DTO gửi lên BE khi tạo reservation
 export interface CreateReservationRequest {
   stationId: number;
-  // optional: nếu user có nhiều xe thì truyền, nếu không gửi BE sẽ tự chọn chiếc đầu tiên
   vehicleId?: number | null;
-
-  // thời gian đặt — ISO 8601 (khuyến nghị gửi UTC: new Date().toISOString())
   reservedFrom: string;
   reservedTo: string;
 }
 
-// DTO BE trả về sau khi tạo/lấy reservation
 export interface ReservationDto {
   reservationId: number;
   userId: string;
@@ -19,8 +14,9 @@ export interface ReservationDto {
 
   reservedFrom: string; // ISO
   reservedTo: string;   // ISO
-  status: 'Pending' | 'Completed' | 'Expired' | 'Cancelled';
-
+  status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Expired';
+  paymentCheckoutUrl?: string; 
+  paymentId?: number;
   reservedBatteryModelId?: number | null;
 
   allocation?: {

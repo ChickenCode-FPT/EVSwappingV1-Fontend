@@ -1,11 +1,10 @@
+// src\app\app.routes.ts
 import { Routes } from '@angular/router';
-// ...existing code...
 import { Home } from './features/home/home';
 import { LoginComponent } from './features/auth/login/login';
 import { GoogleCallbackComponent } from './features/auth/login/google-callback';
 import { RegisterComponent } from './features/auth/register/register';
 import { AdminDashboardComponent } from './features/admin/dashboard/admindashboard';
-// Dummy components for missing routes (replace with real ones later)
 import { Component } from '@angular/core';
 import { UsersComponent } from './features/admin/users/users';
 import { UpdatePhoneComponent } from './features/auth/updatephonenumber/updatephone';
@@ -16,8 +15,6 @@ import { TwoFactorComponent } from './features/auth/two-factor/two-factor';
 import { Disable2FAComponent } from './features/auth/disable-two-factor/disable-two-factor';
 import { MapComponent } from './features/station/components/map.component';
 import { ReservationsPageComponent } from './features/reservations/pages/reservations-page/reservations-page.component';
-
-
 import { StaffDashboard } from './features/staff/staff-dashboard/staff-dashboard';
 import { BatteryWarehouse } from './features/staff/battery-warehouse/battery-warehouse';
 import { BatteryAdd } from './features/staff/battery-add/battery-add';
@@ -25,11 +22,10 @@ import { BatteryModels } from './features/staff/battery-model/battery-model';
 import { BatteryTransaction } from './features/staff/battery-transaction/battery-transaction';
 import { BatteryTransactionDetail } from './features/staff/battery-transaction-detail/battery-transaction-detail';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
-export class About { }
+export class About {}
 
 @Component({ template: '<h2>Contact Page</h2>', standalone: true })
-export class Contact { }
-
+export class Contact {}
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -64,9 +60,16 @@ export const routes: Routes = [
       {
         path: 'transactions/confirm/:id',
         component: BatteryTransactionDetail,
-        data: { mode: 'confirm' }
+        data: { mode: 'confirm' },
       },
-    ]
+    ],
+  },
+  {
+    path: 'payment/result',
+    loadComponent: () =>
+      import('./features/payment/pages/payment-result/payment-result.component').then(
+        (m) => m.PaymentResultComponent
+      ),
   },
   { path: '**', redirectTo: '' },
 ];

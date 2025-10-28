@@ -164,7 +164,6 @@
 }
 .empty__icon { font-size: 36px; margin-bottom: 6px; }
 
-/* skeleton loader */
 .skeleton { position: relative; overflow: hidden; }
 .skeleton::after {
   content: ""; position: absolute; inset: 0;
@@ -179,7 +178,6 @@
   100% { transform: translateX(100%); }
 }
 
-/* ===== Modal confirm ===== */
 .modal__backdrop {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.45);
@@ -205,10 +203,8 @@
 .modal__actions { display:flex; justify-content: flex-end; gap: 10px; }
 .icon { padding: 6px 8px; }
 
-/* grid nhỏ trong modal */
 .grid.small .row { grid-template-columns: 120px 1fr; }
 
-/* ===== Spinner in-button ===== */
 .spinner {
   display: inline-block;
   width: 14px; height: 14px; margin-right: 6px;
@@ -220,7 +216,6 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* trước: :root { ... } */
 :host {
   --bg: #0b0f14;
   --panel: #0f1620;
@@ -238,7 +233,6 @@
   --shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 
-/* trước: @media (...) { :root { ... } } */
 @media (prefers-color-scheme: light) {
   :host {
     --bg: #f7f9fc;

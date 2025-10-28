@@ -25,27 +25,27 @@ export class StationListComponent {
 
   @Output() requestNearest = new EventEmitter<void>();
   @Output() selectStation = new EventEmitter<Station>();
-  /** Emit đến parent để mở form đặt lịch hoặc call trực tiếp
-   *  batteryModelId có thể null → nghĩa là “bất kỳ model còn hàng” */
+
   @Output() reserve = new EventEmitter<{ station: Station; batteryModelId: number | null }>();
 
   constructor(private batteryApi: BatteryService) {}
 
-  // UI state
   searchText = '';
   sortBy: SortKey = 'nearest';
   showOnlyReachable = false;
   reachRadiusKm = 20;
   expandedId: number | null = null;
 
-  /** Cache dữ liệu model theo stationId */
-  modelCache: Record<number, {
-    loading: boolean;
-    loaded: boolean;
-    error?: string;
-    options: ModelOpt[];
-    selected: number | null;
-  }> = {};
+  modelCache: Record<
+    number,
+    {
+      loading: boolean;
+      loaded: boolean;
+      error?: string;
+      options: ModelOpt[];
+      selected: number | null;
+    }
+  > = {};
 
   toggleExpand(st: Station) {
     const newId = this.expandedId === st.stationId ? null : st.stationId;
@@ -66,20 +66,19 @@ export class StationListComponent {
     entry.error = undefined;
     this.batteryApi.getAvailableModelsSummary(stationId).subscribe({
       next: (opts) => {
-        entry.options = opts.sort((a, b) => b.count - a.count); // ưu tiên model nhiều hàng
-        entry.selected = entry.options.length ? entry.options[0].id : null; // chọn mặc định nếu có
+        entry.options = opts.sort((a, b) => b.count - a.count);
+        entry.selected = entry.options.length ? entry.options[0].id : null;
         entry.loaded = true;
         entry.loading = false;
       },
       error: (err) => {
         entry.error = err?.error?.detail || 'Không lấy được danh sách model còn hàng';
         entry.loading = false;
-      }
+      },
     });
   }
 
   refreshModels(stationId: number) {
-    // buộc reload
     this.modelCache[stationId] = { loading: false, loaded: false, options: [], selected: null };
     this.ensureModelsLoaded(stationId);
   }
@@ -104,14 +103,13 @@ export class StationListComponent {
     const q = this.searchText.trim().toLowerCase();
     if (q) {
       list = list.filter(
-        s =>
-          (s.name || '').toLowerCase().includes(q) ||
-          (s.address || '').toLowerCase().includes(q)
+        (s) =>
+          (s.name || '').toLowerCase().includes(q) || (s.address || '').toLowerCase().includes(q)
       );
     }
 
     if (this.showOnlyReachable && this.userLocation) {
-      list = list.filter(s => (s.distanceKm ?? Infinity) <= this.reachRadiusKm);
+      list = list.filter((s) => (s.distanceKm ?? Infinity) <= this.reachRadiusKm);
     }
 
     list.sort((a, b) => {
@@ -132,13 +130,14 @@ export class StationListComponent {
     return list;
   }
 
-  trackById(_: number, s: Station) { return s.stationId; }
+  trackById(_: number, s: Station) {
+    return s.stationId;
+  }
 
   canReserve(st: Station): boolean {
     return st.status === 1 && (st.availableBatteries ?? 0) > 0;
   }
 
-  // tiện: lấy entry cache an toàn
   getEntry(stationId: number) {
     return this.modelCache[stationId];
   }

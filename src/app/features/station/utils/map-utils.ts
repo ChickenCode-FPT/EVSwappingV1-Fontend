@@ -9,6 +9,6 @@ export function buildRouteGeoJson(coords: [number, number][]) {
   return {
     type: 'Feature',
     properties: {},
-    geometry: { type: 'LineString', coordinates: coords }
+    geometry: { type: 'LineString', coordinates: coords },
   } as GeoJSON.Feature<GeoJSON.LineString>;
 }

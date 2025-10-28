@@ -12,15 +12,10 @@ export class StationApi {
 
   constructor(private http: HttpClient) {}
 
-  /** Lấy tất cả trạm */
   getStations(): Observable<Station[]> {
     return this.http.get<Station[]>(`${this.baseUrl}`);
   }
 
-  /**
-   * Lấy trạm gần nhất từ vị trí hiện tại của user
-   * Backend trả về MỘT StationDto (không phải mảng).
-   */
   getNearestStation(
     lng: number,
     lat: number,
@@ -31,7 +26,6 @@ export class StationApi {
     });
   }
 
-  /** Lấy route từ vị trí hiện tại đến stationId */
   getRouteToStation(
     stationId: number,
     lng: number,

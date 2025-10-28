@@ -1,10 +1,11 @@
 <!-- src\app\features\station\components\map.component.html -->
-<!-- SSR fallback -->
-<div *ngIf="!isBrowser" class="w-full h-[600px] flex items-center justify-center bg-gray-100 text-gray-700">
+<div
+  *ngIf="!isBrowser"
+  class="w-full h-[600px] flex items-center justify-center bg-gray-100 text-gray-700"
+>
   <p>Map will load on browser…</p>
 </div>
 
-<!-- Layout 2 cột: map trái, list phải -->
 <div *ngIf="isBrowser" class="layout">
   <div id="map" class="map-pane"></div>
 
@@ -19,7 +20,6 @@
   ></app-station-list>
 </div>
 
-<!-- Modal đặt lịch -->
 <div class="modal-backdrop" *ngIf="showReservation" (click)="closeReservation()"></div>
 
 <div
@@ -38,10 +38,7 @@
   </div>
 
   <div class="modal-body">
-    <!-- ⬇️ Form mới: CHỈ truyền stationId, vehicleId là tuỳ chọn (nếu có) -->
-    <app-reservation-form
-      [stationId]="selectedStationId"
-      (created)="onReservationCreated($event)">
+    <app-reservation-form [stationId]="selectedStationId" (created)="onReservationCreated($event)">
     </app-reservation-form>
   </div>
 </div>

@@ -1,8 +1,11 @@
+<!-- src\app\features\reservations\pages\reservations-page\reservations-page.component.html -->
 <section class="page">
   <header class="page__head">
     <div>
       <h1 class="title">Đặt lịch</h1>
-      <p class="subtitle">Chọn trạm & khung giờ, theo dõi trạng thái đặt lịch của bạn theo thời gian thực.</p>
+      <p class="subtitle">
+        Chọn trạm & khung giờ, theo dõi trạng thái đặt lịch của bạn theo thời gian thực.
+      </p>
     </div>
     <div class="toolbar">
       <div class="input">
@@ -10,7 +13,8 @@
           type="search"
           placeholder="Tìm theo #id, trạm, model…"
           [ngModel]="q()"
-          (ngModelChange)="q.set($event)" />
+          (ngModelChange)="q.set($event)"
+        />
         <button class="btn btn--ghost" (click)="q.set('')">✕</button>
       </div>
 
@@ -42,7 +46,8 @@
       <app-reservation-form
         [stationId]="defaultStationId"
         [vehicleId]="defaultVehicleId"
-        (created)="onCreated($event)">
+        (created)="onCreated($event)"
+      >
       </app-reservation-form>
 
       <div class="messages">
@@ -54,16 +59,14 @@
     <main class="content">
       <h3 class="section-title">Đặt lịch của tôi</h3>
 
-      <!-- skeleton -->
       <div class="list" *ngIf="loading()">
-        <div class="card skeleton" *ngFor="let s of [1,2,3,4]">
+        <div class="card skeleton" *ngFor="let s of [1, 2, 3, 4]">
           <div class="skeleton__header"></div>
           <div class="skeleton__line"></div>
           <div class="skeleton__line short"></div>
         </div>
       </div>
 
-      <!-- list -->
       <div class="list" *ngIf="!loading() && view().length">
         <div class="card" *ngFor="let it of view(); trackBy: trackById">
           <div class="card__head">
@@ -72,52 +75,86 @@
           </div>
 
           <div class="grid">
-            <div class="row"><span>Trạm</span><b>{{ it.stationId }}</b></div>
-            <div class="row"><span>Model pin</span><b>{{ it.reservedBatteryModelId ?? '—' }}</b></div>
-            <div class="row"><span>Bắt đầu</span><b>{{ toLocal(it.reservedFrom) }}</b></div>
-            <div class="row"><span>Kết thúc</span><b>{{ toLocal(it.reservedTo) }}</b></div>
+            <div class="row">
+              <span>Trạm</span><b>{{ it.stationId }}</b>
+            </div>
+            <div class="row">
+              <span>Model pin</span><b>{{ it.reservedBatteryModelId ?? '—' }}</b>
+            </div>
+            <div class="row">
+              <span>Bắt đầu</span><b>{{ toLocal(it.reservedFrom) }}</b>
+            </div>
+            <div class="row">
+              <span>Kết thúc</span><b>{{ toLocal(it.reservedTo) }}</b>
+            </div>
             <div class="row" *ngIf="it.allocation?.holdUntil">
               <span>Giữ đến</span><b>{{ toLocal(it.allocation?.holdUntil) }}</b>
             </div>
           </div>
 
           <div class="card__actions">
-            <button class="btn btn--danger"
-                    (click)="askCancel(it)"
-                    [disabled]="!isPendingStatus(it.status) || cancellingIds().has(it.reservationId)">
+            <button
+              class="btn btn--primary"
+              *ngIf="isPendingStatus(it.status) && it.paymentCheckoutUrl"
+              (click)="openPayment(it)"
+            >
+              💳 Thanh toán đặt cọc
+            </button>
+
+            <button
+              class="btn btn--danger"
+              *ngIf="isPendingStatus(it.status) && !it.paymentCheckoutUrl"
+              (click)="askCancel(it)"
+              [disabled]="cancellingIds().has(it.reservationId)"
+            >
               <ng-container *ngIf="!cancellingIds().has(it.reservationId); else spin">
                 Hủy lịch
               </ng-container>
-              <ng-template #spin>
-                <span class="spinner"></span> Đang hủy…
-              </ng-template>
+              <ng-template #spin> <span class="spinner"></span> Đang hủy… </ng-template>
             </button>
+
+            <span *ngIf="it.status === 'Completed'" class="text-success">✅ Hoàn tất</span>
+
+            <span *ngIf="it.status === 'Confirmed'" class="text-info">💠 Đã xác nhận</span>
           </div>
         </div>
       </div>
 
-      <!-- empty state -->
       <div class="empty" *ngIf="!loading() && view().length === 0">
         <div class="empty__icon">📅</div>
         <h4>Chưa có đặt lịch nào</h4>
-        <p>Hãy tạo một đặt lịch ở panel bên trái. Bạn có thể lọc theo trạng thái ở thanh công cụ.</p>
+        <p>
+          Hãy tạo một đặt lịch ở panel bên trái. Bạn có thể lọc theo trạng thái ở thanh công cụ.
+        </p>
         <button class="btn btn--outline" (click)="reload()">Tải lại</button>
       </div>
     </main>
   </div>
 
-  <!-- Confirm Cancel Modal -->
   <div class="modal__backdrop" *ngIf="confirmOpen()" (click)="closeConfirm()"></div>
-  <div class="modal" *ngIf="confirmOpen()" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div
+    class="modal"
+    *ngIf="confirmOpen()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="confirmTitle"
+  >
     <div class="modal__head">
       <h4 id="confirmTitle">Xác nhận hủy đặt lịch</h4>
       <button class="btn btn--ghost icon" aria-label="Đóng" (click)="closeConfirm()">✕</button>
     </div>
     <div class="modal__body" *ngIf="itemToCancel() as it">
-      <p>Bạn chắc chắn muốn hủy đặt lịch <b>#{{ it.reservationId }}</b>?</p>
+      <p>
+        Bạn chắc chắn muốn hủy đặt lịch <b>#{{ it.reservationId }}</b
+        >?
+      </p>
       <div class="grid small">
-        <div class="row"><span>Trạm</span><b>{{ it.stationId }}</b></div>
-        <div class="row"><span>Khung giờ</span><b>{{ toLocal(it.reservedFrom) }} → {{ toLocal(it.reservedTo) }}</b></div>
+        <div class="row">
+          <span>Trạm</span><b>{{ it.stationId }}</b>
+        </div>
+        <div class="row">
+          <span>Khung giờ</span><b>{{ toLocal(it.reservedFrom) }} → {{ toLocal(it.reservedTo) }}</b>
+        </div>
       </div>
     </div>
     <div class="modal__actions">

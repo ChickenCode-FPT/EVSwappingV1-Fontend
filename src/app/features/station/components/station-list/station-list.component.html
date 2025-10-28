@@ -2,16 +2,13 @@
 <div class="panel">
   <div class="panel-header">
     <h2>Danh sách trạm</h2>
-    <button class="btn-primary"
-            [disabled]="findingNearest"
-            (click)="onClickNearest()">
+    <button class="btn-primary" [disabled]="findingNearest" (click)="onClickNearest()">
       {{ findingNearest ? 'Đang tìm…' : 'Tìm trạm gần nhất' }}
     </button>
   </div>
 
   <div class="tools">
-    <input class="input" type="text" placeholder="Tìm theo tên/địa chỉ…"
-           [(ngModel)]="searchText">
+    <input class="input" type="text" placeholder="Tìm theo tên/địa chỉ…" [(ngModel)]="searchText" />
     <select class="select" [(ngModel)]="sortBy">
       <option value="nearest">Gần nhất</option>
       <option value="duration">Thời gian (min)</option>
@@ -22,10 +19,10 @@
 
   <div class="filters">
     <label>
-      <input type="checkbox" [(ngModel)]="showOnlyReachable">
+      <input type="checkbox" [(ngModel)]="showOnlyReachable" />
       Trong bán kính
     </label>
-    <input type="number" class="radius" [(ngModel)]="reachRadiusKm" min="1" max="200"> km
+    <input type="number" class="radius" [(ngModel)]="reachRadiusKm" min="1" max="200" /> km
   </div>
 
   <div class="status" *ngIf="geoStatusMsg">{{ geoStatusMsg }}</div>
@@ -42,18 +39,20 @@
 
         <div class="meta">
           <div>📍 {{ s.address || '—' }}</div>
-          <div>🔋 Pin sẵn có: <b>{{ s.availableBatteries }}</b> / {{ s.capacity }}</div>
+          <div>
+            🔋 Pin sẵn có: <b>{{ s.availableBatteries }}</b> / {{ s.capacity }}
+          </div>
           <div class="metrics">
-            <span *ngIf="s.distanceKm !== undefined">📏 {{ s.distanceKm | number:'1.0-2' }} km</span>
+            <span *ngIf="s.distanceKm !== undefined"
+              >📏 {{ s.distanceKm | number : '1.0-2' }} km</span
+            >
             <span *ngIf="s.durationMin !== undefined">⏱ {{ s.durationMin }} min</span>
           </div>
         </div>
 
         <div class="actions">
           <button class="btn-secondary" (click)="onSelect(s)">Đi đến trạm này</button>
-          <button class="btn-secondary"
-                  [disabled]="!canReserve(s)"
-                  (click)="onReserve(s)">
+          <button class="btn-secondary" [disabled]="!canReserve(s)" (click)="onReserve(s)">
             Đặt lịch
           </button>
           <button class="btn-link" (click)="toggleExpand(s)">
@@ -67,7 +66,6 @@
         <div><b>Điện thoại:</b> {{ s.phone || '—' }}</div>
         <div><b>Tọa độ:</b> [{{ s.longitude }}, {{ s.latitude }}]</div>
 
-        <!-- Khu vực chọn model pin còn hàng -->
         <div class="models">
           <div class="models-header">
             <b>Model pin còn hàng</b>
@@ -96,8 +94,8 @@
         </div>
 
         <div class="tips">
-          Gợi ý: Chọn model (nếu cần) rồi nhấn “Đặt lịch”.
-          Nếu không chọn, hệ thống có thể chọn bất kỳ model còn hàng.
+          Gợi ý: Chọn model (nếu cần) rồi nhấn “Đặt lịch”. Nếu không chọn, hệ thống có thể chọn bất
+          kỳ model còn hàng.
         </div>
       </div>
     </div>

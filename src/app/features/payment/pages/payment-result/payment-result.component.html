@@ -1,0 +1,11 @@
+<!-- src\app\features\payment\pages\payment-result\payment-result.component.html -->
+<div class="payment-result" [ngClass]="{ success: success, fail: !success }">
+  <h1 *ngIf="success">Thanh toán thành công</h1>
+  <h1 *ngIf="!success">Thanh toán thất bại</h1>
+
+  <p class="status">{{ message }}</p>
+
+  <div *ngIf="loading" class="spinner"></div>
+
+  <button *ngIf="!loading" (click)="goToReservations()" class="btn">Quay lại lịch đặt</button>
+</div>

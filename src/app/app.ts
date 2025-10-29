@@ -1,11 +1,11 @@
 // app.component.ts
 import { Component, signal } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Header } from './shared/header/header';
 import { Footer } from './shared/footer/footer';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -36,6 +36,9 @@ export class App {
   }
 
   isStaffRoute() {
-    return this.currentUrl.startsWith('/staff');
+    return this.currentUrl.startsWith('/staff')  || this.currentUrl.startsWith('/admin') ;
   }
+  // isAdminRoute(){
+  //   return this.currentUrl.startsWith('/admin');
+  // }
 }

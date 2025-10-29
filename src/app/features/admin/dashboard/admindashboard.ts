@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '../../../shared/sidebar/sidenar';
+import { SidebarComponent } from '../../../shared/sidebar/sidebar';
 
 @Component({
   selector: 'app-admin-dashboard',

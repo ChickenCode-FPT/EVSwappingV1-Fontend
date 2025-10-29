@@ -1,0 +1,126 @@
+<div class="admin-layout">
+  <!-- Sidebar bên trái -->
+
+  <!-- Phần nội dung chính -->
+  <div class="admin-content">
+      <app-sidebar></app-sidebar>
+
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
+
+    <div class="card">
+      <div class="flex align-items-center justify-content-between mb-4">
+        <h2>Battery Health Logs</h2>
+        <button pButton label="New Log" icon="pi pi-plus" (click)="openNew()" class="btn-add"></button>
+      </div>
+
+      <p-table
+        [value]="logs"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [loading]="!logs.length"
+        dataKey="id"
+        [tableStyle]="{ 'min-width': '70rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>ID</th>
+            <th>Serial Number</th>
+            <th>Battery ID</th>
+            <th>Recorded At</th>
+            <th>SoH</th>
+            <th>Cycle Count</th>
+            <th>Temperature</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-log>
+          <tr>
+            <td>{{ log.batteryHealthLogId }}</td>
+            <td>{{ log.serialNumber }}</td>
+            <td>{{ log.batteryId }}</td>
+            <td>{{ log.recordedAt | date: 'short' }}</td>
+            <td>{{ log.soH }}</td>
+            <td>{{ log.cycleCount }}</td>
+            <td>{{ log.temperature }}</td>
+            <td>{{ log.notes }}</td>
+            <td>
+              <button
+                pButton
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text"
+                (click)="edit(log)"
+              >Edit</button>
+              <button
+                pButton
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-text p-button-danger"
+                (click)="delete(log)"
+              >Delete</button>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8" class="text-center">No logs found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  header="{{ isEdit ? 'Edit Log' : 'Add Log' }}"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '60vw' }"
+>
+  <ng-container *ngIf="selectedLog">
+    <div class="p-fluid">
+      <div class="field">
+        <label>Battery Serial Number</label>
+         <p-select
+      [options]="serialNumbers" 
+      [(ngModel)]="selectedLog.serialNumber"
+      placeholder="Select Serial Number"
+      optionLabel="label"
+      optionValue="value"
+      [showClear]="true"
+      class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+         </p-select>
+      </div>
+      <div class="formgrid grid">
+      <div class="field col">
+        <label >SoH</label>
+        <p-inputNumber mode="decimal"  [maxFractionDigits]="2" inputId="minmax-buttons" [min]="0" [max]="100" [(ngModel)]="selectedLog.soH" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"/>
+      </div>
+      <div class="field col">
+        <label>Cycle Count</label>
+        <p-inputNumber [(ngModel)]="selectedLog.cycleCount" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></p-inputNumber>
+      </div>
+      </div>
+      <div class="field">
+        <label>Temperature</label>
+        <p-inputNumber mode="decimal"  [maxFractionDigits]="2" inputId="minmax-buttons" [min]="0" [max]="100" [(ngModel)]="selectedLog.temperature" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></p-inputNumber>
+      </div>
+       <div class="field">
+        <label>Recorded At</label>
+        <p-datePicker  [showTime]="true" [(ngModel)]="selectedLog.recordedAt" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></p-datePicker>
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea  [(ngModel)]="selectedLog.notes" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
+      </div>
+    </div>
+  </ng-container>
+  <div class="p-dialog-footer">
+    <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="visible = false"></button>
+    <button pButton label="Save" icon="pi pi-check" (click)="save()"></button>
+  </div>
+</p-dialog>
+

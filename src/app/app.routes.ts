@@ -15,6 +15,10 @@ import { TwoFactorComponent } from './features/auth/two-factor/two-factor';
 import { Disable2FAComponent } from './features/auth/disable-two-factor/disable-two-factor';
 import { MapComponent } from './features/station/components/map.component';
 import { ReservationsPageComponent } from './features/reservations/pages/reservations-page/reservations-page.component';
+import { PromoteUserComponent } from './features/admin/promote-user/promote-user';
+import { BatteryHealthLogsComponent } from './features/admin/battery-health-log/battery-health';
+import { AssignStationStaffComponent } from './features/admin/station-staff/assign-station-staff';
+import { StationStaffListComponent } from './features/admin/station-staff-list/station-staff-list';
 import { StaffDashboard } from './features/staff/staff-dashboard/staff-dashboard';
 import { BatteryWarehouse } from './features/staff/battery-warehouse/battery-warehouse';
 import { BatteryAdd } from './features/staff/battery-add/battery-add';
@@ -35,7 +39,7 @@ export const routes: Routes = [
   { path: 'contact', component: Contact },
   { path: 'register', component: RegisterComponent },
   { path: 'admin/dashboard', component: AdminDashboardComponent },
-  { path: 'admin/users', component: UsersComponent },
+  { path: 'admin/users/list', component: UsersComponent },
   { path: 'update-phone', component: UpdatePhoneComponent },
   { path: 'google-callback', component: GoogleCallbackComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -44,6 +48,12 @@ export const routes: Routes = [
   { path: 'two-factor', component: TwoFactorComponent },
   { path: 'disable-2fa', component: Disable2FAComponent },
   { path: 'station', component: MapComponent },
+  { path: 'reservations', component: ReservationsPageComponent },
+  { path: 'admin/users/promote', component: PromoteUserComponent },
+  { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
+  { path: 'admin/users/assign-staff', component: AssignStationStaffComponent},
+  { path: 'admin/users/list-station-staff', component: StationStaffListComponent},
+
   { path: 'reservations', component: ReservationsPageComponent },
 
   {

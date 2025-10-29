@@ -1,0 +1,206 @@
+<div class="assign-container">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <p-toast></p-toast>
+
+    <!-- Header -->
+    <div class="header">
+      <p-button 
+        icon="pi pi-arrow-left" 
+        [text]="true" 
+        (onClick)="goBack()"
+        label="Back">
+      </p-button>
+      <h1>
+        <i class="pi pi-user-plus"></i>
+        Assign Staff to Station
+      </h1>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <p-progressSpinner></p-progressSpinner>
+      <p>Loading data...</p>
+    </div>
+
+    <!-- Main Card -->
+    <p-card *ngIf="!loading">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h2>Station Staff Assignment</h2>
+          <p>Assign employees to manage and operate charging stations</p>
+        </div>
+      </ng-template>
+
+      <form [formGroup]="assignForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Station Selection -->
+        <div class="form-section">
+          <h3><i class="pi pi-building"></i> Select Station</h3>
+          <p-select
+            formControlName="stationId"
+            [options]="stations"
+            optionLabel="name"
+            optionValue="stationId"
+            placeholder="Choose a station"
+            [filter]="true"
+            filterBy="name,address"
+            (onChange)="onStationChange($event)"
+            [style]="{'width': '100%'}">
+            <ng-template let-station pTemplate="item">
+              <div class="station-item">
+                <div>
+                  <strong>{{ station.name }}</strong>
+                  <div class="station-address">{{ station.address }}</div>
+                </div>
+                <div class="station-badges">
+                  <p-tag 
+                    [value]="station.availableBatteries + '/' + station.capacity" 
+                    icon="pi pi-bolt"
+                    severity="info">
+                  </p-tag>
+                  <p-tag 
+                    [value]="getStatusLabel(station.status)" 
+                    [severity]="getStatusSeverity(station.status)">
+                  </p-tag>
+                </div>
+              </div>
+            </ng-template>
+          </p-select>
+          <small *ngIf="assignForm.get('stationId')?.invalid && assignForm.get('stationId')?.touched" 
+                 class="p-error">
+            Station is required
+          </small>
+        </div>
+
+        <!-- Selected Station Info -->
+        <div *ngIf="selectedStation" class="selected-info">
+          <p-divider align="left">
+            <b>Selected Station</b>
+          </p-divider>
+          <div class="info-card">
+            <div class="info-icon">
+              <i class="pi pi-building"></i>
+            </div>
+            <div class="info-details">
+              <h4>{{ selectedStation.name }}</h4>
+              <p><i class="pi pi-map-marker"></i> {{ selectedStation.address }}</p>
+              <p><i class="pi pi-phone"></i> {{ selectedStation.phone }}</p>
+              <div class="info-stats">
+                <span><strong>Capacity:</strong> {{ selectedStation.capacity }}</span>
+                <span><strong>Available:</strong> {{ selectedStation.availableBatteries }}</span>
+                <span>
+                  <strong>Status:</strong> 
+                  <p-tag 
+                    [value]="getStatusLabel(selectedStation.status)" 
+                    [severity]="getStatusSeverity(selectedStation.status)">
+                  </p-tag>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Selection -->
+        <div class="form-section" *ngIf="selectedStation">
+          <h3><i class="pi pi-user"></i> Select Employee</h3>
+          <p-autoComplete
+            [(ngModel)]="selectedUser"
+            [ngModelOptions]="{standalone: true}"
+            [suggestions]="filteredUsers"
+            (completeMethod)="filterUsers($event)"
+            (onSelect)="onUserSelect($event)"
+            field="fullName"
+            placeholder="Search by name or email"
+            [style]="{'width': '100%'}">
+            <ng-template let-user pTemplate="item">
+              <div class="user-item">
+                <div>
+                  <strong>{{ user.fullName }}</strong>
+                  <div class="user-email">{{ user.email }}</div>
+                </div>
+                <div class="user-roles">
+                  <p-tag *ngFor="let role of user.roles" [value]="role" severity="info"></p-tag>
+                </div>
+              </div>
+            </ng-template>
+          </p-autoComplete>
+          <small *ngIf="assignForm.get('userId')?.invalid && assignForm.get('userId')?.touched" 
+                 class="p-error">
+            User is required
+          </small>
+        </div>
+
+        <!-- Selected User Info -->
+        <div *ngIf="selectedUser" class="selected-info">
+          <p-divider align="left">
+            <b>Selected Employee</b>
+          </p-divider>
+          <div class="info-card">
+            <div class="info-icon user-icon">
+              <i class="pi pi-user"></i>
+            </div>
+            <div class="info-details">
+              <h4>{{ selectedUser.fullName }}</h4>
+              <p><i class="pi pi-envelope"></i> {{ selectedUser.email }}</p>
+              <p *ngIf="selectedUser.phoneNumber">
+                <i class="pi pi-phone"></i> {{ selectedUser.phoneNumber }}
+              </p>
+              <div class="current-roles">
+                <strong>System Roles:</strong>
+                <p-tag *ngFor="let role of selectedUser.roles" 
+                       [value]="role" 
+                       severity="contrast">
+                </p-tag>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="form-section" *ngIf="selectedUser">
+          <h3><i class="pi pi-briefcase"></i> Assign Station Role</h3>
+          <p-select
+            formControlName="role"
+            [options]="staffRoles"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Choose a role"
+            [style]="{'width': '100%'}">
+          </p-select>
+          <small *ngIf="assignForm.get('role')?.invalid && assignForm.get('role')?.touched" 
+                 class="p-error">
+            Role is required
+          </small>
+
+          <p-message 
+            severity="info" 
+            text="This role is specific to the selected station" 
+            [style]="{'margin-top': '1rem', 'width': '100%'}">
+          </p-message>
+        </div>
+
+      </form>
+
+      <ng-template pTemplate="footer">
+        <div class="card-actions">
+          <p-button 
+            label="Reset" 
+            icon="pi pi-refresh" 
+            [outlined]="true"
+            (onClick)="resetForm()" 
+            [disabled]="submitting">
+          </p-button>
+          <p-button 
+            label="Assign Staff" 
+            icon="pi pi-check" 
+            (onClick)="onSubmit()"
+            [disabled]="!assignForm.valid || submitting"
+            [loading]="submitting">
+          </p-button>
+        </div>
+      </ng-template>
+    </p-card>
+  </main>
+</div>

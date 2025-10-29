@@ -10,6 +10,10 @@ export interface UserDto {
   roles?: string; 
   lockout: boolean;
 }
+export interface PromoteUserRoleDto {
+  newRole: string;
+  replaceExistingRoles: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +45,7 @@ export class ManageUsersService {
       headers: this.getAuthHeaders()
     });
   }
+  
 
   lockUser(id: string) {
   return this.http.post(`${this.apiUrl}/lock/${id}`, {}, { headers: this.getAuthHeaders() });
@@ -50,5 +55,8 @@ unlockUser(id: string) {
   return this.http.post(`${this.apiUrl}/unlock/${id}`, {}, { headers: this.getAuthHeaders() });
 }
 
+promoteUserRole(userId: string, model: PromoteUserRoleDto): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${userId}/promote`, model);
+}
 
 }

@@ -1,7 +1,7 @@
 export interface BatteryDto {
   batteryId: number;
   serialNumber: string;
-  status: string;          // "Full" | "Held" | ...
+  status: string;          
   currentSoH?: number | null;
   cycleCount?: number | null;
   batteryModelId: number;

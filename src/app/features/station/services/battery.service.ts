@@ -10,14 +10,12 @@ export class BatteryService {
 
   constructor(private http: HttpClient) {}
 
-  /** Lấy tất cả pin còn hàng ở một trạm (BE đã lọc Full/Full) */
   getAvailableByStation(stationId: number, batteryModelId?: number | null): Observable<BatteryDto[]> {
     let params = new HttpParams().set('stationId', stationId);
     if (batteryModelId != null) params = params.set('batteryModelId', batteryModelId);
     return this.http.get<BatteryDto[]>(`${this.base}/available`, { params });
   }
 
-  /** Gom nhóm theo batteryModelId → {id, count} */
   getAvailableModelsSummary(stationId: number) {
     return this.getAvailableByStation(stationId).pipe(
       map(list => {

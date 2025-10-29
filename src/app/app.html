@@ -1,12 +1,22 @@
 <!-- src\app\app.html -->
 <main class="main">
-   @if (!isStaffRoute()) {
+<!-- <ng-container *ngIf="!isAdminPage()">
+  <app-header></app-header>
+</ng-container>
+
+<router-outlet></router-outlet>
+
+<ng-container *ngIf="!isAdminPage()">
+  <app-footer></app-footer>
+</ng-container> -->
+
+   @if (!isStaffRoute()  ) {
     <app-header></app-header>
   }
 
   <router-outlet></router-outlet>
   
-  @if (!isStaffRoute()) {
+  @if (!isStaffRoute()  ) {
     <app-footer></app-footer>
   }
 </main>

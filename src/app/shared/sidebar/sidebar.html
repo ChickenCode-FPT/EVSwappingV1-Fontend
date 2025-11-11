@@ -16,20 +16,17 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-nav-list class="submenu">
-        <a mat-list-item routerLink="/admin/users/list" routerLinkActive="active">
-          User List
-        </a>
+        <a mat-list-item routerLink="/admin/users/list" routerLinkActive="active"> User List </a>
         <a mat-list-item routerLink="/admin/users/promote" routerLinkActive="active">
           Promote Role
         </a>
       </mat-nav-list>
     </mat-expansion-panel>
 
-
     <a mat-list-item routerLink="/admin/users/battery-health" routerLinkActive="active">
       <span matListItemTitle *ngIf="!isCollapsed">Batteries Health</span>
     </a>
-       <mat-expansion-panel class="submenu-panel" *ngIf="!isCollapsed">
+    <mat-expansion-panel class="submenu-panel" *ngIf="!isCollapsed">
       <mat-expansion-panel-header>
         <mat-panel-title>
           <span>Station Staff</span>
@@ -45,6 +42,9 @@
       </mat-nav-list>
     </mat-expansion-panel>
 
+    <a mat-list-item routerLink="/admin/statistic" routerLinkActive="active">
+      <span matListItemTitle *ngIf="!isCollapsed">Statistic</span>
+    </a>
 
     <a mat-list-item routerLink="/home" routerLinkActive="active">
       <span matListItemTitle *ngIf="!isCollapsed">Home</span>

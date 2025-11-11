@@ -25,6 +25,7 @@ import { BatteryAdd } from './features/staff/battery-add/battery-add';
 import { BatteryModels } from './features/staff/battery-model/battery-model';
 import { BatteryTransaction } from './features/staff/battery-transaction/battery-transaction';
 import { BatteryTransactionDetail } from './features/staff/battery-transaction-detail/battery-transaction-detail';
+import { StatisticDashboardComponent } from './features/admin/statistic/statistic-dashboard';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -53,6 +54,7 @@ export const routes: Routes = [
   { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
   { path: 'admin/users/assign-staff', component: AssignStationStaffComponent},
   { path: 'admin/users/list-station-staff', component: StationStaffListComponent},
+  { path: 'admin/statistic', component: StatisticDashboardComponent },
 
   { path: 'reservations', component: ReservationsPageComponent },
 

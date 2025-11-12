@@ -25,6 +25,8 @@ import { BatteryAdd } from './features/staff/battery-add/battery-add';
 import { BatteryModels } from './features/staff/battery-model/battery-model';
 import { BatteryTransaction } from './features/staff/battery-transaction/battery-transaction';
 import { BatteryTransactionDetail } from './features/staff/battery-transaction-detail/battery-transaction-detail';
+import { CustomerGuard } from './core/customer.guard';
+
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -47,8 +49,8 @@ export const routes: Routes = [
   { path: '2fa-setup', component: Setup2FAComponent },
   { path: 'two-factor', component: TwoFactorComponent },
   { path: 'disable-2fa', component: Disable2FAComponent },
-  { path: 'station', component: MapComponent },
-  { path: 'reservations', component: ReservationsPageComponent },
+  { path: 'station', component: MapComponent, canActivate: [CustomerGuard] },
+  { path: 'reservations', component: ReservationsPageComponent, canActivate: [CustomerGuard] },
   { path: 'admin/users/promote', component: PromoteUserComponent },
   { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
   { path: 'admin/users/assign-staff', component: AssignStationStaffComponent},

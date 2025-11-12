@@ -1,0 +1,15 @@
+<section class="page">
+  <h2>Danh sách trạm</h2>
+
+  <div *ngIf="loading()">Đang tải...</div>
+  <div *ngIf="errorMsg()">{{ errorMsg() }}</div>
+
+  <div class="list" *ngIf="!loading() && !errorMsg()">
+    <div class="station-card" *ngFor="let s of stations()">
+      <h4>{{ s.name }}</h4>
+      <p>{{ s.address }}</p>
+      <p>📍 {{ s.latitude }}, {{ s.longitude }}</p>
+      <p>🔋 Còn {{ s.availableBatteries }} pin</p>
+    </div>
+  </div>
+</section>

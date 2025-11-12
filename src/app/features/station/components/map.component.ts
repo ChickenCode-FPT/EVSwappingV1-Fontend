@@ -1,3 +1,4 @@
+// src\app\features\station\components\map.component.ts
 import { Component, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -274,7 +275,51 @@ export class MapComponent implements AfterViewInit {
 
     queueMicrotask(() => {
       const el = document.querySelector('.modal') as HTMLElement | null;
-      el?.focus();
+      if (!el) return;
+      el.focus();
+
+      // 🎨 Ép style khung modal tổng thể
+      Object.assign(el.style, {
+        background: '#f9fafb',
+        borderRadius: '16px',
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.25)',
+        padding: '0',
+        overflow: 'hidden',
+      });
+
+      // 🎨 Header
+      const header = el.querySelector('.modal-header') as HTMLElement | null;
+      if (header) {
+        Object.assign(header.style, {
+          background: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(6px)',
+          borderBottom: '1px solid #e5e7eb',
+          padding: '14px 20px',
+        });
+      }
+
+      // 🎨 Body
+      const body = el.querySelector('.modal-body') as HTMLElement | null;
+      if (body) {
+        Object.assign(body.style, {
+          background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)',
+          padding: '20px',
+          borderRadius: '0 0 16px 16px',
+        });
+      }
+
+      // 🎨 Form card chính
+      const formCard = el.querySelector('form.card') as HTMLElement | null;
+      if (formCard) {
+        Object.assign(formCard.style, {
+          background: '#fff',
+          borderRadius: '12px',
+          padding: '20px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          margin: '0 auto',
+        });
+      }
     });
   }
 

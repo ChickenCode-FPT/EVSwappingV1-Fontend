@@ -1,0 +1,14 @@
+.page {
+  display: grid;
+  gap: 12px;
+}
+.vehicle-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--card);
+  color: var(--text);
+}
+.vehicle-card h4 {
+  margin: 0 0 4px;
+}

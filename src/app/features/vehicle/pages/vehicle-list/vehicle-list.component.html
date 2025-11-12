@@ -1,0 +1,15 @@
+<section class="page">
+  <h2>Xe của tôi</h2>
+
+  <div *ngIf="loading()">Đang tải...</div>
+  <div *ngIf="errorMsg()">{{ errorMsg() }}</div>
+
+  <div class="list" *ngIf="!loading() && !errorMsg()">
+    <div class="vehicle-card" *ngFor="let v of vehicles()">
+      <h4>{{ v.make }} {{ v.model }}</h4>
+      <p>VIN: {{ v.vin }}</p>
+      <p>Năm SX: {{ v.year || '—' }}</p>
+      <p>Model pin: {{ v.batteryModelPreferenceId || '—' }}</p>
+    </div>
+  </div>
+</section>

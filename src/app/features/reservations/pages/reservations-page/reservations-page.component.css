@@ -244,3 +244,26 @@
     --shadow: 0 10px 25px rgba(15,23,42,.08);
   }
 }
+
+.reservation-form label,
+.reservation-form span,
+.reservation-form p {
+  color: #111 !important; /* Màu đen rõ hơn */
+}
+
+@media (prefers-color-scheme: dark) {
+  .reservation-form label,
+  .reservation-form span,
+  .reservation-form p {
+    color: #e6edf3 !important; /* Màu sáng cho dark mode */
+  }
+}
+
+.reservation-form {
+  font-weight: 500;
+}
+
+.reservation-form b {
+  color: #000 !important;
+  font-weight: 600;
+}

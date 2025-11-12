@@ -2,11 +2,13 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { finalize } from 'rxjs';
-
 import { ReservationService } from '../../services/reservation.service';
 import { CreateReservationRequest, ReservationDto } from '../../models/reservation.types';
+
+// Component con
+import { StationSelectComponent } from '../station-select/station-select.component';
+import { VehicleSelectComponent } from '../vehicle-select/vehicle-select.component';
 
 function localDatetimeToIso(datetimeLocal: string): string {
   return new Date(datetimeLocal).toISOString();
@@ -23,7 +25,12 @@ function snapTo15Minutes(iso: string): string {
 @Component({
   selector: 'app-reservation-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    StationSelectComponent,
+    VehicleSelectComponent,
+  ],
   templateUrl: './reservation-form.component.html',
   styleUrls: ['./reservation-form.component.css'],
 })
@@ -33,18 +40,17 @@ export class ReservationFormComponent {
 
   @Input() stationId?: number;
   @Input() vehicleId?: number | null;
-
   @Output() created = new EventEmitter<ReservationDto>();
 
   submitting = false;
-  errorMsg = '';
   infoMsg = '';
+  errorMsg = '';
 
   form = this.fb.group({
-    stationId: [null as number | null, [Validators.required]],
+    stationId: [null as number | null, Validators.required],
     vehicleId: [null as number | null],
-    reservedFromLocal: ['', [Validators.required]],
-    reservedToLocal: ['', [Validators.required]],
+    reservedFromLocal: ['', Validators.required],
+    reservedToLocal: ['', Validators.required],
   });
 
   ngOnInit() {

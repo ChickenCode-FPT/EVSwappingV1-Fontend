@@ -2,28 +2,26 @@
 <form [formGroup]="form" (ngSubmit)="submit()" class="card">
   <h3>Đặt lịch đổi pin</h3>
 
-  <div class="row">
-    <label>Trạm</label>
-    <input type="number" formControlName="stationId" placeholder="Nhập StationId">
-    <small class="invalid" *ngIf="f.stationId.touched && f.stationId.invalid">Bắt buộc</small>
-  </div>
+  <!-- Component chọn trạm -->
+  <app-station-select [control]="f.stationId"></app-station-select>
 
-  <div class="row">
-    <label>Xe (tuỳ chọn)</label>
-    <input type="number" formControlName="vehicleId" placeholder="VehicleId (nếu có nhiều xe)">
-    <small class="hint">Nếu để trống, hệ thống sẽ dùng xe đầu tiên của bạn.</small>
-  </div>
+  <!-- Component chọn xe -->
+  <app-vehicle-select [control]="f.vehicleId"></app-vehicle-select>
 
   <div class="row">
     <label>Thời gian bắt đầu</label>
-    <input type="datetime-local" formControlName="reservedFromLocal">
-    <small class="invalid" *ngIf="f.reservedFromLocal.touched && f.reservedFromLocal.invalid">Bắt buộc</small>
+    <input type="datetime-local" formControlName="reservedFromLocal" />
+    <small class="invalid" *ngIf="f.reservedFromLocal.touched && f.reservedFromLocal.invalid">
+      Bắt buộc
+    </small>
   </div>
 
   <div class="row">
     <label>Thời gian kết thúc</label>
-    <input type="datetime-local" formControlName="reservedToLocal">
-    <small class="invalid" *ngIf="f.reservedToLocal.touched && f.reservedToLocal.invalid">Bắt buộc</small>
+    <input type="datetime-local" formControlName="reservedToLocal" />
+    <small class="invalid" *ngIf="f.reservedToLocal.touched && f.reservedToLocal.invalid">
+      Bắt buộc
+    </small>
   </div>
 
   <div class="actions">

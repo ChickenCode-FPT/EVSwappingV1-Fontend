@@ -1,0 +1,93 @@
+<div class="p-m-3">
+    <app-sidebar></app-sidebar>
+    <div class="main-content">
+  <p-toolbar>
+    <div class="p-toolbar-group-left">
+      <button pButton label="New Package" icon="pi pi-plus" class="p-button-success" (click)="openCreateDialog()"></button>
+      <button pButton label="Refresh" icon="pi pi-refresh" class="p-button-text" (click)="loadPackages()"></button>
+    </div>
+  </p-toolbar>
+
+  <p-table [value]="packages" [paginator]="true" [rows]="10" [loading]="loading" class="p-mt-3">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Billing</th>
+        <th>Price</th>
+        <th>Included Swaps</th>
+        <th>Created At</th>
+        <th>Status</th>
+        <th style="width:220px">Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-pkg>
+      <tr>
+        <td>{{pkg.name}}</td>
+        <td>{{ pkg['billingCycle'] || '-' }}</td>
+        <td>{{pkg.price | currency}}</td>
+        <td>{{pkg.includedSwaps}}</td>
+        <td>{{pkg.createdAt | date:'short'}}</td>
+        <td>{{pkg.status}}</td>
+        <td>
+         <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text" (click)="openEditDialog(pkg)"></button>
+          @if(statusLabel(pkg.status) == 1){
+            <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-danger" (click)="confirmInactive(pkg)"></button>
+         } 
+         @if(statusLabel(pkg.status) == 0){
+           <button pButton type="button" icon="pi pi-upload" class="p-button-rounded p-button-info" (click)="confirmPublish(pkg)"></button>
+         }
+          @if(statusLabel(pkg.status) == 2){
+           <button pButton type="button" icon="pi pi-refresh" class="p-button-rounded p-button-rounded" (click)="confirmReactivate(pkg)"></button>
+         }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7">No packages found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Dialog for Create / Edit -->
+  <p-dialog header="{{isEdit ? 'Edit Package' : 'New Package'}}" [(visible)]="displayDialog" [modal]="true" [style]="{width: '520px'}" [closable]="true">
+    <form [formGroup]="packageForm" class="p-fluid">
+      <div class="p-field">
+        <label for="name">Name</label>
+        <input id="name" pInputText formControlName="name" />
+        <small *ngIf="packageForm.get('name')?.invalid && packageForm.get('name')?.touched" class="p-error">Name is required</small>
+      </div>
+
+       @if(!isEdit){ 
+      <div class="p-field">
+        <label for="billing">Billing Cycle</label>
+        <p-select id="billing" [options]="billingCycles" optionLabel="label" optionValue="value" placeholder="Select" formControlName="billingCycle"></p-select>
+      </div>
+    }
+
+      <div class="p-field p-grid">
+        <div class="p-col-6">
+          <label for="price">Price</label>
+          <input id="price" pInputText formControlName="price" type="number" />
+        </div>
+        @if(!isEdit){
+        <div class="p-col-6">
+          <label for="swaps">Included Swaps</label>
+          <input id="swaps" pInputText formControlName="includedSwaps" type="number" />
+        </div>
+    }
+      </div>
+
+      <p-footer>
+        <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="displayDialog = false"></button>
+        <button pButton label="Save" icon="pi pi-check" (click)="save()" [disabled]="packageForm.invalid"></button>
+      </p-footer>
+    </form>
+  </p-dialog>
+
+  <p-confirmDialog></p-confirmDialog>
+  <p-toast></p-toast>
+  </div>
+</div>

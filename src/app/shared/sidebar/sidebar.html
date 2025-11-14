@@ -45,6 +45,10 @@
       </mat-nav-list>
     </mat-expansion-panel>
 
+    <a mat-list-item routerLink="/admin/users/subscription-package" routerLinkActive="active">
+      <span matListItemTitle *ngIf="!isCollapsed">Subscription Package</span>
+    </a>
+
 
     <a mat-list-item routerLink="/home" routerLinkActive="active">
       <span matListItemTitle *ngIf="!isCollapsed">Home</span>

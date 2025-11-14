@@ -25,6 +25,7 @@ import { BatteryAdd } from './features/staff/battery-add/battery-add';
 import { BatteryModels } from './features/staff/battery-model/battery-model';
 import { BatteryTransaction } from './features/staff/battery-transaction/battery-transaction';
 import { BatteryTransactionDetail } from './features/staff/battery-transaction-detail/battery-transaction-detail';
+import { PackageManagementComponent } from './features/admin/subscription-package/subscription-package';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -55,7 +56,7 @@ export const routes: Routes = [
   { path: 'admin/users/list-station-staff', component: StationStaffListComponent},
 
   { path: 'reservations', component: ReservationsPageComponent },
-
+  { path: 'admin/users/subscription-package', component: PackageManagementComponent},
   {
     path: 'staff',
     component: StaffDashboard,

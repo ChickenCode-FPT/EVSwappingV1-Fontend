@@ -112,6 +112,7 @@
             (completeMethod)="filterUsers($event)"
             (onSelect)="onUserSelect($event)"
             field="fullName"
+            optionLabel="fullName"
             placeholder="Search by name or email"
             [style]="{'width': '100%'}">
             <ng-template let-user pTemplate="item">
@@ -126,7 +127,7 @@
               </div>
             </ng-template>
           </p-autoComplete>
-          <small *ngIf="assignForm.get('userId')?.invalid && assignForm.get('userId')?.touched" 
+          <small *ngIf="assignForm.get('id')?.invalid && assignForm.get('id')?.touched" 
                  class="p-error">
             User is required
           </small>

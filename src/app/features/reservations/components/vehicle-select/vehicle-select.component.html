@@ -1,0 +1,12 @@
+<div class="vehicle-select">
+  <label>Chọn xe</label>
+  <select [formControl]="control">
+    <option value="">-- Dùng xe đầu tiên của bạn --</option>
+    <option *ngFor="let v of vehicles" [value]="v.vehicleId">
+      {{ v.make }} {{ v.model }} ({{ v.year || '—' }})
+    </option>
+  </select>
+
+  <div *ngIf="loading">Đang tải xe...</div>
+  <small class="error" *ngIf="errorMsg">{{ errorMsg }}</small>
+</div>

@@ -1,0 +1,38 @@
+<section class="page">
+  <div class="header-row">
+    <h2>Danh sách Model Pin</h2>
+    <button class="primary-btn" (click)="add()">+ Thêm Model</button>
+  </div>
+
+  <div *ngIf="loading">Đang tải...</div>
+  <div *ngIf="error" class="alert error">{{ error }}</div>
+
+  <table *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Model Code</th>
+        <th>Hãng</th>
+        <th>Dung lượng (kWh)</th>
+        <th>Hóa học</th>
+        <th>Phí đặt cọc</th>
+        <th width="120">Thao tác</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let b of list">
+        <td>{{ b.batteryModelId }}</td>
+        <td>{{ b.modelCode }}</td>
+        <td>{{ b.manufacturer }}</td>
+        <td>{{ b.capacityKwh }}</td>
+        <td>{{ b.chemistry }}</td>
+        <td>{{ b.reservationDepositFee | number }}</td>
+        <td>
+          <button (click)="edit(b.batteryModelId)" class="small-btn">Sửa</button>
+          <button (click)="delete(b.batteryModelId)" class="small-btn danger">Xóa</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

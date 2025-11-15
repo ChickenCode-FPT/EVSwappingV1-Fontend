@@ -1,0 +1,28 @@
+<section class="page">
+  <h2>Thêm Model Pin</h2>
+
+  <div class="form">
+
+    <label>Model Code *</label>
+    <input [(ngModel)]="form.modelCode" />
+
+    <label>Hãng sản xuất *</label>
+    <input [(ngModel)]="form.manufacturer" />
+
+    <label>Dung lượng (kWh)</label>
+    <input type="number" [(ngModel)]="form.capacityKwh" />
+
+    <label>Hóa học pin</label>
+    <input [(ngModel)]="form.chemistry" />
+
+    <label>Loại xe tương thích</label>
+    <input [(ngModel)]="form.compatibleVehicleTypes" />
+
+    <label>Phí đặt cọc</label>
+    <input type="number" [(ngModel)]="form.reservationDepositFee" />
+
+    <button class="primary-btn" (click)="submit()">Lưu</button>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+  </div>
+</section>

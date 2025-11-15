@@ -1,6 +1,6 @@
 <!-- src\app\app.html -->
 <main class="main">
-<!-- <ng-container *ngIf="!isAdminPage()">
+  <!-- <ng-container *ngIf="!isAdminPage()">
   <app-header></app-header>
 </ng-container>
 
@@ -10,13 +10,13 @@
   <app-footer></app-footer>
 </ng-container> -->
 
-   @if (!isStaffRoute()  ) {
-    <app-header></app-header>
+  @if (!isStaffRoute() ) {
+  <app-header></app-header>
   }
 
   <router-outlet></router-outlet>
-  
-  @if (!isStaffRoute()  ) {
-    <app-footer></app-footer>
+
+  @if (!isStaffRoute() ) {
+  <app-footer></app-footer>
   }
 </main>

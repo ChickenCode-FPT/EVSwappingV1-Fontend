@@ -1,51 +1,61 @@
-<div class="grid grid-cols-2 gap-4 sm:grid-cols-1 md:gap-6 h-full">
+@if (metrics) {
+<div class="ecommerce-metrics">
   <!-- Metric Item Start -->
-  <div
-    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
-  >
+  <div class="metric-item">
     <div
-      class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800"
+      class="metric-item__icon-wrapper"
       [innerHTML]="icons.groupIcon | safeHtml"
     ></div>
-    <div class="flex items-end justify-between mt-5">
+    <div class="metric-item__content">
       <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">Customers</span>
-        <h4
-          class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90"
-        >
-          3,782
-        </h4>
+        <span class="metric-item__label">Customers</span>
+        <h4 class="metric-item__value">{{ metrics.customers.count | number }}</h4>
       </div>
-      <app-badge color="success">
-        <span [innerHTML]="icons.arrowUpIcon | safeHtml"></span>
-        11.01%
+      @if(metrics.customers.percentageChange) {
+      <app-badge
+        [color]="metrics.customers.percentageChange > 0 ? 'success' : 'error'"
+      >
+        <span
+          [innerHTML]="
+            (metrics.customers.percentageChange > 0
+              ? icons.arrowUpIcon
+              : icons.arrowDownIcon) | safeHtml
+          "
+        ></span>
+        {{ metrics.customers.percentageChange | number : "1.2-2" }}%
       </app-badge>
+      }
     </div>
   </div>
   <!-- Metric Item End -->
 
   <!-- Metric Item Start -->
-  <div
-    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
-  >
+  <div class="metric-item">
     <div
-      class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800"
+      class="metric-item__icon-wrapper"
       [innerHTML]="icons.boxIconLine | safeHtml"
     ></div>
-    <div class="flex items-end justify-between mt-5">
+    <div class="metric-item__content">
       <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">Orders</span>
-        <h4
-          class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90"
-        >
-          5,359
-        </h4>
+        <span class="metric-item__label">Orders</span>
+        <h4 class="metric-item__value">{{ metrics.orders.count | number }}</h4>
       </div>
-      <app-badge color="error">
-        <span [innerHTML]="icons.arrowDownIcon | safeHtml"></span>
-        9.05%
+      @if(metrics.orders.percentageChange) {
+      <app-badge
+        [color]="metrics.orders.percentageChange > 0 ? 'success' : 'error'"
+      >
+        <span
+          [innerHTML]="
+            (metrics.orders.percentageChange > 0
+              ? icons.arrowUpIcon
+              : icons.arrowDownIcon) | safeHtml
+          "
+        ></span>
+        {{ metrics.orders.percentageChange | number : "1.2-2" }}%
       </app-badge>
+      }
     </div>
   </div>
   <!-- Metric Item End -->
 </div>
+}

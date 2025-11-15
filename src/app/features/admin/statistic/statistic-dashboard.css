@@ -4,7 +4,10 @@
 
 .dashboard-content {
   padding: 1rem;
-  width: 100%;
+  /* width: 100%; */
+  margin-left: 250px; /* Width của sidebar expanded */
+  padding: 24px;
+  transition: margin-left 0.3s ease;
 }
 
 @media (min-width: 768px) {

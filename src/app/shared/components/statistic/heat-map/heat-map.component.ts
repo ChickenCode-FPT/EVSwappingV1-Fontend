@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -9,6 +9,7 @@ import {
   ApexTitleSubtitle,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { HeatmapData } from '../../../../features/admin/statistic/models/statistic.model';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -24,27 +25,33 @@ export type ChartOptions = {
   imports: [CommonModule, NgApexchartsModule],
   templateUrl: './heat-map.component.html',
 })
-export class HeatmapComponent {
+export class HeatmapComponent implements OnChanges {
   @ViewChild('chart') chart: any;
+  @Input() heatmapData: HeatmapData | null = null;
+
   public chartOptions: ChartOptions;
 
   constructor() {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const hours = Array.from({ length: 24 }, (_, i) => i.toString());
-
-    // Generate fake data for now
-    const series: ApexAxisChartSeries = days.map((day) => ({
-      name: day,
-      data: hours.map(() => Math.floor(Math.random() * 100)),
-    }));
-
     this.chartOptions = {
-      series,
+      series: [],
       chart: { type: 'heatmap', height: 350 },
       dataLabels: { enabled: false },
-      xaxis: { categories: hours },
+      xaxis: { categories: [] },
       yaxis: { labels: { style: { fontSize: '12px' } } },
       title: { text: 'Battery Swap Frequency (Heatmap)' },
     };
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['heatmapData'] && this.heatmapData) {
+      this.chartOptions = {
+        ...this.chartOptions,
+        series: this.heatmapData.series,
+        xaxis: {
+          ...this.chartOptions.xaxis,
+          categories: this.heatmapData.categories,
+        },
+      };
+    }
   }
 }

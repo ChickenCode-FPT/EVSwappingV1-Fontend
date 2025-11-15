@@ -1,6 +1,6 @@
 <header class="header">
   <div class="logo">
-    <img src="assets/finallogo.png" alt="Logo" class="logo-image" />
+    <img src="assets/finallogo.png" alt="Logo" />
   </div>
 
   <nav class="nav">
@@ -11,6 +11,9 @@
       <ng-container *ngIf="isCustomer()">
         <li><a routerLink="/station">Stations</a></li>
         <li><a routerLink="/reservations">Reservations</a></li>
+        <li><a routerLink="/payments">Payments</a></li>
+        <li><a routerLink="/vehicles">My Vehicles</a></li>
+        <li><a routerLink="/driver/register">Activate Swap Service</a></li>
       </ng-container>
 
       <li><a routerLink="/contact">Contact</a></li>
@@ -23,15 +26,19 @@
       <ng-template #loggedIn>
         <li class="user-dropdown">
           <a href="javascript:void(0)">Hello {{ authService.getFullname() }}</a>
+
           <ul class="dropdown-menu">
             <li><a routerLink="/profile">Profile</a></li>
-
             <li *ngIf="isAdmin()"><a routerLink="/admin/dashboard">Admin Dashboard</a></li>
             <li *ngIf="isStaff()"><a routerLink="/staff">Staff Dashboard</a></li>
-            <li *ngIf="isCustomer()"><a routerLink="/home">Customer Dashboard</a></li>
 
-            <li><a routerLink="/2fa-setup">Enable 2 Factor</a></li>
-            <li><a routerLink="/disable-2fa">Disable 2 Factor</a></li>
+            <li *ngIf="isCustomer()"><a routerLink="/home">Customer Dashboard</a></li>
+            <li *ngIf="isCustomer()"><a routerLink="/vehicles">My Vehicles</a></li>
+            <li *ngIf="isCustomer()"><a routerLink="/driver/register">Activate Swap Service</a></li>
+            <li *ngIf="isCustomer()"><a routerLink="/payments">My Payments</a></li>
+
+            <li><a routerLink="/2fa-setup">Enable 2FA</a></li>
+            <li><a routerLink="/disable-2fa">Disable 2FA</a></li>
             <li><a (click)="logout()">Logout</a></li>
           </ul>
         </li>

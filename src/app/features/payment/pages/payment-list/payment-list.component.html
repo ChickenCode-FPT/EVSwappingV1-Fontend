@@ -1,0 +1,63 @@
+<section class="page">
+  <div class="container">
+
+    <h1 class="title">Lịch sử thanh toán</h1>
+
+    <div *ngIf="loading()" class="loading">
+      <div class="spinner"></div>
+      Đang tải dữ liệu...
+    </div>
+
+    <div *ngIf="errorMsg()" class="error-card">
+      {{ errorMsg() }}
+    </div>
+
+    <div class="payment-grid" *ngIf="!loading() && !errorMsg()">
+      
+      <div class="payment-card" *ngFor="let p of payments()">
+        
+        <!-- Header -->
+        <div class="card-top">
+          <div class="left">
+            <div class="icon-wrapper" [ngClass]="p.type.toLowerCase()">
+              <i class="material-icons">{{ getIcon(p.type) }}</i>
+            </div>
+            <div>
+              <div class="payment-type">{{ formatType(p.type) }}</div>
+              <div class="payment-id">#{{ p.paymentId }}</div>
+            </div>
+          </div>
+
+          <span class="status-chip" [ngClass]="getStatusColor(p.status)">
+            {{ p.status }}
+          </span>
+        </div>
+
+        <!-- Amount -->
+        <div class="amount">
+          {{ p.amount | number }} <span>{{ p.currency }}</span>
+        </div>
+
+        <!-- Details -->
+        <div class="details">
+          <div><strong>Phương thức:</strong> {{ p.method }}</div>
+          <div><strong>Thời gian:</strong> {{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div><strong>Mô tả:</strong> {{ p.description || '—' }}</div>
+          <div *ngIf="p.reservationId"><strong>Đơn đặt chỗ:</strong> #{{ p.reservationId }}</div>
+          <div *ngIf="p.swapTransactionId"><strong>Giao dịch đổi pin:</strong> #{{ p.swapTransactionId }}</div>
+        </div>
+
+        <!-- Pay button -->
+        <a 
+          *ngIf="p.status.toLowerCase() === 'pending'"
+          class="pay-action"
+          [href]="p.checkoutUrl"
+          target="_blank">
+          Thanh toán ngay
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+</section>

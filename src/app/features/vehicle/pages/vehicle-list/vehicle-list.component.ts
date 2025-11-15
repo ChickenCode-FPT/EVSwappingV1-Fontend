@@ -1,7 +1,9 @@
+// src\app\features\vehicle\pages\vehicle-list\vehicle-list.component.ts
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehicleService } from '../../services/vehicle.service';
 import { Vehicle } from '../../models/vehicle.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vehicle-list',
@@ -12,6 +14,7 @@ import { Vehicle } from '../../models/vehicle.model';
 })
 export class VehicleListComponent implements OnInit {
   private api = inject(VehicleService);
+  private router = inject(Router);
 
   vehicles = signal<Vehicle[]>([]);
   loading = signal(false);
@@ -19,6 +22,18 @@ export class VehicleListComponent implements OnInit {
 
   ngOnInit() {
     this.loadVehicles();
+  }
+
+  goAdd() {
+    this.router.navigate(['/vehicles/add']);
+  }
+
+  getIcon(make: string): string {
+    make = make.toLowerCase();
+    if (make.includes('vin')) return 'electric_scooter';
+    if (make.includes('yamaha')) return 'two_wheeler';
+    if (make.includes('honda')) return 'motorcycle';
+    return 'directions_car';
   }
 
   loadVehicles() {

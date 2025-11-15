@@ -1,0 +1,147 @@
+.page {
+  display: flex;
+  justify-content: center;
+  padding: 50px 20px;
+  background: #f5f7fb;
+}
+
+.card {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: 0px 12px 32px rgba(0,0,0,0.06);
+}
+
+.header {
+  text-align: center;
+}
+
+.icon-circle {
+  width: 70px;
+  height: 70px;
+  background: #e8f2ff;
+  border-radius: 50%;
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle .material-icons {
+  font-size: 36px;
+  color: #0078ff;
+}
+
+h2 {
+  margin: 18px 0 6px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #23395d;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.form-section {
+  margin-top: 28px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.payment-options {
+  display: flex;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.option {
+  flex: 1;
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1px solid #d0d7e2;
+  background: #fafbff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option img {
+  width: 40px;
+  opacity: 0.9;
+}
+
+.option span {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.option:hover {
+  border-color: #9cc4ff;
+  background: #f0f6ff;
+}
+
+.option.active {
+  border-color: #0078ff;
+  background: #e7f1ff;
+  box-shadow: 0 0 8px rgba(0,120,255,0.2);
+}
+
+.option.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.warn {
+  margin-top: 10px;
+  padding: 10px;
+  background: #fff3cd;
+  color: #b68500;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.primary-btn {
+  margin-top: 24px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: #0078ff;
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.primary-btn:hover {
+  background: #005fcc;
+}
+
+.alert {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.alert.success {
+  background: #e8ffe8;
+  color: #0c7e0c;
+}
+
+.alert.error {
+  background: #ffe4e4;
+  color: #b40000;
+}

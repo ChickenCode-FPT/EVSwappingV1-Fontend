@@ -1,0 +1,30 @@
+<section class="page">
+  <div class="card">
+
+    <h2>Liên kết phương tiện</h2>
+    <p class="subtitle">Nhập thông tin xe để sử dụng dịch vụ đổi pin.</p>
+
+    <label>VIN</label>
+    <input [(ngModel)]="form.vin" placeholder="VD: 1HGCM82633A123456" />
+
+    <label>Hãng xe</label>
+    <input [(ngModel)]="form.make" placeholder="VD: VinFast" />
+
+    <label>Dòng xe</label>
+    <input [(ngModel)]="form.model" placeholder="VD: Klara S" />
+
+    <label>Năm sản xuất</label>
+    <input type="number" [(ngModel)]="form.year" placeholder="VD: 2023" />
+
+    <label>Model pin (ID)</label>
+    <input type="number" [(ngModel)]="form.batteryModelPreferenceId" placeholder="VD: 1" />
+
+    <button class="primary-btn" (click)="submit()" [disabled]="loading">
+      {{ loading ? 'Đang lưu...' : 'Thêm phương tiện' }}
+    </button>
+
+    <div class="alert success" *ngIf="success">✔ Đã thêm xe!</div>
+    <div class="alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  </div>
+</section>

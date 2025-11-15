@@ -1,15 +1,39 @@
 <section class="page">
-  <h2>Xe của tôi</h2>
 
-  <div *ngIf="loading()">Đang tải...</div>
-  <div *ngIf="errorMsg()">{{ errorMsg() }}</div>
+  <div class="header-row">
+    <h2>Phương tiện của tôi</h2>
+    <button class="primary-btn" (click)="goAdd()">+ Thêm xe</button>
+  </div>
 
-  <div class="list" *ngIf="!loading() && !errorMsg()">
+  <div *ngIf="loading()" class="loading">Đang tải...</div>
+  <div *ngIf="errorMsg()" class="error">{{ errorMsg() }}</div>
+
+  <div class="list" *ngIf="!loading() && vehicles().length > 0">
     <div class="vehicle-card" *ngFor="let v of vehicles()">
-      <h4>{{ v.make }} {{ v.model }}</h4>
-      <p>VIN: {{ v.vin }}</p>
-      <p>Năm SX: {{ v.year || '—' }}</p>
-      <p>Model pin: {{ v.batteryModelPreferenceId || '—' }}</p>
+
+      <div class="left">
+        <div class="icon-box">
+          <span class="material-icons">{{ getIcon(v.make) }}</span>
+        </div>
+
+        <div class="info">
+          <h3>{{ v.make }} {{ v.model }}</h3>
+          <p class="vin">VIN: {{ v.vin }}</p>
+
+          <div class="meta">
+            <span class="tag">Năm: {{ v.year || '—' }}</span>
+            <span class="tag model">Model Pin: {{ v.batteryModelPreferenceId || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
+
+  <div *ngIf="!loading() && vehicles().length === 0" class="empty">
+    <span class="material-icons empty-icon">garage</span>
+    <p>Bạn chưa liên kết phương tiện nào.</p>
+    <button class="primary-btn" (click)="goAdd()">Liên kết ngay</button>
+  </div>
+
 </section>

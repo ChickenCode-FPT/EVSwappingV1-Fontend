@@ -1,14 +1,129 @@
 .page {
+  padding: 30px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.primary-btn {
+  padding: 10px 16px;
+  background: #0078ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #005fcc;
+}
+
+.list {
   display: grid;
-  gap: 12px;
+  gap: 20px;
 }
+
 .vehicle-card {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 12px;
-  background: var(--card);
-  color: var(--text);
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  transition: 0.25s ease;
 }
-.vehicle-card h4 {
-  margin: 0 0 4px;
+
+.vehicle-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+
+.left {
+  display: flex;
+  gap: 18px;
+}
+
+.icon-box {
+  width: 65px;
+  height: 65px;
+  border-radius: 14px;
+  background: #e8f2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-box .material-icons {
+  font-size: 32px;
+  color: #0078ff;
+}
+
+.info h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.vin {
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tag {
+  padding: 6px 10px;
+  font-size: 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.tag.model {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 16px;
+  margin-top: 20px;
+  color: #475569;
+}
+
+.empty {
+  text-align: center;
+  margin-top: 40px;
+  color: #6b7280;
+}
+
+.empty-icon {
+  font-size: 55px;
+  color: #a3a3a3;
+  margin-bottom: 10px;
+}
+
+.empty button {
+  margin-top: 12px;
 }

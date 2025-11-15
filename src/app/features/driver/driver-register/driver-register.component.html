@@ -1,0 +1,65 @@
+<section class="page">
+  <div class="card">
+
+    <div class="header">
+      <div class="icon-circle">
+        <span class="material-icons">electric_bike</span>
+      </div>
+      <h2>Đăng ký dịch vụ đổi pin</h2>
+      <p class="subtitle">
+        Kích hoạt tài khoản đổi pin để có thể đặt lịch, theo dõi giao dịch và sử dụng hệ thống EV Swapping.
+      </p>
+    </div>
+
+    <div class="form-section">
+
+      <label>Chọn phương thức thanh toán mặc định</label>
+
+      <div class="payment-options">
+
+        <div 
+          class="option" 
+          [class.active]="preferredPaymentMethod === 'VNPAY'"
+          (click)="preferredPaymentMethod = 'VNPAY'; onPaymentChange()"
+        >
+          <img src="assets/vnpay.png" alt="VNPAY" />
+          <span>VNPAY</span>
+        </div>
+
+        <div 
+          class="option" 
+          [class.disabled]="true"
+          (click)="preferredPaymentMethod = 'PayOS'; onPaymentChange()"
+        >
+          <img src="assets/payos.png" alt="PayOS" />
+          <span>PayOS</span>
+        </div>
+
+        <div 
+          class="option" 
+          [class.disabled]="true"
+          (click)="preferredPaymentMethod = 'Cash'; onPaymentChange()"
+        >
+          <img src="assets/cash.png" alt="Cash" />
+          <span>Tiền mặt</span>
+        </div>
+
+      </div>
+
+      <div class="warn" *ngIf="unsupportedWarning">{{ unsupportedWarning }}</div>
+    </div>
+
+    <button class="primary-btn" (click)="submit()" [disabled]="loading">
+      {{ loading ? 'Đang xử lý...' : 'Kích hoạt dịch vụ' }}
+    </button>
+
+    <div class="alert success" *ngIf="success">
+      ✔ Đăng ký thành công! Đang chuyển hướng...
+    </div>
+
+    <div class="alert error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+  </div>
+</section>

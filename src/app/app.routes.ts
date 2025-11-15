@@ -26,6 +26,7 @@ import { BatteryModels } from './features/staff/battery-model/battery-model';
 import { BatteryTransaction } from './features/staff/battery-transaction/battery-transaction';
 import { BatteryTransactionDetail } from './features/staff/battery-transaction-detail/battery-transaction-detail';
 import { CustomerGuard } from './core/customer.guard';
+import { PaymentListComponent } from './features/payment/pages/payment-list/payment-list.component';
 
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
@@ -40,8 +41,16 @@ export const routes: Routes = [
   { path: 'about', component: About },
   { path: 'contact', component: Contact },
   { path: 'register', component: RegisterComponent },
+
+  // Admin
   { path: 'admin/dashboard', component: AdminDashboardComponent },
   { path: 'admin/users/list', component: UsersComponent },
+  { path: 'admin/users/promote', component: PromoteUserComponent },
+  { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
+  { path: 'admin/users/assign-staff', component: AssignStationStaffComponent },
+  { path: 'admin/users/list-station-staff', component: StationStaffListComponent },
+
+  // Auth extra
   { path: 'update-phone', component: UpdatePhoneComponent },
   { path: 'google-callback', component: GoogleCallbackComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -49,15 +58,49 @@ export const routes: Routes = [
   { path: '2fa-setup', component: Setup2FAComponent },
   { path: 'two-factor', component: TwoFactorComponent },
   { path: 'disable-2fa', component: Disable2FAComponent },
+
+  // Customer features
   { path: 'station', component: MapComponent, canActivate: [CustomerGuard] },
   { path: 'reservations', component: ReservationsPageComponent, canActivate: [CustomerGuard] },
-  { path: 'admin/users/promote', component: PromoteUserComponent },
-  { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
-  { path: 'admin/users/assign-staff', component: AssignStationStaffComponent},
-  { path: 'admin/users/list-station-staff', component: StationStaffListComponent},
+  { path: 'payments', component: PaymentListComponent, canActivate: [CustomerGuard] },
 
-  { path: 'reservations', component: ReservationsPageComponent },
+  // Driver
+  {
+    path: 'driver/register',
+    loadComponent: () =>
+      import('./features/driver/driver-register/driver-register.component').then(
+        (m) => m.DriverRegisterComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
 
+  // Vehicles
+  {
+    path: 'vehicles',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-list/vehicle-list.component').then(
+        (m) => m.VehicleListComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+  {
+    path: 'vehicles/add',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-add/vehicle-add.component').then(
+        (m) => m.VehicleAddComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+  {
+    path: 'vehicles/edit/:id',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-edit/vehicle-edit.component').then(
+        (m) => m.VehicleEditComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+
+  // Staff
   {
     path: 'staff',
     component: StaffDashboard,
@@ -76,12 +119,6 @@ export const routes: Routes = [
       },
     ],
   },
-  {
-    path: 'payment/result',
-    loadComponent: () =>
-      import('./features/payment/pages/payment-result/payment-result.component').then(
-        (m) => m.PaymentResultComponent
-      ),
-  },
+
   { path: '**', redirectTo: '' },
 ];

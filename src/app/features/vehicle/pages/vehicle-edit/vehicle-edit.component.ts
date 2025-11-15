@@ -1,9 +1,12 @@
+// src\app\features\vehicle\pages\vehicle-edit\vehicle-edit.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VehicleService } from '../../services/vehicle.service';
 import { Vehicle } from '../../models/vehicle.model';
+import { BatteryModelService } from '../../../battery-model/services/battery-model.service';
+import { BatteryModel } from '../../../battery-model/models/battery-model.model';
 
 @Component({
   selector: 'app-vehicle-edit',
@@ -14,10 +17,13 @@ import { Vehicle } from '../../models/vehicle.model';
 })
 export class VehicleEditComponent implements OnInit {
   private api = inject(VehicleService);
+  private batteryApi = inject(BatteryModelService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   vehicleId!: number;
+
+  batteryModels: BatteryModel[] = [];
 
   form = {
     vin: '',
@@ -34,6 +40,13 @@ export class VehicleEditComponent implements OnInit {
 
   ngOnInit() {
     this.vehicleId = Number(this.route.snapshot.paramMap.get('id'));
+
+    // Load battery models first
+    this.batteryApi.getAll().subscribe({
+      next: (res) => (this.batteryModels = res),
+      error: () => (this.errorMessage = 'Không tải được danh sách model pin.'),
+    });
+
     this.loadVehicle();
   }
 
@@ -54,7 +67,24 @@ export class VehicleEditComponent implements OnInit {
     });
   }
 
+  validate(): boolean {
+    if (
+      !this.form.vin ||
+      !this.form.make ||
+      !this.form.model ||
+      !this.form.year ||
+      !this.form.batteryModelPreferenceId
+    ) {
+      this.errorMessage = 'Vui lòng nhập đầy đủ thông tin.';
+      return false;
+    }
+
+    return true;
+  }
+
   submit() {
+    if (!this.validate()) return;
+
     this.saving = true;
     this.errorMessage = '';
 
@@ -63,20 +93,15 @@ export class VehicleEditComponent implements OnInit {
       vin: this.form.vin,
       make: this.form.make,
       model: this.form.model,
-      year: this.form.year ? Number(this.form.year) : undefined,
-      batteryModelPreferenceId: this.form.batteryModelPreferenceId
-        ? Number(this.form.batteryModelPreferenceId)
-        : null,
+      year: Number(this.form.year),
+      batteryModelPreferenceId: Number(this.form.batteryModelPreferenceId),
     };
 
     this.api.update(this.vehicleId, payload).subscribe({
       next: () => {
         this.success = true;
         this.saving = false;
-
-        setTimeout(() => {
-          this.router.navigate(['/vehicles']);
-        }, 1500);
+        setTimeout(() => this.router.navigate(['/vehicles']), 1500);
       },
       error: () => {
         this.errorMessage = 'Không thể cập nhật. Vui lòng thử lại.';

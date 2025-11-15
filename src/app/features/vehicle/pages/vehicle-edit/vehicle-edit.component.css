@@ -7,12 +7,12 @@
 .card {
   background: #fff;
   width: 100%;
-  max-width: 420px;
-  padding: 30px;
-  border-radius: 18px;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  max-width: 440px;
+  padding: 32px;
+  border-radius: 22px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 
 .header-row {
@@ -24,57 +24,67 @@
 .back-btn {
   border: none;
   background: transparent;
-  color: #0078ff;
+  color: #246bfd;
   font-weight: 600;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  cursor: pointer;
+  gap: 6px;
 }
 
 h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
 }
 
 .subtitle {
-  color: #777;
-  margin-bottom: 10px;
+  color: #6b7280;
 }
 
-input {
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input, select {
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  font-size: 15px;
 }
 
 .primary-btn {
   padding: 12px;
   border: none;
-  background: #0078ff;
+  background: #246bfd;
   color: white;
   border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  transition: .2s;
+}
+.primary-btn:hover {
+  background: #1d56cb;
+}
+
+.alert {
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.alert.success {
+  background: #ecfdf5;
+  color: #0f5132;
+}
+.alert.error {
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .loading {
   text-align: center;
   padding: 10px;
-}
-
-.alert {
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.alert.success {
-  background: #e7ffe7;
-  color: #0c7e0c;
-}
-
-.alert.error {
-  background: #ffe4e4;
-  color: #b40000;
 }

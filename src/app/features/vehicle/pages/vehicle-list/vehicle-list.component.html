@@ -1,3 +1,4 @@
+<!-- src\app\features\vehicle\pages\vehicle-list\vehicle-list.component.html -->
 <section class="page">
 
   <div class="header-row">
@@ -9,22 +10,40 @@
   <div *ngIf="errorMsg()" class="error">{{ errorMsg() }}</div>
 
   <div class="list" *ngIf="!loading() && vehicles().length > 0">
+
     <div class="vehicle-card" *ngFor="let v of vehicles()">
 
-      <div class="left">
+      <div class="vehicle-top">
         <div class="icon-box">
           <span class="material-icons">{{ getIcon(v.make) }}</span>
         </div>
 
         <div class="info">
-          <h3>{{ v.make }} {{ v.model }}</h3>
-          <p class="vin">VIN: {{ v.vin }}</p>
+          <h3>{{ v.make || '—' }} {{ v.model || '' }}</h3>
+          <p class="vin">VIN: {{ v.vin || '—' }}</p>
 
           <div class="meta">
             <span class="tag">Năm: {{ v.year || '—' }}</span>
-            <span class="tag model">Model Pin: {{ v.batteryModelPreferenceId || '—' }}</span>
+            <span class="tag highlight">
+              Model Pin: {{ v.batteryModel?.modelCode || '—' }}
+            </span>
           </div>
         </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div *ngIf="v.batteryModel" class="battery-info">
+        <div><b>Dung lượng:</b> {{ v.batteryModel.capacityKwh }} kWh</div>
+        <div><b>Hãng pin:</b> {{ v.batteryModel.manufacturer }}</div>
+        <div><b>Hóa học:</b> {{ v.batteryModel.chemistry }}</div>
+        <div><b>Loại xe phù hợp:</b> {{ v.batteryModel.compatibleVehicleTypes }}</div>
+      </div>
+
+      <div class="actions">
+        <button class="action-update" (click)="goEdit(v.vehicleId)">
+          <span class="material-icons">edit</span> Cập nhật
+        </button>
       </div>
 
     </div>

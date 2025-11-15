@@ -1,4 +1,3 @@
-// src\app\features\vehicle\pages\vehicle-list\vehicle-list.component.ts
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehicleService } from '../../services/vehicle.service';
@@ -28,6 +27,10 @@ export class VehicleListComponent implements OnInit {
     this.router.navigate(['/vehicles/add']);
   }
 
+  goEdit(id: number) {
+    this.router.navigate(['/vehicles/edit', id]);
+  }
+
   getIcon(make: string): string {
     make = make.toLowerCase();
     if (make.includes('vin')) return 'electric_scooter';
@@ -38,6 +41,7 @@ export class VehicleListComponent implements OnInit {
 
   loadVehicles() {
     this.loading.set(true);
+
     this.api.getMine().subscribe({
       next: (res) => {
         this.vehicles.set(res);

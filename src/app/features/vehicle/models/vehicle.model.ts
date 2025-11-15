@@ -1,3 +1,5 @@
+import { BatteryModel } from "../../models/batteryModel.model";
+
 // src\app\features\vehicle\models\vehicle.model.ts
 export interface Vehicle {
   vehicleId: number;
@@ -7,6 +9,7 @@ export interface Vehicle {
   model: string;
   year?: number;
   batteryModelPreferenceId?: number | null;
+    batteryModel?: BatteryModel | null;
 }
 
 export interface CreateVehicleRequest {

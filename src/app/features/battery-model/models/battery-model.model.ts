@@ -5,6 +5,6 @@ export interface BatteryModel {
   capacityKwh: number;
   chemistry: string;
   compatibleVehicleTypes: string;
+  reservationDepositFee: number;
   createdAt: string;
-    reservationDepositFee: number;
 }

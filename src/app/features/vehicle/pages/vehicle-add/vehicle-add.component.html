@@ -1,29 +1,45 @@
+<!-- src\app\features\vehicle\pages\vehicle-add\vehicle-add.component.html -->
 <section class="page">
   <div class="card">
 
     <h2>Liên kết phương tiện</h2>
     <p class="subtitle">Nhập thông tin xe để sử dụng dịch vụ đổi pin.</p>
 
-    <label>VIN</label>
-    <input [(ngModel)]="form.vin" placeholder="VD: 1HGCM82633A123456" />
+    <div class="form-group">
+      <label>VIN *</label>
+      <input [(ngModel)]="form.vin" />
+    </div>
 
-    <label>Hãng xe</label>
-    <input [(ngModel)]="form.make" placeholder="VD: VinFast" />
+    <div class="form-group">
+      <label>Hãng xe *</label>
+      <input [(ngModel)]="form.make" />
+    </div>
 
-    <label>Dòng xe</label>
-    <input [(ngModel)]="form.model" placeholder="VD: Klara S" />
+    <div class="form-group">
+      <label>Dòng xe *</label>
+      <input [(ngModel)]="form.model" />
+    </div>
 
-    <label>Năm sản xuất</label>
-    <input type="number" [(ngModel)]="form.year" placeholder="VD: 2023" />
+    <div class="form-group">
+      <label>Năm sản xuất *</label>
+      <input type="number" [(ngModel)]="form.year" />
+    </div>
 
-    <label>Model pin (ID)</label>
-    <input type="number" [(ngModel)]="form.batteryModelPreferenceId" placeholder="VD: 1" />
+    <div class="form-group">
+      <label>Model pin *</label>
+      <select [(ngModel)]="form.batteryModelPreferenceId">
+        <option disabled value="">-- Chọn model pin --</option>
+        <option *ngFor="let b of batteryModels" [value]="b.batteryModelId">
+          {{ b.modelCode }} - {{ b.capacityKwh }} kWh
+        </option>
+      </select>
+    </div>
 
     <button class="primary-btn" (click)="submit()" [disabled]="loading">
       {{ loading ? 'Đang lưu...' : 'Thêm phương tiện' }}
     </button>
 
-    <div class="alert success" *ngIf="success">✔ Đã thêm xe!</div>
+    <div class="alert success" *ngIf="success">✔ Đã thêm xe thành công!</div>
     <div class="alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
   </div>

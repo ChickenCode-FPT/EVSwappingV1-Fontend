@@ -120,5 +120,32 @@ export const routes: Routes = [
     ],
   },
 
+  {
+    path: 'battery-model',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import(
+            './features/battery-model/pages/battery-model-list/battery-model-list.component'
+          ).then((m) => m.BatteryModelListComponent),
+      },
+      {
+        path: 'add',
+        loadComponent: () =>
+          import(
+            './features/battery-model/pages/battery-model-add/battery-model-add.component'
+          ).then((m) => m.BatteryModelAddComponent),
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () =>
+          import(
+            './features/battery-model/pages/battery-model-edit/battery-model-edit.component'
+          ).then((m) => m.BatteryModelEditComponent),
+      },
+    ],
+  },
+
   { path: '**', redirectTo: '' },
 ];

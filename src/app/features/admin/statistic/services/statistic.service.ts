@@ -1,11 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  ApexChartData,
-  EcommerceMetrics,
-  HeatmapData,
-} from '../models/statistic.model';
+import { ApexChartData, EcommerceMetrics, HeatmapData } from '../models/statistic.model';
 import { environment } from '../../../../../environments/environment';
 
 @Injectable({
@@ -13,14 +9,26 @@ import { environment } from '../../../../../environments/environment';
 })
 export class StatisticService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiBase}/v1/statistics`;
+  private apiUrl = `${environment.apiBase}/Statistic`;
 
   getEcommerceMetrics(): Observable<EcommerceMetrics> {
     return this.http.get<EcommerceMetrics>(`${this.apiUrl}/ecommerce-metrics`);
   }
 
-  getChartData(): Observable<ApexChartData> {
-    return this.http.get<ApexChartData>(`${this.apiUrl}/chart-data`);
+  getChartData(startDate: Date, endDate: Date, period: string): Observable<any> {
+    const params = new HttpParams()
+      .set('startDate', startDate.toISOString())
+      .set('endDate', endDate.toISOString())
+      .set('period', period);
+    return this.http.get<any>(`${this.apiUrl}/revenue`, { params });
+  }
+
+  getBatterySwapData(startDate: Date, endDate: Date, period: string): Observable<any> {
+    const params = new HttpParams()
+      .set('startDate', startDate.toISOString())
+      .set('endDate', endDate.toISOString())
+      .set('period', period);
+    return this.http.get<any>(`${this.apiUrl}/battery-swaps`, { params });
   }
 
   getHeatmapData(): Observable<HeatmapData> {

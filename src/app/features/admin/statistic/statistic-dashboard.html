@@ -6,14 +6,14 @@
     <div class="grid-container">
       <div class="grid-item-3">
         <div>
-          <app-heatmap [heatmapData]="heatmapData$ | async" />
+          <app-heatmap [heatmapData]="heatmapData()" />
         </div>
       </div>
       <div class="grid-item-4">
-        <div><app-ecommerce-metrics [metrics]="ecommerceMetrics$ | async" /></div>
+        <div><app-ecommerce-metrics [metrics]="ecommerceMetrics()" /></div>
       </div>
       <div class="grid-item-5">
-        <app-statics-chart [chartData]="chartData$ | async" />
+        <app-statics-chart [chartData]="chartData()" />
       </div>
     </div>
   </div>

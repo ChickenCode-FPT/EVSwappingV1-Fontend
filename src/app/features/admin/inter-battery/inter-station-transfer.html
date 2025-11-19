@@ -1,0 +1,287 @@
+<div class="layout-wrapper">
+  <app-sidebar></app-sidebar>
+  
+  <div class="layout-content">
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
+
+    <div class="container">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="pi pi-sync"></i>
+              Inter Station Transfer Requests
+            </h2>
+          </div>
+        </ng-template>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-icon pending">
+              <i class="pi pi-clock"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Pendding</div>
+              <div class="stat-value">{{ pendingCount }}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon approved">
+              <i class="pi pi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Approved</div>
+              <div class="stat-value">{{ approvedCount }}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon total">
+              <i class="pi pi-list"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Number Of request</div>
+              <div class="stat-value">{{ transfers.length }}</div>
+            </div>
+          </div>
+        </div>
+
+        <p-toolbar styleClass="mb-4">
+          <ng-template pTemplate="left">
+            <button 
+              pButton 
+              icon="pi pi-refresh" 
+              label="Reload" 
+              class="p-button-info mr-2"
+              (click)="refresh()"
+              [disabled]="loading">
+            </button>
+            <button 
+              pButton 
+              icon="pi pi-download" 
+              label="Export Data" 
+              class="p-button-secondary"
+              (click)="exportData()">
+            </button>
+          </ng-template>
+          <ng-template pTemplate="right">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input 
+                pInputText 
+                type="text" 
+                placeholder="Search..."
+                class="search-input">
+            </span>
+          </ng-template>
+        </p-toolbar>
+
+        <div *ngIf="loading" class="loading-container">
+          <p-progressSpinner></p-progressSpinner>
+          <p>Đang tải dữ liệu...</p>
+        </div>
+
+        <p-table 
+          *ngIf="!loading"
+          [value]="transfers" 
+          [paginator]="true" 
+          [rows]="10"
+          [rowsPerPageOptions]="[5, 10, 20, 50]"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Hiển thị {first} - {last} trong tổng số {totalRecords} yêu cầu"
+          [tableStyle]="{ 'min-width': '75rem' }"
+          styleClass="p-datatable-gridlines p-datatable-striped">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 4%">ID</th>
+              <th style="width: 10%">Pin</th>
+              <th style="width: 12%">Request By</th>
+              <th style="width: 12%">From Station</th>
+              <th style="width: 12%">To Station</th>
+              <th style="width: 12%">Request At</th>
+              <th style="width: 12%">Approved By</th>
+              <th style="width: 12%">Comnplete At</th>
+              <th style="width: 8%">Status</th>
+              <th style="width: 6%">Action</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-transfer>
+            <tr>
+              <td><strong>{{ transfer.transferId }}</strong></td>
+              <td>
+                <div class="battery-info">
+                  <i class="pi pi-bolt"></i>
+                  <div>
+                    <div class="battery-serial">{{ transfer.batterySerial || 'N/A' }}</div>
+                    <small class="text-muted">ID: {{ transfer.batteryId }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="user-info">
+                  <i class="pi pi-user"></i>
+                  <div>
+                    <div>{{ transfer.requestedBy || 'N/A' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="station-badge from-station">
+                  <i class="pi pi-arrow-circle-right"></i>
+                  {{ transfer.fromStationName || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                <span class="station-badge to-station">
+                  <i class="pi pi-arrow-circle-left"></i>
+                  {{ transfer.toStationName || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                <div class="date-info">
+                  <i class="pi pi-calendar"></i>
+                  {{ formatDate(transfer.requestedAt) }}
+                </div>
+              </td>
+              <td>
+                <div *ngIf="transfer.approvedBy; else noApprover" class="user-info">
+                  <i class="pi pi-user-edit"></i>
+                  <div>
+                    <div>{{ transfer.approvedBy }}</div>
+                  </div>
+                </div>
+                <ng-template #noApprover>
+                  <span class="text-muted">-</span>
+                </ng-template>
+              </td>
+              <td>
+                <div *ngIf="transfer.completedAt; else notCompleted" class="date-info">
+                  <i class="pi pi-calendar-check"></i>
+                  {{ formatDate(transfer.completedAt) }}
+                </div>
+                <ng-template #notCompleted>
+                  <span class="text-muted">-</span>
+                </ng-template>
+              </td>
+              <td>
+                <p-tag 
+                  [value]="getStatusLabel(transfer.status)" 
+                  [severity]="getStatusSeverity(transfer.status)"
+                  [icon]="transfer.status === 'Pending' ? 'pi pi-clock' : 
+                          transfer.status === 'Approved' ? 'pi pi-check' : 
+                          transfer.status === 'Rejected' ? 'pi pi-times' : 'pi pi-info-circle'">
+                </p-tag>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button 
+                    *ngIf="transfer.canApprove"
+                    pButton 
+                    icon="pi pi-check" 
+                    class="p-button-rounded p-button-success p-button-sm"
+                    pTooltip="Phê duyệt"
+                    tooltipPosition="top"
+                    (click)="showApproveDialog(transfer)">
+                  </button>
+                  <button 
+                    pButton 
+                    icon="pi pi-eye" 
+                    class="p-button-rounded p-button-info p-button-sm"
+                    pTooltip="Chi tiết"
+                    tooltipPosition="top"
+                    (click)="viewDetails(transfer)">
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10" class="text-center">
+                <div class="empty-message">
+                  <i class="pi pi-inbox"></i>
+                  <p>No request </p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+
+    <!-- Approve Dialog -->
+    <p-dialog 
+      [(visible)]="approveDialogVisible" 
+      [modal]="true" 
+      [style]="{width: '500px'}"
+      header="Approve Transfer Request"
+      [draggable]="false"
+      [resizable]="false">
+      
+      <div *ngIf="selectedTransfer" class="dialog-content">
+        <div class="transfer-info">
+          <h4 class="info-header">
+            <i class="pi pi-info-circle"></i>
+            Thông tin yêu cầu
+          </h4>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Request Code:</span>
+              <span class="value">#{{ selectedTransfer.transferId }}</span>
+            </div>
+            
+            <div class="info-item">
+              <span class="label">Pin:</span>
+              <span class="value">{{ selectedTransfer.batterySerial }}</span>
+            </div>
+            
+            <div class="info-item">
+              <span class="label">Request By:</span>
+              <span class="value">{{ selectedTransfer.requestedBy }}</span>
+            </div>
+            
+            <div class="info-item">
+              <span class="label">From Station:</span>
+              <span class="value highlight from">{{ selectedTransfer.fromStationName }}</span>
+            </div>
+            
+            <div class="info-item">
+              <span class="label">To Station:</span>
+              <span class="value highlight to">{{ selectedTransfer.toStationName }}</span>
+            </div>
+            
+            <div class="info-item">
+              <span class="label">Request At:</span>
+              <span class="value">{{ formatDate(selectedTransfer.requestedAt) }}</span>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+
+      <ng-template pTemplate="footer">
+        <button 
+          pButton 
+          label="Cancel" 
+          icon="pi pi-times" 
+          class="p-button-text p-button-secondary"
+          (click)="approveDialogVisible = false"
+          [disabled]="submitting">
+        </button>
+        <button 
+          pButton 
+          label="Approved" 
+          icon="pi pi-check" 
+          class="p-button-success"
+          (click)="approveTransfer()"
+          [loading]="submitting">
+        </button>
+      </ng-template>
+    </p-dialog>
+  </div>
+</div>

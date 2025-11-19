@@ -28,7 +28,8 @@ import { BatteryTransactionDetail } from './features/staff/battery-transaction-d
 import { PackageManagementComponent } from './features/admin/subscription-package/subscription-package';
 import { CustomerGuard } from './core/customer.guard';
 import { PaymentListComponent } from './features/payment/pages/payment-list/payment-list.component';
-
+import { guestGuard } from './core/guards/guest.guard';
+import { InterStationTransferComponent } from './features/admin/inter-battery/InterStationTransfer';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -38,7 +39,7 @@ export class Contact {}
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'home', component: Home },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent,canActivate: [guestGuard] },
   { path: 'about', component: About },
   { path: 'contact', component: Contact },
   { path: 'register', component: RegisterComponent },
@@ -50,6 +51,7 @@ export const routes: Routes = [
   { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
   { path: 'admin/users/assign-staff', component: AssignStationStaffComponent },
   { path: 'admin/users/list-station-staff', component: StationStaffListComponent },
+  { path: 'admin/users/inter-station-transfer', component: InterStationTransferComponent },
 
   // Auth extra
   { path: 'update-phone', component: UpdatePhoneComponent },

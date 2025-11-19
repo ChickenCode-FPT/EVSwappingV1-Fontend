@@ -1,0 +1,12 @@
+<div class="station-select">
+  <label>Chọn trạm</label>
+  <select [formControl]="control">
+    <option value="">-- Chọn trạm --</option>
+    <option *ngFor="let s of stations" [value]="s.stationId">
+      {{ s.name }} (Còn {{ s.availableBatteries }} pin)
+    </option>
+  </select>
+
+  <div *ngIf="loading">Đang tải trạm...</div>
+  <small class="error" *ngIf="errorMsg">{{ errorMsg }}</small>
+</div>

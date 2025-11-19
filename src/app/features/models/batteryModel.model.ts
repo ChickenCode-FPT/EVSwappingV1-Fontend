@@ -6,4 +6,5 @@ export interface BatteryModel {
   chemistry: string;
   compatibleVehicleTypes: string;
   createdAt: string;
+    reservationDepositFee: number;
 }

@@ -93,25 +93,28 @@
           </div>
 
           <div class="card__actions">
-            <button
-              class="btn btn--primary"
-              *ngIf="isPendingStatus(it.status) && it.paymentCheckoutUrl"
-              (click)="openPayment(it)"
-            >
-              💳 Thanh toán đặt cọc
-            </button>
+<!-- Nút thanh toán -->
+<button
+  class="btn btn--primary"
+  *ngIf="isPendingStatus(it.status) && it.paymentCheckoutUrl"
+  (click)="openPayment(it)"
+>
+  💳 Thanh toán đặt cọc
+</button>
 
-            <button
-              class="btn btn--danger"
-              *ngIf="isPendingStatus(it.status) && !it.paymentCheckoutUrl"
-              (click)="askCancel(it)"
-              [disabled]="cancellingIds().has(it.reservationId)"
-            >
-              <ng-container *ngIf="!cancellingIds().has(it.reservationId); else spin">
-                Hủy lịch
-              </ng-container>
-              <ng-template #spin> <span class="spinner"></span> Đang hủy… </ng-template>
-            </button>
+<!-- Nút hủy (luôn hiển thị cho Pending, dù có payment URL hay không) -->
+<button
+  class="btn btn--danger"
+  *ngIf="isPendingStatus(it.status)"
+  (click)="askCancel(it)"
+  [disabled]="cancellingIds().has(it.reservationId)"
+>
+  <ng-container *ngIf="!cancellingIds().has(it.reservationId); else spin">
+    ❌ Hủy lịch
+  </ng-container>
+  <ng-template #spin> <span class="spinner"></span> Đang hủy… </ng-template>
+</button>
+
 
             <span *ngIf="it.status === 'Completed'" class="text-success">✅ Hoàn tất</span>
 

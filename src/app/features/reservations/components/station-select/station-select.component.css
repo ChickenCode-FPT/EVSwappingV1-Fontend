@@ -1,0 +1,14 @@
+.station-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+label { font-weight: 600; }
+select {
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+}
+.error { color: var(--danger); font-size: 13px; }

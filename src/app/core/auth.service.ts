@@ -1,3 +1,4 @@
+// src\app\core\auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -89,5 +90,14 @@ export class AuthService {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     });
+  }
+
+  getUserRoles(): string[] {
+    const roles = localStorage.getItem('roles');
+    return roles ? roles.split(',') : [];
+  }
+
+  hasRole(role: string): boolean {
+    return this.getUserRoles().includes(role);
   }
 }

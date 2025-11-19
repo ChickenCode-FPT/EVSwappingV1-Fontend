@@ -30,6 +30,7 @@ import { CustomerGuard } from './core/customer.guard';
 import { PaymentListComponent } from './features/payment/pages/payment-list/payment-list.component';
 import { guestGuard } from './core/guards/guest.guard';
 import { InterStationTransferComponent } from './features/admin/inter-battery/InterStationTransfer';
+
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -68,6 +69,51 @@ export const routes: Routes = [
   { path: 'station', component: MapComponent, canActivate: [CustomerGuard] },
   { path: 'reservations', component: ReservationsPageComponent, canActivate: [CustomerGuard] },
   { path: 'payments', component: PaymentListComponent, canActivate: [CustomerGuard] },
+
+  // Driver
+  {
+    path: 'driver/register',
+    loadComponent: () =>
+      import('./features/driver/driver-register/driver-register.component').then(
+        (m) => m.DriverRegisterComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+
+  // Vehicles
+  {
+    path: 'vehicles',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-list/vehicle-list.component').then(
+        (m) => m.VehicleListComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+  {
+    path: 'vehicles/add',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-add/vehicle-add.component').then(
+        (m) => m.VehicleAddComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+  {
+    path: 'vehicles/edit/:id',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-edit/vehicle-edit.component').then(
+        (m) => m.VehicleEditComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+
+  // Staff
+  {
+    path: 'payment-result',
+    loadComponent: () =>
+      import('./features/payment/pages/payment-result/payment-result.component').then(
+        (m) => m.PaymentResultComponent
+      ),
+  },
 
   // Driver
   {

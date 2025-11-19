@@ -64,6 +64,14 @@ export const routes: Routes = [
   { path: 'reservations', component: ReservationsPageComponent, canActivate: [CustomerGuard] },
   { path: 'payments', component: PaymentListComponent, canActivate: [CustomerGuard] },
 
+  {
+    path: 'payment-result',
+    loadComponent: () =>
+      import('./features/payment/pages/payment-result/payment-result.component').then(
+        (m) => m.PaymentResultComponent
+      ),
+  },
+
   // Driver
   {
     path: 'driver/register',

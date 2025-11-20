@@ -38,3 +38,14 @@ export interface BatteryModelDto {
   chemistry: string;
   compatibleVehicleTypes: string;
 }
+
+export interface CreateBattery {
+  modelId: number;
+  capacity: number;
+  serialNumber: string;
+  batteryModelId: number;
+  currentSoH: number;
+  cycleCount: number;
+  status: string;  
+  stationId: number;  
+}

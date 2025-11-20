@@ -67,6 +67,26 @@ export class LoginComponent {
 
           if (roles.includes('Admin')) {
             this.router.navigate(['/admin/dashboard']);
+          }
+          else if (roles.includes('Staff')) {
+            this.auth.getStaffInfo(payload.sub).subscribe({
+              next: (staffInfo) => {
+                localStorage.setItem('stationId', staffInfo.stationId.toString());
+                localStorage.setItem('userRole', staffInfo.role);
+                localStorage.setItem('staffEmail', staffInfo.email);
+                localStorage.setItem('userId', staffInfo.userId);
+
+                console.log('Staff info loaded:', staffInfo);
+                this.router.navigate(['/staff/battery/warehouse']);
+              },
+              error: (err) => {
+                console.error('Error fetching staff info', err);
+                this.snackBar.open('Cannot fetch staff info', 'Close', {
+                  duration: 3000,
+                  panelClass: ['snackbar-error']
+                });
+              }
+            });
           } else {
             this.router.navigate(['/home']);
           }

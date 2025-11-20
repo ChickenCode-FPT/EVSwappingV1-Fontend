@@ -1,0 +1,91 @@
+<div class="p-6 bg-white rounded-lg shadow-sm">
+    <h1 class="text-xl font-semibold">Inter-station Transfers</h1>
+
+    <div class="flex items-center gap-3">
+        <div class="flex rounded-lg border overflow-hidden">
+            <button (click)="switchView('incoming')"
+                [class]="view === 'incoming' ? 'px-4 py-2 bg-indigo-600 text-white' : 'px-4 py-2 bg-white text-gray-700'">
+                Incoming
+            </button>
+            <button (click)="switchView('outgoing')"
+                [class]="view === 'outgoing' ? 'px-4 py-2 bg-indigo-600 text-white' : 'px-4 py-2 bg-white text-gray-700'">
+                Outgoing
+            </button>
+        </div>
+        <button (click)="openCreate()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+            + Create
+        </button>
+    </div>
+
+</div>
+
+@if (loading) {
+<div class="text-center py-6">Loading...</div>
+}
+
+@if (!loading) {
+<table class="min-w-full table-auto">
+    <thead>
+        <tr class="text-left text-sm text-gray-600 border-b">
+            <th class="py-2">Transfer Id</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Battery</th>
+            <th>Status</th>
+            <th>Requested At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (t of transfers; track t.transferId) {
+        <tr class="hover:bg-gray-50">
+            <td class="py-3">{{ t.transferId }}</td>
+            <td>{{ t.fromStationName }} ({{ t.fromStationId }})</td>
+            <td>{{ t.toStationName }} ({{ t.toStationId }})</td>
+            <td>
+                <div class="flex items-center gap-2">
+                    <div>{{ t.batterySerial }}</div>
+                    <button (click)="openDetail({ batteryId: t.batteryId })"
+                        class="text-sm px-2 py-1 bg-gray-100 rounded">Detail</button>
+                </div>
+            </td>
+            <td>{{ t.status }}</td>
+            <td>{{ t.requestedAt | date:'medium' }}</td>
+            <td class="space-x-2">
+                @if (t.status.toLowerCase() === 'approved') {
+                @if (t.status.toLowerCase() !== 'completed') {
+                <button (click)="confirmTransfer(t)" class="px-3 py-1 bg-green-500 text-white rounded">
+                    Confirm
+                </button>
+                }
+                }
+
+                <button (click)="openDetail({ batteryId: t.batteryId })"
+                    class="px-3 py-1 bg-gray-200 rounded">View</button>
+            </td>
+        </tr>
+        }
+        @empty {
+        <tr>
+            <td colspan="7" class="text-center py-6 text-gray-500">
+                Không có đơn nào.
+            </td>
+        </tr>
+        }
+
+    </tbody>
+</table>
+}
+
+@if (isConfirming) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-1/3">
+        <h2 class="text-lg font-semibold">Confirmation</h2>
+        <p class="mt-2 text-sm">Are you sure you want to complete this order?</p>
+        <div class="mt-4 flex justify-end space-x-2">
+            <button (click)="cancelConfirm()" class="px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+            <button (click)="confirmComplete()" class="px-4 py-2 bg-blue-600 text-white rounded">Confirm</button>
+        </div>
+    </div>
+</div>
+}

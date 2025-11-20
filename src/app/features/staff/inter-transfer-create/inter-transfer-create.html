@@ -1,0 +1,53 @@
+<div class="p-6 bg-white rounded-lg shadow-sm max-w-3xl mx-auto">
+    <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Create Transfer</h2>
+        <a routerLink="/staff/transfers" class="text-sm text-gray-600">Back</a>
+    </div>
+
+    @if (loading) {
+    <div class="py-6 text-center">Loading...</div>
+    }
+
+    @if (!loading) {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium mb-1">Select Battery (from your station)</label>
+            <select formControlName="batteryId" class="w-full rounded border px-3 py-2">
+                <option value="">--- Select battery ---</option>
+                @for (inv of batteries; track inv.batteryId) {
+                <option [value]="inv.batteryId">
+                    {{ inv.batteries.serialNumber }} — (Slot: {{ inv.slotNumber || 'N/A' }}) — Status: {{
+                    inv.status }}
+                </option>
+                }
+            </select>
+            @if (form.controls['batteryId'].invalid && form.controls['batteryId'].touched) {
+            <div class="text-red-600 text-sm mt-1">Please choose a battery.</div>
+            }
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Destination Station</label>
+            <select formControlName="toStationId" class="w-full rounded border px-3 py-2">
+                <option value="">--- Select destination ---</option>
+                @for (s of stations; track s.stationId) {
+                <option [value]="s.stationId">
+                    {{ s.name }} — {{ s.address }}
+                </option>
+                }
+            </select>
+            @if (form.controls['toStationId'].invalid && form.controls['toStationId'].touched) {
+            <div class="text-red-600 text-sm mt-1">Please choose destination station.</div>
+            }
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button type="submit" [disabled]="creating"
+                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                Create
+            </button>
+            <a routerLink="/staff/transfers" class="text-sm text-gray-500">Cancel</a>
+        </div>
+    </form>
+    }
+</div>

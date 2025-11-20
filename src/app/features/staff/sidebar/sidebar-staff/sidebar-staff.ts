@@ -27,6 +27,8 @@ export class SidebarStaff {
     { label: 'Add Battery', icon: 'add_circle', path: '/staff/battery/add' },
     { label: 'Battery Models', icon: 'memory', path: '/staff/battery/model' },
     { label: 'Battery Transaction', icon: 'sync_alt', path: '/staff/battery/transaction' },
+    { label: 'Inter-Station Transfers', icon: 'compare_arrows', path: '/staff/inter/transfers' },
+    { label: 'Profile', icon: 'person', path: '/staff/profile' },
   ];
 
   constructor(private authService: AuthService, private router: Router) {}

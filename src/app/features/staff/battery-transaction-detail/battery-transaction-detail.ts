@@ -11,6 +11,8 @@ import { SwapTransactionService } from '../services/swapTransaction-service';
 import { BatteryService } from '../services/battery-service';
 import { PaymentService } from '../services/payment-service';
 import { PaymentPopup } from '../payment-popup/payment-popup';
+import { StaffService } from '../services/staff.service';
+
 
 @Component({
   selector: 'app-battery-transaction-detail',
@@ -35,24 +37,37 @@ export class BatteryTransactionDetail implements OnInit {
   loading = true;
   mode: 'view' | 'confirm' = 'view';
 
-  // popup state
   showPaymentPopup = false;
+  showConfirmSwapPopup = false;
+  showMissingFacePopup = false;
+  pendingReturnUrl: string | null = null;
+
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private swapService: SwapTransactionService,
     private batteryService: BatteryService,
-    private paymentService: PaymentService
-  ) {}
+    private paymentService: PaymentService,
+    private staffService: StaffService
+  ) { }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) this.loadTransaction(+id);
+    });
+
+    this.route.queryParams.subscribe(params => {
+      if (params['showPopup'] === 'true') {
+        this.showConfirmSwapPopup = true;
+      }
+    });
+
     const routeData = this.route.snapshot.data;
     this.mode = routeData['mode'] || 'view';
-
-    if (id) this.loadTransaction(+id);
   }
+
 
   async loadTransaction(id: number) {
     this.loading = true;
@@ -99,20 +114,20 @@ export class BatteryTransactionDetail implements OnInit {
   }
 
   openPaymentPopup() {
-  if (this.payment) {
-    const userId = this.payment.transcation?.customerUserId;
+    if (this.payment) {
+      const userId = this.payment.transcation?.customerUserId;
 
-    if (!this.payment.userId && userId) {
-      this.payment.userId = userId;
+      if (!this.payment.userId && userId) {
+        this.payment.userId = userId;
+      }
+
+      if (!this.payment.transactionRef && this.payment.transcation?.swapTransactionId) {
+        this.payment.transactionRef = 'CASH-' + this.payment.transcation.swapTransactionId;
+      }
     }
 
-    if (!this.payment.transactionRef && this.payment.transcation?.swapTransactionId) {
-      this.payment.transactionRef = 'CASH-' + this.payment.transcation.swapTransactionId;
-    }
+    this.showPaymentPopup = true;
   }
-
-  this.showPaymentPopup = true;
-}
 
   closePaymentPopup() {
     this.showPaymentPopup = false;
@@ -122,26 +137,55 @@ export class BatteryTransactionDetail implements OnInit {
     this.payment = updatedPayment;
     this.showPaymentPopup = false;
     if (this.transaction?.swapTransactionId) {
-    this.loadPayment(this.transaction.swapTransactionId);
-  }
-  }
-
-  // ✅ Xác nhận swap
-  confirmSwap() {
-    if (this.transaction.swapStatus === 'Completed' || this.transaction.swapStatus === 'Cancelled') return;
-
-    if (confirm('Are you sure to confirm this swap?')) {
-      this.swapService.updateTransactionStatus(this.transaction.swapTransactionId, 'Completed').subscribe({
-        next: () => {
-          alert('Swap confirmed successfully!');
-          this.transaction.swapStatus = 'Completed';
-        },
-        error: (err) => console.error(err)
-      });
+      this.loadPayment(this.transaction.swapTransactionId);
     }
   }
 
-  // ✅ Kiểm tra ẩn/hiện nút
+  async confirmSwap() {
+    if (this.transaction.swapStatus === 'Completed' || this.transaction.swapStatus === 'Cancelled') return;
+
+    const cachedFid = localStorage.getItem('staff_fid');
+    if (cachedFid) {
+      this.showConfirmSwapPopup = true;
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    try {
+      const staff: any = await firstValueFrom(this.staffService.getStaffProfile(userId));
+
+      if (!staff) {
+        alert('Không lấy được thông tin nhân viên.');
+        return;
+      }
+
+      if (!staff.fId) {
+        this.pendingReturnUrl = `/staff/battery/transaction/${this.transaction?.swapTransactionId ?? ''}`;
+        this.showMissingFacePopup = true;
+        return;
+      }
+
+      localStorage.setItem('staff_fid', staff.fId);
+      this.showConfirmSwapPopup = true;
+
+    } catch (err) {
+      console.error('Lỗi khi lấy profile staff:', err);
+      alert('Có lỗi khi kiểm tra khuôn mặt.');
+    }
+  }
+
+  onConfirmSwapPopup() {
+    this.showConfirmSwapPopup = false;
+    this.router.navigate(['staff/face/verify'], {
+      queryParams: { swapTransactionId: this.transaction.swapTransactionId }
+    });
+  }
+
   canShowConfirmButton() {
     return (
       this.mode === 'confirm' &&
@@ -152,10 +196,10 @@ export class BatteryTransactionDetail implements OnInit {
 
   canShowPaymentButton() {
     console.log('--- Check payment visibility ---');
-  console.log('Mode:', this.mode);
-  console.log('Payment:', this.payment);
-  console.log('Payment status:', this.payment?.status);
-  console.log('Transaction status:', this.transaction?.swapStatus);
+    console.log('Mode:', this.mode);
+    console.log('Payment:', this.payment);
+    console.log('Payment status:', this.payment?.status);
+    console.log('Transaction status:', this.transaction?.swapStatus);
     return (
       this.mode === 'confirm' &&
       this.payment &&
@@ -164,4 +208,12 @@ export class BatteryTransactionDetail implements OnInit {
       this.transaction.swapStatus !== 'Completed'
     );
   }
+
+  goToAddFace() {
+    this.showMissingFacePopup = false;
+    this.router.navigate(['/staff/face/add'], {
+      queryParams: { returnTo: this.pendingReturnUrl }
+    });
+  }
+
 }

@@ -13,6 +13,7 @@ export interface ApexChartData {
   series: {
     name: string;
     data: number[];
+    type?: string;
   }[];
   categories: string[];
 }

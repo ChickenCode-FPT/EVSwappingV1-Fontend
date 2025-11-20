@@ -31,49 +31,31 @@ const defaultHeatmapData: HeatmapData = {
   series: [
     {
       name: 'Mon',
-      data: [
-        74, 34, 77, 47, 27, 84, 81, 38, 46, 33, 73, 22, 5, 9, 28, 96, 27, 48, 61, 33, 4, 20, 4, 98,
-      ],
+      data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     },
     {
       name: 'Tue',
-      data: [
-        87, 63, 94, 41, 66, 96, 70, 57, 37, 3, 19, 36, 6, 52, 82, 31, 15, 31, 15, 67, 43, 43, 44,
-        53,
-      ],
+      data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     },
     {
       name: 'Wed',
-      data: [
-        26, 88, 21, 57, 19, 24, 26, 15, 84, 1, 70, 64, 90, 50, 48, 93, 76, 79, 28, 94, 79, 32, 10,
-        1,
-      ],
+      data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     },
     {
       name: 'Thu',
-      data: [
-        77, 67, 79, 46, 83, 3, 42, 10, 0, 82, 60, 84, 14, 81, 85, 67, 70, 94, 24, 79, 29, 31, 19,
-        11,
-      ],
+      data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     },
     {
       name: 'Fri',
-      data: [
-        44, 16, 35, 84, 59, 86, 92, 23, 49, 4, 53, 40, 12, 41, 1, 12, 50, 70, 77, 49, 27, 25, 90,
-        23,
-      ],
+      data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     },
     {
       name: 'Sat',
-      data: [
-        88, 9, 42, 72, 42, 39, 70, 14, 3, 50, 23, 8, 20, 19, 58, 78, 45, 23, 28, 3, 2, 8, 21, 62,
-      ],
+      data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     },
     {
       name: 'Sun',
-      data: [
-        90, 60, 56, 3, 48, 10, 88, 41, 4, 24, 93, 86, 98, 54, 5, 77, 9, 24, 16, 56, 18, 79, 92, 67,
-      ],
+      data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     },
   ],
   categories: [
@@ -158,11 +140,16 @@ export class StatisticDashboardComponent implements OnInit {
       period: this.period(),
     };
     try {
-      const revenue = await firstValueFrom(
-        this.statisticService.getChartData(params.startDate, params.endDate, params.period)
-      );
+      const [revenue, batterySwaps] = await Promise.all([
+        firstValueFrom(
+          this.statisticService.getChartData(params.startDate, params.endDate, params.period)
+        ),
+        firstValueFrom(
+          this.statisticService.getBatterySwapData(params.startDate, params.endDate, params.period)
+        ),
+      ]);
 
-      if (!revenue || !revenue.dataPoints) {
+      if (!revenue || !revenue.dataPoints || !batterySwaps || !batterySwaps.dataPoints) {
         this.chartData.set(defaultApexChartData);
         return;
       }
@@ -170,9 +157,14 @@ export class StatisticDashboardComponent implements OnInit {
       const newChartData: ApexChartData = {
         categories: revenue.dataPoints.map((p: any) => p.lable),
         series: [
-          // defaultApexChartData.series[0],
+          {
+            name: 'Battery Swaps',
+            type: 'line',
+            data: batterySwaps.dataPoints.map((p: any) => p.value),
+          },
           {
             name: 'Revenue (k VND)',
+            type: 'line',
             data: revenue.dataPoints.map((p: any) => p.value),
           },
         ],
@@ -189,8 +181,68 @@ export class StatisticDashboardComponent implements OnInit {
   async loadHeatmapData() {
     this.loadingHeatmap.set(true);
     try {
-      const data = await firstValueFrom(this.statisticService.getHeatmapData());
-      this.heatmapData.set(data || defaultHeatmapData);
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dates: Date[] = [];
+      const today = new Date();
+      const currentDayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+      // Calculate the date of the Monday of the *previous* week
+      const previousMonday = new Date(today);
+      // Adjust to the current Monday first
+      previousMonday.setDate(today.getDate() - (currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1));
+      // Then subtract 7 days to get to the previous Monday
+      previousMonday.setDate(previousMonday.getDate() - 7);
+
+      // Generate the 7 days from previous Monday to previous Sunday
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(previousMonday);
+        date.setDate(previousMonday.getDate() + i);
+        dates.push(date);
+      }
+
+      const apiCalls = dates.map((date) => {
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+        return firstValueFrom(this.statisticService.getHeatmapData(startOfDay, endOfDay));
+      });
+
+      const dailyResults = await Promise.all(apiCalls);
+
+      // The heatmap component expects series for Mon, Tue, etc.
+      // Let's create a map to hold the data for each day of the week.
+      const seriesMap = new Map<string, number[]>();
+      const order = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      order.forEach((day) => seriesMap.set(day, Array(24).fill(0))); // Initialize with empty data
+
+      dailyResults.forEach((result, index) => {
+        if (!result || !result.dataPoints) return;
+
+        const date = dates[index];
+        const dayName = dayNames[date.getDay()];
+        const hourlyData = Array(24).fill(0);
+
+        result.dataPoints.forEach((dp: any) => {
+          const hour = parseInt(dp.lable.split(':')[0]);
+          if (!isNaN(hour) && hour >= 0 && hour < 24) {
+            hourlyData[hour] = dp.value;
+          }
+        });
+        seriesMap.set(dayName, hourlyData);
+      });
+
+      const finalSeries = order.map((dayName) => ({
+        name: dayName,
+        data: seriesMap.get(dayName) || Array(24).fill(0),
+      }));
+
+      const categories = Array.from({ length: 24 }, (_, i) => i.toString());
+
+      this.heatmapData.set({
+        series: finalSeries,
+        categories: categories,
+      });
     } catch (error) {
       console.error('Error loading heatmap data:', error);
       this.heatmapData.set(defaultHeatmapData);

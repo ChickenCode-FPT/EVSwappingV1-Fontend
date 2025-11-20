@@ -28,10 +28,13 @@ export class StatisticService {
       .set('startDate', startDate.toISOString())
       .set('endDate', endDate.toISOString())
       .set('period', period);
-    return this.http.get<any>(`${this.apiUrl}/battery-swaps`, { params });
+    return this.http.get<any>(`${this.apiUrl}/swap`, { params });
   }
 
-  getHeatmapData(): Observable<HeatmapData> {
-    return this.http.get<HeatmapData>(`${this.apiUrl}/heatmap-data`);
+  getHeatmapData(startDate: Date, endDate: Date): Observable<any> {
+    const params = new HttpParams()
+      .set('startDate', startDate.toISOString())
+      .set('endDate', endDate.toISOString());
+    return this.http.get<any>(`${this.apiUrl}/swap/peak-hours`, { params });
   }
 }

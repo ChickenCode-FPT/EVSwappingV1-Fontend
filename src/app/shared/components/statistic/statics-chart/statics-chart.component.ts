@@ -30,17 +30,17 @@ export class StatisticsChartComponent implements OnChanges {
   public chart: ApexChart = {
     fontFamily: 'Outfit, sans-serif',
     height: 310,
-    type: 'area',
+    type: 'line',
     toolbar: { show: false },
     width: '100%',
   };
-  public colors: string[] = ['#465FFF', '#9CB9FF'];
+  public colors: string[] = ['#191970', '#228B22'];
   public stroke: ApexStroke = {
     curve: 'straight',
-    width: [2, 2],
+    width: [2, 3],
   };
   public fill: ApexFill = {
-    type: 'gradient',
+    type: ['solid', 'transparent'],
     gradient: {
       opacityFrom: 0.55,
       opacityTo: 0,
@@ -60,6 +60,14 @@ export class StatisticsChartComponent implements OnChanges {
   public tooltip: ApexTooltip = {
     enabled: true,
     x: { format: 'dd MMM yyyy' },
+    y: {
+      formatter: (val, { seriesIndex, w }) => {
+        if (w.config.series[seriesIndex].name === 'Revenue (k VND)') {
+          return val.toLocaleString() + ' VND';
+        }
+        return val.toString();
+      },
+    },
   };
   public xaxis: ApexXAxis = {
     type: 'category',
@@ -68,20 +76,47 @@ export class StatisticsChartComponent implements OnChanges {
     axisTicks: { show: false },
     tooltip: { enabled: false },
   };
-  public yaxis: ApexYAxis = {
-    labels: {
-      style: {
-        fontSize: '12px',
-        colors: ['#6B7280'],
+  public yaxis: ApexYAxis | ApexYAxis[] = [
+    {
+      seriesName: 'Battery Swaps',
+      title: {
+        text: 'Battery Swaps',
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: '#191970',
+        },
+      },
+      labels: {
+        style: {
+          colors: ['#6B7280'],
+        },
       },
     },
-    title: {
-      text: '',
-      style: { fontSize: '0px' },
+    {
+      seriesName: 'Revenue (k VND)',
+      opposite: true,
+      title: {
+        text: 'Revenue (k VND)',
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: '#228B22',
+        },
+      },
+      labels: {
+        style: {
+          colors: ['#6B7280'],
+        },
+        formatter: function (val) {
+          if (!val) return '';
+          return (val / 1000).toFixed(0) + 'k';
+        },
+      },
     },
-  };
+  ];
   public legend: ApexLegend = {
-    show: false,
+    show: true,
     position: 'top',
     horizontalAlign: 'left',
   };

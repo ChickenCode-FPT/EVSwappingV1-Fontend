@@ -1,5 +1,5 @@
 // src\app\features\auth\login\login.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -13,7 +13,7 @@ import { AuthService, LoginResponseDto } from '../../../core/auth.service';
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 
   constructor(
@@ -26,6 +26,14 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+  }
+  
+  ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const roles = localStorage.getItem('roles');
+    if (token && roles) {
+      this.navigateBasedOnRole(roles);
+    }
   }
 
   onSubmit() {
@@ -68,8 +76,26 @@ export class LoginComponent {
 
           if (roles.includes('Admin')) {
             this.router.navigate(['/admin/dashboard']);
-          } else if (roles.includes('Staff')) {
-            this.router.navigate(['/staff']);
+          }
+          else if (roles.includes('Staff')) {
+            this.auth.getStaffInfo(payload.sub).subscribe({
+              next: (staffInfo) => {
+                localStorage.setItem('stationId', staffInfo.stationId.toString());
+                localStorage.setItem('userRole', staffInfo.role);
+                localStorage.setItem('staffEmail', staffInfo.email);
+                localStorage.setItem('userId', staffInfo.userId);
+
+                console.log('Staff info loaded:', staffInfo);
+                this.router.navigate(['/staff/battery/warehouse']);
+              },
+              error: (err) => {
+                console.error('Error fetching staff info', err);
+                this.snackBar.open('Cannot fetch staff info', 'Close', {
+                  duration: 3000,
+                  panelClass: ['snackbar-error']
+                });
+              }
+            });
           } else {
             this.router.navigate(['/home']);
           }
@@ -86,6 +112,17 @@ export class LoginComponent {
         });
       }
     });
+  }
+
+
+  private navigateBasedOnRole(roles: string) {
+    if (roles.includes('Admin')) {
+      this.router.navigate(['/admin/dashboard']);
+    } else if (roles.includes('Staff')) {
+      this.router.navigate(['/staff']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 
   loginWithGoogle() {

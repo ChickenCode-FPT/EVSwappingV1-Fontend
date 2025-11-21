@@ -1,219 +1,49 @@
-.assign-container {
-  display: flex;
-  min-height: 100vh;
-  background: #f8f9fa;
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 250px;
-  padding: 2rem;
-  transition: margin-left 0.3s ease;
-}
-
-/* Header */
-.header {
-  background: white;
-  padding: 1.5rem 2rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.header h1 {
-  margin: 1rem 0 0 0;
-  font-size: 1.8rem;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Loading */
-.loading-container {
-  text-align: center;
-  padding: 4rem 2rem;
-}
-
-.loading-container p {
-  margin-top: 1rem;
-  color: #6c757d;
-}
-
-/* Card */
-.card-header {
-  padding: 1rem 0;
-}
-
-.card-header h2 {
-  margin: 0 0 0.5rem 0;
-  color: #2c3e50;
-}
-
-.card-header p {
-  margin: 0;
-  color: #6c757d;
-}
-
-.card-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
-/* Form Sections */
-.form-section {
-  margin-bottom: 2rem;
-}
-
-.form-section h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.form-section h3 i {
-  color: #3b82f6;
-}
-
-/* Station Item */
-.station-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-.station-address {
-  font-size: 0.85rem;
-  color: #6c757d;
-  margin-top: 0.25rem;
-}
-
-.station-badges {
-  display: flex;
-  gap: 0.5rem;
-}
-
-/* User Item */
-.user-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-.user-email {
-  font-size: 0.85rem;
-  color: #6c757d;
-  margin-top: 0.25rem;
-}
-
-.user-roles {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-/* Selected Info */
-.selected-info {
-  margin: 2rem 0;
-}
-
-.info-card {
-  display: flex;
-  gap: 1.5rem;
-  background: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 2px solid #e9ecef;
-}
-
-.info-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.info-icon.user-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.info-icon i {
-  font-size: 2rem;
-  color: white;
-}
-
-.info-details {
-  flex: 1;
-}
-
-.info-details h4 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.2rem;
-  color: #2c3e50;
-}
-
-.info-details p {
-  margin: 0.5rem 0;
-  color: #6c757d;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.info-stats {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #dee2e6;
-}
-
-.info-stats span {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #495057;
-}
-
-.current-roles {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #dee2e6;
-}
-
-.current-roles strong {
-  color: #2c3e50;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    padding: 1rem;
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
   }
-
-  .info-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
+}
 
-  .info-stats {
-    flex-direction: column;
-    gap: 0.5rem;
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Smooth dropdown animations */
+.dropdown-enter {
+  animation: dropdown-fade-in 0.2s ease-out;
+}
+
+@keyframes dropdown-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar for dropdowns */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

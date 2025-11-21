@@ -2,8 +2,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
-const API = 'https://localhost:7292/api/Auth';
+const API = `${environment.apiBase}/Auth`;
 
 export interface RegisterUserCommand {
   email: string;
@@ -25,6 +26,7 @@ export interface LoginResponseDto {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private api = environment.apiBase;
   constructor(private http: HttpClient) {}
 
   register(model: RegisterUserCommand): Observable<{ token: string } | string> {
@@ -82,6 +84,11 @@ export class AuthService {
     localStorage.removeItem('fullname');
     localStorage.removeItem('roles');
     localStorage.removeItem('2faEmail');
+    localStorage.removeItem('staff_fid');
+    localStorage.removeItem('staffEmail');
+    localStorage.removeItem('stationId');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userRole');
   }
 
   getAuthHeaders(): HttpHeaders {
@@ -99,5 +106,8 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     return this.getUserRoles().includes(role);
+  }
+  getStaffInfo(userId: string): Observable<any> {
+    return this.http.get<any>(`${this.api}/AdminStationsStaff/${userId}`);
   }
 }

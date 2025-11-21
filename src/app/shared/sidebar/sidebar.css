@@ -124,3 +124,20 @@
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  margin-top: 820px;
+  color: #d32f2f !important;
+}
+
+.logout-btn:hover {
+  background-color: rgba(211, 47, 47, 0.04) !important;
+}
+
+
+.logout-btn mat-icon {
+  color: #d32f2f;
+}

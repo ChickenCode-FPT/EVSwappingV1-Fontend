@@ -1,0 +1,61 @@
+<div class="p-6 max-w-xl mx-auto mt-6">
+
+    @if (loading) {
+    <div class="text-center py-10 text-gray-500">
+        Loading...
+    </div>
+    }
+
+    @if (!loading) {
+    <div class="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
+
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+            Employee Profile
+        </h2>
+
+        <div class="space-y-6">
+
+            <div class="flex flex-col space-y-1">
+                <span class="text-sm font-medium text-gray-500">Full Name</span>
+                <p class="text-lg font-semibold text-gray-900">{{ staff.fullName }}</p>
+            </div>
+
+            <div class="flex flex-col space-y-1">
+                <span class="text-sm font-medium text-gray-500">Email</span>
+                <p class="text-lg font-semibold text-gray-900">{{ staff.email }}</p>
+            </div>
+
+            <div class="flex flex-col space-y-1">
+                <span class="text-sm font-medium text-gray-500">Phone Number</span>
+                <p class="text-lg font-semibold text-gray-900">{{ staff.phoneNumber }}</p>
+            </div>
+
+            <div class="flex flex-col space-y-1">
+                <span class="text-sm font-medium text-gray-500">Face Detection</span>
+                <p class="text-lg font-semibold text-gray-900">
+                    {{ staff.fId ? 'Active' : 'N/A' }}
+                </p>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (staff && !staff.fId && !loading) {
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div
+            class="bg-white p-8 rounded-xl shadow-2xl text-center w-full max-w-md transform transition duration-300 scale-100">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                Face ID Missing
+            </h3>
+            <p class="text-gray-600 mb-6">
+                It looks like you don't have a Face ID saved. Please update your Face Detection.
+            </p>
+            <button (click)="navigateToFaceAdd()" class="w-full px-6 py-3 text-lg font-semibold text-white bg-blue-600 rounded-lg
+                        hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50
+                        transition duration-150 ease-in-out">
+                Go to Face Detection
+            </button>
+        </div>
+    </div>
+    }
+</div>

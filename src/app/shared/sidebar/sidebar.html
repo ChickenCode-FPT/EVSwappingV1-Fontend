@@ -45,9 +45,23 @@
       </mat-nav-list>
     </mat-expansion-panel>
 
+    <a mat-list-item routerLink="/admin/users/subscription-package" routerLinkActive="active">
+      <span matListItemTitle *ngIf="!isCollapsed">Subscription Package</span>
+    </a>
+
+     <a mat-list-item routerLink="/admin/users/inter-station-transfer" routerLinkActive="active">
+      <span matListItemTitle *ngIf="!isCollapsed">Approve Request</span>
+    </a>
+
 
     <a mat-list-item routerLink="/home" routerLinkActive="active">
       <span matListItemTitle *ngIf="!isCollapsed">Home</span>
+    </a>
+
+
+    <a mat-list-item (click)="logout()" class="logout-btn">
+      <mat-icon matListItemIcon>logout</mat-icon> 
+      <span matListItemTitle *ngIf="!isCollapsed">Logout</span>
     </a>
   </mat-nav-list>
 </div>

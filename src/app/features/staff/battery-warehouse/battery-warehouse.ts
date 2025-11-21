@@ -3,22 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BatteryService } from '../services/battery-service';
+import { StationInventoryService } from '../services/station-inventory-services';
 import { Battery } from '../../models/battery.model';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
-import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BatteryDetailDialog } from '../battery-detail-dialog/battery-detail-dialog';
 import { MatDialog } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
 import { firstValueFrom } from 'rxjs';
+import { StationInventory } from '../../models/stationInventory.model';
 
-// Giao diện hiển thị trạng thái pin
+// Combined view type used in template (inventory + battery flattened)
+type InventoryView = StationInventory & { batteries: Battery; inventoryStatus: string };
+
 interface StatusAppearance {
   color: 'primary' | 'accent' | 'warn' | undefined;
   icon: string;
@@ -30,44 +24,50 @@ interface StatusAppearance {
   imports: [
     CommonModule,
     FormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule,
-    MatTableModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDividerModule
   ],
   templateUrl: './battery-warehouse.html',
   styleUrls: ['./battery-warehouse.css']
 })
 export class BatteryWarehouse implements OnInit {
   private batteryService = inject(BatteryService);
+  private stationInventoryService = inject(StationInventoryService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
   // --- SIGNALS ---
-  batteries = signal<Battery[]>([]);
+  inventories = signal<StationInventory[]>([]); // keep raw inventories
   selectedStatus = signal<string>('');
   selectedModel = signal<string>('');
   minSoH = signal<number | null>(null);
   maxSoH = signal<number | null>(null);
   loading = signal<boolean>(false);
 
+  // edit popup signals
+  showEditPopup = signal<boolean>(false);
+  editInventory = signal<StationInventory | null>(null);
+  newStatus = signal<string>('');
+
+  showConfirmUpdatePopup = signal<boolean>(false);
+
   async ngOnInit() {
-    await this.loadBatteries();
+    await this.loadInventories();
   }
 
-  async loadBatteries() {
+  // load StationInventory[] from API (stationId filtered)
+  async loadInventories() {
     this.loading.set(true);
     try {
-      const data = await firstValueFrom(this.batteryService.getBatteries());
-      this.batteries.set(data);
+      const data = await firstValueFrom(this.stationInventoryService.getStationInventories());
+      const stationId = localStorage.getItem('stationId');
+
+      if (stationId) {
+        const filteredInventories = data.filter(inv => inv.stationId.toString() === stationId);
+        this.inventories.set(filteredInventories);
+      } else {
+        console.warn('⚠️ StationId not found in localStorage');
+      }
     } catch (err) {
-      console.error('❌ Lỗi load pin:', err);
+      console.error('❌ Lỗi load inventories:', err);
     } finally {
       this.loading.set(false);
     }
@@ -80,31 +80,24 @@ export class BatteryWarehouse implements OnInit {
     this.maxSoH.set(null);
   }
 
-  // Hiển thị biểu tượng + màu theo trạng thái
   getStatusAppearance(status: string): StatusAppearance {
-    switch (status.toUpperCase()) {
-      case 'GOOD':
-        return { color: 'primary', icon: 'check_circle' };
-      case 'AVAILABLE':
-        return { color: 'primary', icon: 'battery_full' };
-      case 'CHARGING':
-        return { color: 'accent', icon: 'bolt' };
-      case 'INUSE':
-        return { color: 'accent', icon: 'local_shipping' };
-      case 'MAINTENANCE':
-        return { color: 'accent', icon: 'build' };
-      case 'FAULTY':
-        return { color: 'warn', icon: 'report_problem' };
-      default:
-        return { color: undefined, icon: 'help_outline' };
+    switch ((status || '').toUpperCase()) {
+      case 'GOOD': return { color: 'primary', icon: 'check_circle' };
+      case 'AVAILABLE': return { color: 'primary', icon: 'battery_full' };
+      case 'CHARGING': return { color: 'accent', icon: 'bolt' };
+      case 'INUSE': return { color: 'accent', icon: 'local_shipping' };
+      case 'MAINTENANCE': return { color: 'accent', icon: 'build' };
+      case 'FAULTY': return { color: 'warn', icon: 'report_problem' };
+      default: return { color: undefined, icon: 'help_outline' };
     }
   }
 
   openBatteryDetailDialog(batteryId: number) {
-    const battery = this.batteries().find(b => b.batteryId === batteryId);
-    if (battery) {
+    // find by batteryId inside inventories
+    const inv = this.inventories().find(i => i.batteries?.batteryId === batteryId);
+    if (inv && inv.batteries) {
       this.dialog.open(BatteryDetailDialog, {
-        data: battery,
+        data: inv.batteries,
         width: '1200px',
         maxWidth: '1500px',
         maxHeight: '90vh',
@@ -113,34 +106,39 @@ export class BatteryWarehouse implements OnInit {
     }
   }
 
-  // --- COMPUTED SIGNALS ---
+  // --- COMPUTED VIEWS ---
 
-  // Trạng thái pin (unique)
+  // unique statuses come from inventory.status (we want to edit inventory.status)
   statuses = computed(() =>
-    Array.from(new Set(this.batteries().map(b => b.status))).filter(s => s !== '')
+    Array.from(new Set(this.inventories().map(i => i.status))).filter(s => s !== '')
   );
 
-  // Model pin (unique theo modelCode)
   models = computed(() =>
-    Array.from(
-      new Set(
-        this.batteries()
-          .filter(b => !!b.batteryModel)
-          .map(b => b.batteryModel.modelCode)
-      )
-    )
+    Array.from(new Set(
+      this.inventories()
+        .map(i => i.batteries)
+        .filter(b => !!b && !!b.batteryModel)
+        .map(b => b.batteryModel.modelCode)
+    ))
   );
 
-  // Bộ lọc hiển thị
+  // flattened items for display: include battery props and inventoryStatus
   filteredBatteries = computed(() => {
-    return this.batteries().filter(b => {
-      const statusOk = this.selectedStatus() ? b.status === this.selectedStatus() : true;
+    const items: InventoryView[] = this.inventories().map(inv => ({
+      ...inv,
+      inventoryStatus: inv.status,
+      batteries: inv.batteries
+    })) as InventoryView[];
+
+    return items.filter(b => {
+      const statusOk = this.selectedStatus() ? b.inventoryStatus === this.selectedStatus() : true;
       const modelOk = this.selectedModel()
-        ? b.batteryModel?.modelCode === this.selectedModel()
+        ? b.batteries?.batteryModel?.modelCode === this.selectedModel()
         : true;
 
-      const sohMinOk = this.minSoH() !== null ? b.currentSoH >= this.minSoH()! : true;
-      const sohMaxOk = this.maxSoH() !== null ? b.currentSoH <= this.maxSoH()! : true;
+      const soh = b.batteries?.currentSoH ?? 0;
+      const sohMinOk = this.minSoH() !== null ? soh >= this.minSoH()! : true;
+      const sohMaxOk = this.maxSoH() !== null ? soh <= this.maxSoH()! : true;
 
       return statusOk && modelOk && sohMinOk && sohMaxOk;
     });
@@ -148,14 +146,122 @@ export class BatteryWarehouse implements OnInit {
 
   batteryCountByStatus = computed(() => {
     const counts: Record<string, number> = {};
-    this.batteries().forEach(b => {
-      counts[b.status] = (counts[b.status] || 0) + 1;
+    this.inventories().forEach(inv => {
+      const s = inv.status || 'UNKNOWN';
+      counts[s] = (counts[s] || 0) + 1;
     });
     return counts;
   });
 
   navigateToAddBattery() {
     this.router.navigate(['staff/battery/add']);
+  }
+
+  // open edit popup — receive InventoryView or StationInventory
+  openEditPopup(item: InventoryView | null) {
+    if (!item) return;
+    const blockedStatuses = ['ORDERED', 'DELIVERED'];
+
+    if (blockedStatuses.includes((item.inventoryStatus || item.status || '').toUpperCase())) {
+      alert(`Status "${item.inventoryStatus || item.status}" cannot be edited.`);
+      return;
+    }
+
+    // set editInventory as the actual StationInventory (find by id to keep original reference)
+    const inv = this.inventories().find(x => x.stationInventoryId === item.stationInventoryId) ?? null;
+
+    if (!inv) {
+      console.warn("Inventory not found:", item.stationInventoryId);
+      return;
+    }
+
+    this.editInventory.set(inv);
+    this.newStatus.set(inv.status);
+    this.showEditPopup.set(true);
+  }
+
+  openConfirmUpdatePopup() {
+    this.showEditPopup.set(false);
+    this.showConfirmUpdatePopup.set(true);
+  }
+
+  /*
+  async updateInventoryStatus() {
+    const inventory = this.editInventory();
+    if (!inventory) return;
+
+    const payload = {
+      stationInventoryId: inventory.stationInventoryId,
+      status: this.newStatus()
+    };
+
+    try {
+      this.loading.set(true);
+      await firstValueFrom(this.stationInventoryService.updateStatus(payload));
+
+      // update inventories signal in place
+      this.inventories.update(list =>
+        list.map(i =>
+          i.stationInventoryId === inventory.stationInventoryId
+            ? { ...i, status: payload.status }
+            : i
+        )
+      );
+
+      this.showConfirmUpdatePopup.set(false);
+      alert('Status updated successfully!');
+    } catch (err) {
+      console.error('Update failed:', err);
+      alert('Update failed!');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+    */
+
+  async updateBatteryStatus() {
+    const inventory = this.editInventory();
+    if (!inventory || !inventory.batteries) {
+      alert('Battery not found!');
+      return;
+    }
+
+    const payload = {
+      batteryId: inventory.batteries.batteryId,
+      status: this.newStatus()
+    };
+
+    try {
+      this.loading.set(true);
+      await firstValueFrom(this.batteryService.updateStatus(payload));
+
+      this.inventories.update(list =>
+        list.map(i =>
+          i.stationInventoryId === inventory.stationInventoryId
+            ? {
+              ...i,
+              batteries: {
+                ...i.batteries!,
+                status: payload.status
+              }
+            }
+            : i
+        )
+      );
+
+      this.showConfirmUpdatePopup.set(false);
+      alert('Battery status updated successfully!');
+    } catch (err) {
+      console.error('Update failed:', err);
+      alert('Update failed!');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  // helper to display battery-specific fields in template safely
+  getBatterySafe(b: InventoryView) {
+    return b.batteries ?? ({} as Battery);
   }
 
   displayedColumnsWithActions: string[] = [

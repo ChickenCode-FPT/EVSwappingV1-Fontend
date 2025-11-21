@@ -25,9 +25,17 @@ import { BatteryAdd } from './features/staff/battery-add/battery-add';
 import { BatteryModels } from './features/staff/battery-model/battery-model';
 import { BatteryTransaction } from './features/staff/battery-transaction/battery-transaction';
 import { BatteryTransactionDetail } from './features/staff/battery-transaction-detail/battery-transaction-detail';
+import { PackageManagementComponent } from './features/admin/subscription-package/subscription-package';
 import { CustomerGuard } from './core/customer.guard';
 import { PaymentListComponent } from './features/payment/pages/payment-list/payment-list.component';
+import { guestGuard } from './core/guards/guest.guard';
+import { InterStationTransferComponent } from './features/admin/inter-battery/InterStationTransfer';
 
+import { InterTransferCreate } from './features/staff/inter-transfer-create/inter-transfer-create';
+import { InterTransferList } from './features/staff/inter-transfer-list/inter-transfer-list';
+import { StaffProfile } from './features/staff/staff-profile/staff-profile';
+import { FaceAdd } from './features/staff/face-add/face-add';
+import { FaceVerified } from './features/staff/face-verified/face-verified';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -37,7 +45,7 @@ export class Contact {}
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'home', component: Home },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent,canActivate: [guestGuard] },
   { path: 'about', component: About },
   { path: 'contact', component: Contact },
   { path: 'register', component: RegisterComponent },
@@ -49,6 +57,7 @@ export const routes: Routes = [
   { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
   { path: 'admin/users/assign-staff', component: AssignStationStaffComponent },
   { path: 'admin/users/list-station-staff', component: StationStaffListComponent },
+  { path: 'admin/users/inter-station-transfer', component: InterStationTransferComponent },
 
   // Auth extra
   { path: 'update-phone', component: UpdatePhoneComponent },
@@ -59,11 +68,50 @@ export const routes: Routes = [
   { path: 'two-factor', component: TwoFactorComponent },
   { path: 'disable-2fa', component: Disable2FAComponent },
 
+  { path: 'reservations', component: ReservationsPageComponent },
+  { path: 'admin/users/subscription-package', component: PackageManagementComponent},
   // Customer features
   { path: 'station', component: MapComponent, canActivate: [CustomerGuard] },
   { path: 'reservations', component: ReservationsPageComponent, canActivate: [CustomerGuard] },
   { path: 'payments', component: PaymentListComponent, canActivate: [CustomerGuard] },
 
+  // Driver
+  {
+    path: 'driver/register',
+    loadComponent: () =>
+      import('./features/driver/driver-register/driver-register.component').then(
+        (m) => m.DriverRegisterComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+
+  // Vehicles
+  {
+    path: 'vehicles',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-list/vehicle-list.component').then(
+        (m) => m.VehicleListComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+  {
+    path: 'vehicles/add',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-add/vehicle-add.component').then(
+        (m) => m.VehicleAddComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+  {
+    path: 'vehicles/edit/:id',
+    loadComponent: () =>
+      import('./features/vehicle/pages/vehicle-edit/vehicle-edit.component').then(
+        (m) => m.VehicleEditComponent
+      ),
+    canActivate: [CustomerGuard],
+  },
+
+  // Staff
   {
     path: 'payment',
     children: [
@@ -130,7 +178,12 @@ export const routes: Routes = [
         component: BatteryTransactionDetail,
         data: { mode: 'confirm' },
       },
-    ],
+      { path: 'inter/transfers', component: InterTransferList },
+      { path: 'inter/transfers/create', component: InterTransferCreate },
+      { path: 'profile', component: StaffProfile },
+      { path: 'face/add', component: FaceAdd },
+      { path: 'face/verify', component: FaceVerified }
+    ]
   },
 
   {

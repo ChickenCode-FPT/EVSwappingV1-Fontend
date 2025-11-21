@@ -45,3 +45,19 @@ export interface BatteryModelDto {
   maxChargeCurrent?: number;
   description?: string;
 }
+
+export interface CreateBattery {
+  modelId: number;
+  capacity: number;
+  serialNumber: string;
+  batteryModelId: number;
+  currentSoH: number;
+  cycleCount: number;
+  status: string;  
+  stationId: number;  
+}
+
+export interface UpdateStatusBattery {
+  batteryId: number;
+  status: string;
+}

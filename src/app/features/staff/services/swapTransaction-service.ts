@@ -8,18 +8,17 @@ import { TransactionFull } from '../../models/transaction.model';
 export class SwapTransactionService {
   private apiUrl = `${environment.apiBase}/swapTransactions`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAllFullTransactions(): Observable<TransactionFull[]> {
     return this.http.get<TransactionFull[]>(`${this.apiUrl}/full`);
   }
 
-    getFullTransactionById(id: number): Observable<TransactionFull> {
+  getFullTransactionById(id: number): Observable<TransactionFull> {
     return this.http.get<TransactionFull>(`${this.apiUrl}/full/${id}`);
   }
 
-  updateTransactionStatus(id: number, status: string) {
-  return this.http.put(`${this.apiUrl}/${id}`, { status });
-}
-
+  updateTransaction(id: number, data: any) {
+    return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
 }

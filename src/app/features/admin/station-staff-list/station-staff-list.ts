@@ -1,36 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
-import { TagModule } from 'primeng/tag';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
-import { DialogModule } from 'primeng/dialog';
-import { ConfirmationService } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-
 import { StationStaffService } from '../../../core/station-staff.service';
 import { SidebarComponent } from "../../../shared/sidebar/sidebar";
+
 @Component({
   selector: 'app-station-staff-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    TableModule,
-    ButtonModule,
-    CardModule,
-    DividerModule,
-    TagModule,
-    ToastModule,
-    ProgressSpinnerModule,
-    SidebarComponent,
-    DialogModule,
-    ConfirmDialogModule
-],
-  providers: [MessageService, ConfirmationService],
+  imports: [CommonModule, SidebarComponent],
   templateUrl: './station-staff-list.html',
   styleUrls: ['./station-staff-list.css']
 })
@@ -42,12 +18,24 @@ export class StationStaffListComponent implements OnInit {
   loadingStaffs = false;
   showDialog = false;
 
-  constructor(
-    private stationStaffService: StationStaffService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
+  toast = {
+    show: false,
+    severity: 'info',
+    summary: '',
+    detail: ''
+  };
 
-  ) {}
+  confirmDialog = {
+    show: false,
+    message: '',
+    header: '',
+    acceptLabel: 'Yes',
+    rejectLabel: 'No',
+    accept: () => {},
+    reject: () => {}
+  };
+
+  constructor(private stationStaffService: StationStaffService) {}
 
   ngOnInit() {
     this.loadStations();
@@ -61,11 +49,7 @@ export class StationStaffListComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load stations'
-        });
+        this.showToast('error', 'Error', 'Failed to load stations');
         this.loading = false;
       }
     });
@@ -81,53 +65,51 @@ export class StationStaffListComponent implements OnInit {
         this.loadingStaffs = false;
       },
       error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load staff list'
-        });
+        this.showToast('error', 'Error', 'Failed to load staff list');
         this.loadingStaffs = false;
       }
     });
   }
 
- closeDialog() {
+  closeDialog() {
     this.showDialog = false;
     this.selectedStation = null;
     this.stationStaffs = [];
   }
 
- confirmRemove(stationStaffId: number) {
-    this.confirmationService.confirm({
+  confirmRemove(staff: any) {
+    this.confirmDialog = {
+      show: true,
       message: 'Are you sure you want to remove this staff from the station?',
       header: 'Confirm Remove',
-      icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Yes',
       rejectLabel: 'No',
-      acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.removeStaff(stationStaffId);
+        this.removeStaff(staff);
+        this.confirmDialog.show = false;
       },
-    });
+      reject: () => {
+        this.confirmDialog.show = false;
+      }
+    };
   }
 
   removeStaff(staff: any) {
     this.stationStaffService.deactivateStaff(staff.stationStaffId).subscribe({
       next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Removed',
-          detail: `${staff.userName} has been deactivated.`,
-        });
+        this.showToast('success', 'Removed', `${staff.userName} has been deactivated.`);
         this.stationStaffs = this.stationStaffs.filter(s => s.stationStaffId !== staff.stationStaffId);
       },
       error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to deactivate staff.',
-        });
+        this.showToast('error', 'Error', 'Failed to deactivate staff.');
       }
     });
-}
+  }
+
+  showToast(severity: string, summary: string, detail: string) {
+    this.toast = { show: true, severity, summary, detail };
+    setTimeout(() => {
+      this.toast.show = false;
+    }, 3000);
+  }
 }

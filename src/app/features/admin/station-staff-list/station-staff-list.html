@@ -1,88 +1,203 @@
-<div class="main-content">
+<div class="flex min-h-screen bg-gray-50">
   <app-sidebar></app-sidebar>
-  <p-toast></p-toast>
-  <p-confirmDialog></p-confirmDialog>
-  <h2 class="page-title">
-    <i class="pi pi-building"></i> Station List
-  </h2>
+  
+  <div class="flex-1 p-6">
+    <!-- Toast Notification -->
+    <div *ngIf="toast.show" 
+         [class]="'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 ' + 
+         (toast.severity === 'success' ? 'bg-green-500' : toast.severity === 'error' ? 'bg-red-500' : 'bg-blue-500') + ' text-white'">
+      <div class="flex items-center gap-3">
+        <i [class]="'pi ' + (toast.severity === 'success' ? 'pi-check-circle' : toast.severity === 'error' ? 'pi-times-circle' : 'pi-info-circle')"></i>
+        <div>
+          <div class="font-semibold">{{ toast.summary }}</div>
+          <div class="text-sm">{{ toast.detail }}</div>
+        </div>
+      </div>
+    </div>
 
-  <p-table [value]="stations" [loading]="loading" styleClass="p-datatable-gridlines p-datatable-striped">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Phone</th>
-        <th>Capacity</th>
-        <th>Available</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </ng-template>
+    <!-- Confirm Dialog -->
+    <div *ngIf="confirmDialog.show" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
+          <i class="pi pi-exclamation-triangle text-orange-500 text-2xl"></i>
+          <h3 class="text-lg font-semibold text-gray-900">{{ confirmDialog.header }}</h3>
+        </div>
+        <div class="px-6 py-4 text-gray-700">
+          {{ confirmDialog.message }}
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200">
+          <button 
+            (click)="confirmDialog.reject()"
+            class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+            {{ confirmDialog.rejectLabel }}
+          </button>
+          <button 
+            (click)="confirmDialog.accept()"
+            class="px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors">
+            {{ confirmDialog.acceptLabel }}
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Page Header -->
+    <div class="mb-6">
+      <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <i class="pi pi-building text-blue-600"></i>
+        Station List
+      </h2>
+    </div>
 
-    <ng-template pTemplate="body" let-station>
-      <tr>
-        <td>{{ station.stationId }}</td>
-        <td>{{ station.name }}</td>
-        <td>{{ station.address }}</td>
-        <td>{{ station.phone }}</td>
-        <td>{{ station.capacity }}</td>
-        <td>{{ station.availableBatteries }}</td>
-        <td>
-          <p-tag [value]="station.status === 1 ? 'Active' : 'Inactive'" [severity]="station.status === 1 ? 'success' : 'danger'"></p-tag>
-        </td>
-        <td>
-          <button pButton icon="pi pi-users" label="View Staff" class="p-button-rounded p-button-info"
-                  (click)="viewStaffs(station)"></button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-
-  <!-- ✅ Dialog hiển thị danh sách nhân viên -->
-  <p-dialog
-    header="Station Staffs"
-    [(visible)]="showDialog"
-    [modal]="true"
-    [style]="{ width: '80vw' }"
-    [closable]="true"
-    (onHide)="closeDialog()"
-  >
-    <ng-template pTemplate="content">
-      <div *ngIf="selectedStation">
-        <h3>{{ selectedStation.name }}</h3>
-        <p class="station-info">
-          📍 {{ selectedStation.address }} <br />
-          ☎ {{ selectedStation.phone }} <br />
-          🔋 Capacity: {{ selectedStation.capacity }} | Available: {{ selectedStation.availableBatteries }}
-        </p>
+    <!-- Stations Table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <!-- Loading Spinner -->
+      <div *ngIf="loading" class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
-      <p-table [value]="stationStaffs" [loading]="loadingStaffs" styleClass="p-datatable-gridlines p-datatable-striped">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Id</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Action</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-staff>
-          <tr>
-            <td>{{ staff.stationStaffId}}</td>
-            <td>{{ staff.userName }}</td>
-            <td>{{ staff.email }}</td>
-            <td><p-tag [value]="staff.role" severity="info"></p-tag></td>
-            <td>
-              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger" label="Remove" (click)="confirmRemove(staff)" ></button>
-          </tr>
-        </ng-template>
-      </p-table>
-    </ng-template>
+      <!-- Table -->
+      <div *ngIf="!loading" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Address</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Phone</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Capacity</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Available</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let station of stations" class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ station.stationId }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ station.name }}</td>
+              <td class="px-6 py-4 text-sm text-gray-600">{{ station.address }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ station.phone }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ station.capacity }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ station.availableBatteries }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span [class]="'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + 
+                      (station.status === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+                  {{ station.status === 1 ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <button 
+                  (click)="viewStaffs(station)"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                  <i class="pi pi-users"></i>
+                  View Staff
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-    <ng-template pTemplate="footer">
-      <button pButton label="Close" icon="pi pi-times" class="p-button-text" (click)="closeDialog()"></button>
-    </ng-template>
-  </p-dialog>
+    <!-- Staff Dialog -->
+    <div *ngIf="showDialog" class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+        <!-- Dialog Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
+          <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <i class="pi pi-users text-blue-600"></i>
+            Station Staffs
+          </h3>
+          <button 
+            (click)="closeDialog()"
+            class="text-gray-400 hover:text-gray-600 transition-colors">
+            <i class="pi pi-times text-2xl"></i>
+          </button>
+        </div>
+
+        <!-- Dialog Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+          <!-- Station Info Card -->
+          <div *ngIf="selectedStation" class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-6">
+            <h4 class="text-2xl font-bold text-gray-800 mb-3">{{ selectedStation.name }}</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
+              <div class="flex items-start gap-3">
+                <span class="text-2xl">📍</span>
+                <div>
+                  <div class="font-semibold text-gray-500 text-xs uppercase mb-1">Address</div>
+                  <div>{{ selectedStation.address }}</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-2xl">☎</span>
+                <div>
+                  <div class="font-semibold text-gray-500 text-xs uppercase mb-1">Phone</div>
+                  <div>{{ selectedStation.phone }}</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-2xl">🔋</span>
+                <div>
+                  <div class="font-semibold text-gray-500 text-xs uppercase mb-1">Batteries</div>
+                  <div>Capacity: {{ selectedStation.capacity }} | Available: {{ selectedStation.availableBatteries }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Table -->
+          <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <!-- Loading Spinner -->
+            <div *ngIf="loadingStaffs" class="flex justify-center items-center py-20">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+
+            <!-- Table -->
+            <div *ngIf="!loadingStaffs" class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                  <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Full Name</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr *ngFor="let staff of stationStaffs" class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ staff.stationStaffId }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ staff.userName }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ staff.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {{ staff.role }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <button 
+                        (click)="confirmRemove(staff)"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        <i class="pi pi-trash"></i>
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dialog Footer -->
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <button 
+            (click)="closeDialog()"
+            class="px-6 py-2 text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg transition-colors font-medium">
+            <i class="pi pi-times mr-2"></i>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

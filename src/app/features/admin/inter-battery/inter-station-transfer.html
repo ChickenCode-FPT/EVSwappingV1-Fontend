@@ -1,287 +1,347 @@
-<div class="layout-wrapper">
-  <app-sidebar></app-sidebar>
+<div class="flex min-h-screen bg-gray-50">
+  <div class="fixed left-0 top-0 h-full z-30">
+    <app-sidebar></app-sidebar>
+  </div>
   
-  <div class="layout-content">
-    <p-toast></p-toast>
-    <p-confirmDialog></p-confirmDialog>
+  <div class="flex-1 ml-64 p-6">
+    <!-- Toast Notification -->
+    <div *ngIf="toast.show" 
+         [class]="'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 ' + 
+         (toast.severity === 'success' ? 'bg-green-500' : toast.severity === 'error' ? 'bg-red-500' : toast.severity === 'warn' ? 'bg-orange-500' : 'bg-blue-500') + ' text-white'">
+      <div class="flex items-center gap-3">
+        <i [class]="'pi ' + (toast.severity === 'success' ? 'pi-check-circle' : toast.severity === 'error' ? 'pi-times-circle' : toast.severity === 'warn' ? 'pi-exclamation-triangle' : 'pi-info-circle')"></i>
+        <div>
+          <div class="font-semibold">{{ toast.summary }}</div>
+          <div class="text-sm">{{ toast.detail }}</div>
+        </div>
+      </div>
+    </div>
 
-    <div class="container">
-      <p-card>
-        <ng-template pTemplate="header">
-          <div class="card-header">
-            <h2 class="card-title">
-              <i class="pi pi-sync"></i>
-              Inter Station Transfer Requests
-            </h2>
-          </div>
-        </ng-template>
+    <!-- Page Header -->
+    <div class="mb-6">
+      <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <i class="pi pi-sync text-blue-600"></i>
+        Inter Station Transfer Requests
+      </h2>
+    </div>
 
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-          <div class="stat-card">
-            <div class="stat-icon pending">
-              <i class="pi pi-clock"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-label">Pendding</div>
-              <div class="stat-value">{{ pendingCount }}</div>
-            </div>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <!-- Pending -->
+      <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 mb-1">Pending</p>
+            <p class="text-3xl font-bold text-gray-900">{{ pendingCount }}</p>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon approved">
-              <i class="pi pi-check-circle"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-label">Approved</div>
-              <div class="stat-value">{{ approvedCount }}</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon total">
-              <i class="pi pi-list"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-label">Number Of request</div>
-              <div class="stat-value">{{ transfers.length }}</div>
-            </div>
+          <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center">
+            <i class="pi pi-clock text-2xl text-orange-600"></i>
           </div>
         </div>
+      </div>
 
-        <p-toolbar styleClass="mb-4">
-          <ng-template pTemplate="left">
-            <button 
-              pButton 
-              icon="pi pi-refresh" 
-              label="Reload" 
-              class="p-button-info mr-2"
-              (click)="refresh()"
-              [disabled]="loading">
-            </button>
-            <button 
-              pButton 
-              icon="pi pi-download" 
-              label="Export Data" 
-              class="p-button-secondary"
-              (click)="exportData()">
-            </button>
-          </ng-template>
-          <ng-template pTemplate="right">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search"></i>
-              <input 
-                pInputText 
-                type="text" 
-                placeholder="Search..."
-                class="search-input">
-            </span>
-          </ng-template>
-        </p-toolbar>
-
-        <div *ngIf="loading" class="loading-container">
-          <p-progressSpinner></p-progressSpinner>
-          <p>Đang tải dữ liệu...</p>
+      <!-- Approved -->
+      <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 mb-1">Approved</p>
+            <p class="text-3xl font-bold text-gray-900">{{ approvedCount }}</p>
+          </div>
+          <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+            <i class="pi pi-check-circle text-2xl text-green-600"></i>
+          </div>
         </div>
+      </div>
 
-        <p-table 
-          *ngIf="!loading"
-          [value]="transfers" 
-          [paginator]="true" 
-          [rows]="10"
-          [rowsPerPageOptions]="[5, 10, 20, 50]"
-          [showCurrentPageReport]="true"
-          currentPageReportTemplate="Hiển thị {first} - {last} trong tổng số {totalRecords} yêu cầu"
-          [tableStyle]="{ 'min-width': '75rem' }"
-          styleClass="p-datatable-gridlines p-datatable-striped">
-          
-          <ng-template pTemplate="header">
+      <!-- Total -->
+      <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 mb-1">Number Of Requests</p>
+            <p class="text-3xl font-bold text-gray-900">{{ transfers.length }}</p>
+          </div>
+          <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
+            <i class="pi pi-list text-2xl text-blue-600"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex gap-3">
+          <button 
+            (click)="refresh()"
+            [disabled]="loading"
+            [class]="'inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ' + 
+                    (loading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white')">
+            <i class="pi pi-refresh"></i>
+            Reload
+          </button>
+          <button 
+            (click)="exportData()"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">
+            <i class="pi pi-download"></i>
+            Export Data
+          </button>
+        </div>
+        
+        <div class="relative">
+          <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <input 
+            type="text"
+            placeholder="Search..."
+            [(ngModel)]="searchText"
+            (input)="filterTransfers()"
+            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64">
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="bg-white rounded-lg shadow-md p-20">
+      <div class="flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-600">Loading data...</p>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!loading" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
             <tr>
-              <th style="width: 4%">ID</th>
-              <th style="width: 10%">Pin</th>
-              <th style="width: 12%">Request By</th>
-              <th style="width: 12%">From Station</th>
-              <th style="width: 12%">To Station</th>
-              <th style="width: 12%">Request At</th>
-              <th style="width: 12%">Approved By</th>
-              <th style="width: 12%">Comnplete At</th>
-              <th style="width: 8%">Status</th>
-              <th style="width: 6%">Action</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-16">ID</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Battery</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Request By</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">From Station</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">To Station</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Request At</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Approved By</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Complete At</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
             </tr>
-          </ng-template>
-
-          <ng-template pTemplate="body" let-transfer>
-            <tr>
-              <td><strong>{{ transfer.transferId }}</strong></td>
-              <td>
-                <div class="battery-info">
-                  <i class="pi pi-bolt"></i>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let transfer of paginatedTransfers" class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-4 whitespace-nowrap">
+                <span class="text-sm font-bold text-gray-900">#{{ transfer.transferId }}</span>
+              </td>
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-bolt text-yellow-500"></i>
                   <div>
-                    <div class="battery-serial">{{ transfer.batterySerial || 'N/A' }}</div>
-                    <small class="text-muted">ID: {{ transfer.batteryId }}</small>
+                    <div class="text-sm font-medium text-gray-900">{{ transfer.batterySerial || 'N/A' }}</div>
+                    <div class="text-xs text-gray-500">ID: {{ transfer.batteryId }}</div>
                   </div>
                 </div>
               </td>
-              <td>
-                <div class="user-info">
-                  <i class="pi pi-user"></i>
-                  <div>
-                    <div>{{ transfer.requestedBy || 'N/A' }}</div>
-                  </div>
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-user text-blue-500"></i>
+                  <span class="text-sm text-gray-900">{{ transfer.requestedBy || 'N/A' }}</span>
                 </div>
               </td>
-              <td>
-                <span class="station-badge from-station">
+              <td class="px-4 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center gap-2 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
                   <i class="pi pi-arrow-circle-right"></i>
                   {{ transfer.fromStationName || 'N/A' }}
                 </span>
               </td>
-              <td>
-                <span class="station-badge to-station">
+              <td class="px-4 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
                   <i class="pi pi-arrow-circle-left"></i>
                   {{ transfer.toStationName || 'N/A' }}
                 </span>
               </td>
-              <td>
-                <div class="date-info">
-                  <i class="pi pi-calendar"></i>
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <i class="pi pi-calendar text-gray-400"></i>
                   {{ formatDate(transfer.requestedAt) }}
                 </div>
               </td>
-              <td>
-                <div *ngIf="transfer.approvedBy; else noApprover" class="user-info">
-                  <i class="pi pi-user-edit"></i>
-                  <div>
-                    <div>{{ transfer.approvedBy }}</div>
-                  </div>
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div *ngIf="transfer.approvedBy; else noApprover" class="flex items-center gap-2">
+                  <i class="pi pi-user-edit text-purple-500"></i>
+                  <span class="text-sm text-gray-900">{{ transfer.approvedBy }}</span>
                 </div>
                 <ng-template #noApprover>
-                  <span class="text-muted">-</span>
+                  <span class="text-sm text-gray-400">-</span>
                 </ng-template>
               </td>
-              <td>
-                <div *ngIf="transfer.completedAt; else notCompleted" class="date-info">
-                  <i class="pi pi-calendar-check"></i>
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div *ngIf="transfer.completedAt; else notCompleted" class="flex items-center gap-2 text-sm text-gray-600">
+                  <i class="pi pi-calendar-check text-gray-400"></i>
                   {{ formatDate(transfer.completedAt) }}
                 </div>
                 <ng-template #notCompleted>
-                  <span class="text-muted">-</span>
+                  <span class="text-sm text-gray-400">-</span>
                 </ng-template>
               </td>
-              <td>
-                <p-tag 
-                  [value]="getStatusLabel(transfer.status)" 
-                  [severity]="getStatusSeverity(transfer.status)"
-                  [icon]="transfer.status === 'Pending' ? 'pi pi-clock' : 
-                          transfer.status === 'Approved' ? 'pi pi-check' : 
-                          transfer.status === 'Rejected' ? 'pi pi-times' : 'pi pi-info-circle'">
-                </p-tag>
+              <td class="px-4 py-4 whitespace-nowrap">
+                <span [class]="'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ' + 
+                      (transfer.status === 'Pending' ? 'bg-orange-100 text-orange-800' : 
+                       transfer.status === 'Approved' ? 'bg-green-100 text-green-800' : 
+                       transfer.status === 'Rejected' ? 'bg-red-100 text-red-800' : 
+                       'bg-blue-100 text-blue-800')">
+                  <i [class]="'pi ' + (transfer.status === 'Pending' ? 'pi-clock' : 
+                              transfer.status === 'Approved' ? 'pi-check' : 
+                              transfer.status === 'Rejected' ? 'pi-times' : 'pi-info-circle')"></i>
+                  {{ getStatusLabel(transfer.status) }}
+                </span>
               </td>
-              <td>
-                <div class="action-buttons">
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-2">
                   <button 
                     *ngIf="transfer.canApprove"
-                    pButton 
-                    icon="pi pi-check" 
-                    class="p-button-rounded p-button-success p-button-sm"
-                    pTooltip="Phê duyệt"
-                    tooltipPosition="top"
-                    (click)="showApproveDialog(transfer)">
+                    (click)="showApproveDialog(transfer)"
+                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                    title="Approve">
+                    <i class="pi pi-check"></i>
                   </button>
                   <button 
-                    pButton 
-                    icon="pi pi-eye" 
-                    class="p-button-rounded p-button-info p-button-sm"
-                    pTooltip="Chi tiết"
-                    tooltipPosition="top"
-                    (click)="viewDetails(transfer)">
+                    (click)="viewDetails(transfer)"
+                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="View Details">
+                    <i class="pi pi-eye"></i>
                   </button>
                 </div>
               </td>
             </tr>
-          </ng-template>
-
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="10" class="text-center">
-                <div class="empty-message">
-                  <i class="pi pi-inbox"></i>
-                  <p>No request </p>
+            
+            <tr *ngIf="filteredTransfers.length === 0">
+              <td colspan="10" class="px-6 py-10 text-center">
+                <div class="flex flex-col items-center">
+                  <i class="pi pi-inbox text-6xl text-gray-300 mb-3"></i>
+                  <p class="text-gray-500 text-lg">No request</p>
                 </div>
               </td>
             </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="filteredTransfers.length > 0" class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage, filteredTransfers.length) }} of {{ filteredTransfers.length }} entries
+          </div>
+          <div class="flex gap-2">
+            <button 
+              (click)="previousPage()"
+              [disabled]="currentPage === 1"
+              [class]="'px-3 py-1 rounded-lg transition-colors ' + 
+                      (currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300')">
+              <i class="pi pi-chevron-left"></i>
+            </button>
+            
+            <button *ngFor="let page of getPageNumbers()" 
+              (click)="goToPage(page)"
+              [class]="'px-3 py-1 rounded-lg transition-colors ' + 
+                      (currentPage === page ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300')">
+              {{ page }}
+            </button>
+            
+            <button 
+              (click)="nextPage()"
+              [disabled]="currentPage === totalPages"
+              [class]="'px-3 py-1 rounded-lg transition-colors ' + 
+                      (currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300')">
+              <i class="pi pi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Approve Dialog -->
-    <p-dialog 
-      [(visible)]="approveDialogVisible" 
-      [modal]="true" 
-      [style]="{width: '500px'}"
-      header="Approve Transfer Request"
-      [draggable]="false"
-      [resizable]="false">
-      
-      <div *ngIf="selectedTransfer" class="dialog-content">
-        <div class="transfer-info">
-          <h4 class="info-header">
-            <i class="pi pi-info-circle"></i>
-            Thông tin yêu cầu
-          </h4>
-          
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">Request Code:</span>
-              <span class="value">#{{ selectedTransfer.transferId }}</span>
-            </div>
+    <div *ngIf="approveDialogVisible" class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4">
+        <!-- Dialog Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-blue-50">
+          <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <i class="pi pi-check-circle text-green-600"></i>
+            Approve Transfer Request
+          </h3>
+          <button 
+            (click)="approveDialogVisible = false"
+            [disabled]="submitting"
+            class="text-gray-400 hover:text-gray-600 transition-colors">
+            <i class="pi pi-times text-2xl"></i>
+          </button>
+        </div>
+
+        <!-- Dialog Content -->
+        <div *ngIf="selectedTransfer" class="p-6">
+          <div class="bg-blue-50 rounded-lg p-4 mb-4">
+            <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <i class="pi pi-info-circle text-blue-600"></i>
+              Request Information
+            </h4>
             
-            <div class="info-item">
-              <span class="label">Pin:</span>
-              <span class="value">{{ selectedTransfer.batterySerial }}</span>
-            </div>
-            
-            <div class="info-item">
-              <span class="label">Request By:</span>
-              <span class="value">{{ selectedTransfer.requestedBy }}</span>
-            </div>
-            
-            <div class="info-item">
-              <span class="label">From Station:</span>
-              <span class="value highlight from">{{ selectedTransfer.fromStationName }}</span>
-            </div>
-            
-            <div class="info-item">
-              <span class="label">To Station:</span>
-              <span class="value highlight to">{{ selectedTransfer.toStationName }}</span>
-            </div>
-            
-            <div class="info-item">
-              <span class="label">Request At:</span>
-              <span class="value">{{ formatDate(selectedTransfer.requestedAt) }}</span>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Request Code:</span>
+                <span class="text-sm font-semibold text-gray-900">#{{ selectedTransfer.transferId }}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Battery:</span>
+                <span class="text-sm font-semibold text-gray-900">{{ selectedTransfer.batterySerial }}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Request By:</span>
+                <span class="text-sm font-semibold text-gray-900">{{ selectedTransfer.requestedBy }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">From Station:</span>
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
+                  {{ selectedTransfer.fromStationName }}
+                </span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">To Station:</span>
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                  {{ selectedTransfer.toStationName }}
+                </span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Request At:</span>
+                <span class="text-sm font-semibold text-gray-900">{{ formatDate(selectedTransfer.requestedAt) }}</span>
+              </div>
             </div>
           </div>
         </div>
-       
-      </div>
 
-      <ng-template pTemplate="footer">
-        <button 
-          pButton 
-          label="Cancel" 
-          icon="pi pi-times" 
-          class="p-button-text p-button-secondary"
-          (click)="approveDialogVisible = false"
-          [disabled]="submitting">
-        </button>
-        <button 
-          pButton 
-          label="Approved" 
-          icon="pi pi-check" 
-          class="p-button-success"
-          (click)="approveTransfer()"
-          [loading]="submitting">
-        </button>
-      </ng-template>
-    </p-dialog>
+        <!-- Dialog Footer -->
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <button 
+            (click)="approveDialogVisible = false"
+            [disabled]="submitting"
+            [class]="'px-6 py-2 rounded-lg font-medium transition-colors ' + 
+                    (submitting ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'text-gray-700 bg-white hover:bg-gray-100 border border-gray-300')">
+            <i class="pi pi-times mr-2"></i>
+            Cancel
+          </button>
+          <button 
+            (click)="approveTransfer()"
+            [disabled]="submitting"
+            [class]="'px-6 py-2 text-white rounded-lg font-medium transition-colors flex items-center gap-2 ' + 
+                    (submitting ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700')">
+            <div *ngIf="submitting" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <i *ngIf="!submitting" class="pi pi-check"></i>
+            {{ submitting ? 'Processing...' : 'Approved' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

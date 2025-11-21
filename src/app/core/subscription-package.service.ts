@@ -8,8 +8,8 @@ export interface PackageDto {
     billingCycle: string;
     price: number;
     includedSwaps: number;
-    status: number;
-    createAt: Date;
+    status: string;
+    createdAt: Date;
 }
 
 export interface CreatePackageDto {

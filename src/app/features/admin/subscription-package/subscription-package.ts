@@ -1,49 +1,50 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators,FormsModule,ReactiveFormsModule } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SubscriptionPackageService, PackageDto, CreatePackageDto, UpdatePackageDto } from '../../../core/subscription-package.service';
-import { TableModule } from 'primeng/table';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { ToolbarModule } from 'primeng/toolbar';
-import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Select } from "primeng/select";
-import { DatePipe,CurrencyPipe,CommonModule } from '@angular/common';
+import { DatePipe, CurrencyPipe, CommonModule } from '@angular/common';
 import { SidebarComponent } from "../../../shared/sidebar/sidebar";
+
 @Component({
   selector: 'app-package-management',
   templateUrl: './subscription-package.html',
   styleUrls: ['./subscription-package.css'],
   standalone: true,
-    imports: [
-    TableModule,
-    DialogModule,
-    ButtonModule,
-    InputTextModule,
-    ToolbarModule,
-    ToastModule,
-    ConfirmDialogModule,
+  imports: [
     FormsModule,
     ReactiveFormsModule,
-    Select,
     DatePipe,
     CurrencyPipe,
     SidebarComponent,
     CommonModule
-],
-    providers: [ConfirmationService, MessageService]
+  ]
 })
 export class PackageManagementComponent implements OnInit {
   packages: PackageDto[] = [];
   loading = false;
-
   displayDialog = false;
   isEdit = false;
-
   packageForm!: FormGroup;
   selectedPackage?: PackageDto;
+  Math = Math;
+
+  // Pagination
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 1;
+
+  toast = {
+    show: false,
+    severity: 'info',
+    summary: '',
+    detail: ''
+  };
+
+  confirmDialog = {
+    show: false,
+    message: '',
+    accept: () => {},
+    reject: () => {}
+  };
 
   billingCycles = [
     { label: 'Monthly', value: 'Monthly' },
@@ -53,9 +54,7 @@ export class PackageManagementComponent implements OnInit {
 
   constructor(
     private subscriptionPackage: SubscriptionPackageService,
-    private fb: FormBuilder,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -77,18 +76,51 @@ export class PackageManagementComponent implements OnInit {
     this.subscriptionPackage.getAllPackages().subscribe({
       next: (res) => {
         this.packages = res;
+        this.totalPages = Math.ceil(this.packages.length / this.itemsPerPage);
         this.loading = false;
       },
       error: (err) => {
         this.loading = false;
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err?.error?.message || err.message || 'Failed to load packages' });
+        this.showToast('error', 'Error', err?.error?.message || err.message || 'Failed to load packages');
       }
     });
+  }
+
+  get paginatedPackages() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.packages.slice(start, end);
+  }
+
+  getPageNumbers(): number[] {
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number) {
+    this.currentPage = page;
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
   }
 
   openCreateDialog() {
     this.isEdit = false;
     this.packageForm.reset({ price: 0, includedSwaps: 0 });
+    this.packageForm.get('billingCycle')?.enable();
+    this.packageForm.get('includedSwaps')?.enable();
     this.displayDialog = true;
   }
 
@@ -99,6 +131,8 @@ export class PackageManagementComponent implements OnInit {
       name: pkg.name,
       price: pkg.price,
     });
+    this.packageForm.get('billingCycle')?.disable();
+    this.packageForm.get('includedSwaps')?.disable();
     this.displayDialog = true;
   }
 
@@ -115,78 +149,92 @@ export class PackageManagementComponent implements OnInit {
         name: form.name,
         price: form.price
       };
-        this.packageForm.get('billingCycle')?.disable();
-        this.packageForm.get('includedSwaps')?.disable();
+
       this.subscriptionPackage.updatePackage(this.selectedPackage.packageId, update).subscribe({
         next: () => {
-          this.messageService.add({ severity: 'success', summary: 'Updated', detail: 'Package updated' });
+          this.showToast('success', 'Updated', 'Package updated successfully');
           this.displayDialog = false;
           this.loadPackages();
         },
-        error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err?.error?.message || err.message })
+        error: (err) => this.showToast('error', 'Error', err?.error?.message || err.message)
       });
     } else {
       const create: CreatePackageDto = {
         name: form.name,
-        billingCycle: form.billingCycle, 
+        billingCycle: form.billingCycle,
         price: form.price,
         includedSwaps: form.includedSwaps
       };
 
       this.subscriptionPackage.createPackage(create).subscribe({
         next: () => {
-          this.messageService.add({ severity: 'success', summary: 'Created', detail: 'Package created' });
+          this.showToast('success', 'Created', 'Package created successfully');
           this.displayDialog = false;
           this.loadPackages();
         },
-        error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err?.error?.message || err.message })
+        error: (err) => this.showToast('error', 'Error', err?.error?.message || err.message)
       });
     }
   }
 
   confirmInactive(pkg: PackageDto) {
-    this.confirmationService.confirm({
+    this.confirmDialog = {
+      show: true,
       message: `Are you sure you want to set package "${pkg.name}" to inactive?`,
       accept: () => {
         this.subscriptionPackage.inactivePackage(pkg.packageId).subscribe({
           next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Done', detail: 'Package set to inactive' });
+            this.showToast('success', 'Done', 'Package set to inactive');
             this.loadPackages();
           },
-          error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err?.error?.message || err.message })
+          error: (err) => this.showToast('error', 'Error', err?.error?.message || err.message)
         });
+        this.confirmDialog.show = false;
+      },
+      reject: () => {
+        this.confirmDialog.show = false;
       }
-    });
+    };
   }
 
   confirmReactivate(pkg: PackageDto) {
-    this.confirmationService.confirm({
+    this.confirmDialog = {
+      show: true,
       message: `Reactivate package "${pkg.name}"?`,
       accept: () => {
         this.subscriptionPackage.reactivePackage(pkg.packageId).subscribe({
           next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Done', detail: 'Package reactivated' });
+            this.showToast('success', 'Done', 'Package reactivated');
             this.loadPackages();
           },
-          error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err?.error?.message || err.message })
+          error: (err) => this.showToast('error', 'Error', err?.error?.message || err.message)
         });
+        this.confirmDialog.show = false;
+      },
+      reject: () => {
+        this.confirmDialog.show = false;
       }
-    });
+    };
   }
 
   confirmPublish(pkg: PackageDto) {
-    this.confirmationService.confirm({
+    this.confirmDialog = {
+      show: true,
       message: `Publish package "${pkg.name}"?`,
       accept: () => {
         this.subscriptionPackage.publishPackage(pkg.packageId).subscribe({
           next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Published', detail: 'Package published' });
+            this.showToast('success', 'Published', 'Package published successfully');
             this.loadPackages();
           },
-          error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err?.error?.message || err.message })
+          error: (err) => this.showToast('error', 'Error', err?.error?.message || err.message)
         });
+        this.confirmDialog.show = false;
+      },
+      reject: () => {
+        this.confirmDialog.show = false;
       }
-    });
+    };
   }
 
   statusLabel(status: string) {
@@ -194,11 +242,23 @@ export class PackageManagementComponent implements OnInit {
       case "Draft": return 0;
       case "Active": return 1;
       case "Inactive": return 2;
+      default: return -1;
+    }
+  }
+
+  getStatusText(status: number): string {
+    switch (status) {
+      case 0: return 'Draft';
+      case 1: return 'Active';
+      case 2: return 'Inactive';
       default: return 'Unknown';
     }
   }
+
+  showToast(severity: string, summary: string, detail: string) {
+    this.toast = { show: true, severity, summary, detail };
+    setTimeout(() => {
+      this.toast.show = false;
+    }, 3000);
+  }
 }
-
-
-
-

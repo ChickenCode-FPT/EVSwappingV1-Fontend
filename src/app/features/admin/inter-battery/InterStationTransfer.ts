@@ -1,25 +1,12 @@
+
+// inter-station-transfer.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SidebarComponent } from '../../../shared/sidebar/sidebar';
-import { InterStationTransferService} from '../../../core/interBatteryStation.service';
+import { InterStationTransferService } from '../../../core/interBatteryStation.service';
 
-// PrimeNG Imports
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
-import { ToolbarModule } from 'primeng/toolbar';
-
-// DTOs and Service
 export interface InterStationTransferAdminDto {
   transferId: number;
   fromStationId: number;
@@ -32,7 +19,7 @@ export interface InterStationTransferAdminDto {
   requestedBy: string | null;
   approvedByUserId: string | null;
   approvedBy: string | null;
-  status: string; // "Pending", "Approved", "Rejected", "Completed"
+  status: string;
   requestedAt: string;
   completedAt: string | null;
   canApprove: boolean;
@@ -42,39 +29,41 @@ export interface ApproveTransferDto {
   approvedByUserId: string;
 }
 
-type TagSeverity = "success" | "secondary" | "info" | "warn" | "danger" | "contrast" | null | undefined;
-
 @Component({
   selector: 'app-inter-station-transfer',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    SidebarComponent,
-    CardModule,
-    ButtonModule,
-    TableModule,
-    TagModule,
-    ToastModule,
-    ProgressSpinnerModule,
-    DialogModule,
-    InputTextModule,
-    ConfirmDialogModule,
-    ToolbarModule
+    FormsModule,
+    SidebarComponent
   ],
-  providers: [MessageService, ConfirmationService],
   templateUrl: './inter-station-transfer.html',
   styleUrls: ['./inter-station-transfer.css']
 })
 export class InterStationTransferComponent implements OnInit {
   transfers: InterStationTransferAdminDto[] = [];
+  filteredTransfers: InterStationTransferAdminDto[] = [];
   loading = false;
   approveDialogVisible = false;
   selectedTransfer: InterStationTransferAdminDto | null = null;
   approveForm: FormGroup;
   submitting = false;
+  searchText = '';
+  Math = Math;
 
-  // Stats
+  // Pagination
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 1;
+
+  toast = {
+    show: false,
+    severity: 'info',
+    summary: '',
+    detail: ''
+  };
+
   get pendingCount(): number {
     return this.transfers.filter(t => t.status === 'Pending').length;
   }
@@ -83,10 +72,14 @@ export class InterStationTransferComponent implements OnInit {
     return this.transfers.filter(t => t.status === 'Approved').length;
   }
 
+  get paginatedTransfers() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredTransfers.slice(start, end);
+  }
+
   constructor(
     private fb: FormBuilder,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     private router: Router,
     private transferService: InterStationTransferService
   ) {
@@ -97,36 +90,69 @@ export class InterStationTransferComponent implements OnInit {
 
   ngOnInit() {
     this.loadTransfers();
-    this.getUserIdFromToken();
   }
 
   loadTransfers() {
     this.loading = true;
     
-    this.transferService .getAllTransfers().subscribe({
+    this.transferService.getAllTransfers().subscribe({
       next: (data) => {
         this.transfers = data;
+        this.filteredTransfers = data;
+        this.totalPages = Math.ceil(this.filteredTransfers.length / this.itemsPerPage);
         this.loading = false;
       },
       error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải danh sách chuyển trạm'
-        });
+        this.showToast('error', 'Error', 'Cannot load transfer list');
         this.loading = false;
       }
     });
+  }
 
+  filterTransfers() {
+    if (!this.searchText.trim()) {
+      this.filteredTransfers = this.transfers;
+    } else {
+      const search = this.searchText.toLowerCase();
+      this.filteredTransfers = this.transfers.filter(t =>
+        t.batterySerial?.toLowerCase().includes(search) ||
+        t.requestedBy?.toLowerCase().includes(search) ||
+        t.fromStationName?.toLowerCase().includes(search) ||
+        t.toStationName?.toLowerCase().includes(search) ||
+        t.status.toLowerCase().includes(search)
+      );
+    }
+    this.totalPages = Math.ceil(this.filteredTransfers.length / this.itemsPerPage);
+    this.currentPage = 1;
+  }
+
+  getPageNumbers(): number[] {
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number) {
+    this.currentPage = page;
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
   }
 
   showApproveDialog(transfer: InterStationTransferAdminDto) {
     if (!transfer.canApprove) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Cảnh báo',
-        detail: 'Chỉ có thể phê duyệt yêu cầu đang chờ xử lý'
-      });
+      this.showToast('warn', 'Warning', 'Only pending requests can be approved');
       return;
     }
     
@@ -135,82 +161,46 @@ export class InterStationTransferComponent implements OnInit {
     this.approveForm.reset();
   }
 
-getUserIdFromToken(): string | null {
-  const token = localStorage.getItem('token');
-  if (!token) return null;
+  getUserIdFromToken(): string | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
 
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const userId = payload?.sub || payload?.nameid || null;
-
-    console.log('User ID decoded:', userId); 
-
-    return userId;
-  } catch (error) {
-    console.error('Token không hợp lệ:', error);
-    return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const userId = payload?.sub || payload?.nameid || null;
+      return userId;
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null;
+    }
   }
-}
 
   approveTransfer() {
     const currentUserId = this.getUserIdFromToken();
     if (!currentUserId) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Lỗi xác thực',
-      detail: 'Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.'
-    });
-    return;
-  }
+      this.showToast('error', 'Authentication Error', 'User information not found. Please login again.');
+      return;
+    }
+    
     if (this.selectedTransfer) {
       this.submitting = true;
       const dto: ApproveTransferDto = {
         approvedByUserId: currentUserId
       };
-        this.transferService.approveTransfer(this.selectedTransfer.transferId, dto).subscribe({
-      next: (response) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: response || 'Đã phê duyệt yêu cầu chuyển trạm'
-        });
-        this.submitting = false;
-        this.approveDialogVisible = false;
-        this.loadTransfers();
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: err.error || 'Không thể phê duyệt yêu cầu'
-        });
-        this.submitting = false;
-      }
-    });
-  }
-
-      // Mock success
-      setTimeout(() => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Transfer approved.'
-        });
-        this.submitting = false;
-        this.approveDialogVisible = false;
-        this.loadTransfers();
-      }, 1000);
-    
-  }
-
-  getStatusSeverity(status: string): TagSeverity {
-    const severityMap: { [key: string]: TagSeverity } = {
-      'Pending': 'warn',
-      'Approved': 'success',
-      'Rejected': 'danger',
-      'Completed': 'info'
-    };
-    return severityMap[status] || 'secondary';
+      
+      this.transferService.approveTransfer(this.selectedTransfer.transferId, dto).subscribe({
+        next: (response) => {
+          this.showToast('success', 'Success', response || 'Transfer request approved');
+          this.submitting = false;
+          this.approveDialogVisible = false;
+          this.loadTransfers();
+        },
+        error: (err) => {
+          this.showToast('error', 'Error', err.error || 'Cannot approve request');
+          this.submitting = false;
+        }
+      });
+    }
   }
 
   getStatusLabel(status: string): string {
@@ -226,7 +216,7 @@ getUserIdFromToken(): string | null {
   formatDate(dateString: string | null): string {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleString('vi-VN', {
+    return date.toLocaleString('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -241,13 +231,17 @@ getUserIdFromToken(): string | null {
 
   viewDetails(transfer: InterStationTransferAdminDto) {
     console.log('View details:', transfer);
+    this.showToast('info', 'Info', 'Feature under development');
   }
 
   exportData() {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Xuất dữ liệu',
-      detail: 'Chức năng đang được phát triển'
-    });
+    this.showToast('info', 'Export Data', 'Feature under development');
+  }
+
+  showToast(severity: string, summary: string, detail: string) {
+    this.toast = { show: true, severity, summary, detail };
+    setTimeout(() => {
+      this.toast.show = false;
+    }, 3000);
   }
 }

@@ -49,3 +49,8 @@ export interface CreateBattery {
   status: string;  
   stationId: number;  
 }
+
+export interface UpdateStatusBattery {
+  batteryId: number;
+  status: string;
+}

@@ -174,7 +174,7 @@ export class BatteryWarehouse implements OnInit {
       console.warn("Inventory not found:", item.stationInventoryId);
       return;
     }
-    
+
     this.editInventory.set(inv);
     this.newStatus.set(inv.status);
     this.showEditPopup.set(true);
@@ -185,7 +185,7 @@ export class BatteryWarehouse implements OnInit {
     this.showConfirmUpdatePopup.set(true);
   }
 
-  // call API to update status (payload matches backend: { stationInventoryId, status })
+  /*
   async updateInventoryStatus() {
     const inventory = this.editInventory();
     if (!inventory) return;
@@ -210,6 +210,47 @@ export class BatteryWarehouse implements OnInit {
 
       this.showConfirmUpdatePopup.set(false);
       alert('Status updated successfully!');
+    } catch (err) {
+      console.error('Update failed:', err);
+      alert('Update failed!');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+    */
+
+  async updateBatteryStatus() {
+    const inventory = this.editInventory();
+    if (!inventory || !inventory.batteries) {
+      alert('Battery not found!');
+      return;
+    }
+
+    const payload = {
+      batteryId: inventory.batteries.batteryId,
+      status: this.newStatus()
+    };
+
+    try {
+      this.loading.set(true);
+      await firstValueFrom(this.batteryService.updateStatus(payload));
+
+      this.inventories.update(list =>
+        list.map(i =>
+          i.stationInventoryId === inventory.stationInventoryId
+            ? {
+              ...i,
+              batteries: {
+                ...i.batteries!,
+                status: payload.status
+              }
+            }
+            : i
+        )
+      );
+
+      this.showConfirmUpdatePopup.set(false);
+      alert('Battery status updated successfully!');
     } catch (err) {
       console.error('Update failed:', err);
       alert('Update failed!');

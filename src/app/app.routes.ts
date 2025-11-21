@@ -31,6 +31,11 @@ import { PaymentListComponent } from './features/payment/pages/payment-list/paym
 import { guestGuard } from './core/guards/guest.guard';
 import { InterStationTransferComponent } from './features/admin/inter-battery/InterStationTransfer';
 
+import { InterTransferCreate } from './features/staff/inter-transfer-create/inter-transfer-create';
+import { InterTransferList } from './features/staff/inter-transfer-list/inter-transfer-list';
+import { StaffProfile } from './features/staff/staff-profile/staff-profile';
+import { FaceAdd } from './features/staff/face-add/face-add';
+import { FaceVerified } from './features/staff/face-verified/face-verified';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -168,7 +173,12 @@ export const routes: Routes = [
         component: BatteryTransactionDetail,
         data: { mode: 'confirm' },
       },
-    ],
+      { path: 'inter/transfers', component: InterTransferList },
+      { path: 'inter/transfers/create', component: InterTransferCreate },
+      { path: 'profile', component: StaffProfile },
+      { path: 'face/add', component: FaceAdd },
+      { path: 'face/verify', component: FaceVerified }
+    ]
   },
 
   {

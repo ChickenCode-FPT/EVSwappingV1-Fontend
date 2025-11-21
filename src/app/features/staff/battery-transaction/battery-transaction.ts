@@ -58,7 +58,15 @@ export class BatteryTransaction implements OnInit {
     this.loading.set(true);
     try {
       const data = await firstValueFrom(this.transactionService.getAllFullTransactions());
-      this.transactions.set(data);
+      const stationId = localStorage.getItem('stationId');
+
+      if (stationId) {
+        const filteredTransactions = data.filter(transaction => transaction.station?.stationId.toString() === stationId);
+        this.transactions.set(filteredTransactions);
+      } else {
+        console.warn('⚠️ StationId không có trong localStorage');
+        this.transactions.set([]);
+      }
     } catch (err) {
       console.error('Lỗi khi tải dữ liệu:', err);
     } finally {

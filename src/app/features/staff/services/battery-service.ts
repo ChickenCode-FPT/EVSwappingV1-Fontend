@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { Battery } from '../../models/battery.model';
+import { Battery, CreateBattery, UpdateStatusBattery } from '../../models/battery.model';
 
 
 @Injectable({
@@ -24,12 +24,16 @@ export class BatteryService {
     return this.http.get<any>(`${this.api}/battery/${batteryId}`);
   }
 
-  addBattery(battery: Battery): Observable<any> {
-  return this.http.post(`${this.api}/batteries`, battery).pipe(
-    catchError((err) => {
-      console.error('addBattery error', err);
-      return of(null);
-    })
-  );
-}
+  addBattery(battery: CreateBattery): Observable<any> {
+    return this.http.post(`${this.api}/batteries`, battery).pipe(
+      catchError((err) => {
+        console.error('addBattery error', err);
+        return of(null);
+      })
+    );
+  }
+
+  updateStatus(payload: UpdateStatusBattery): Observable<any> {
+    return this.http.put(`${this.api}/batteries/status`, payload);
+  }
 }

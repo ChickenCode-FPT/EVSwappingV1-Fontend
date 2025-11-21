@@ -1,0 +1,127 @@
+<!-- Floating Button -->
+<div 
+  class="chat-fab"
+  [class.is-open]="isOpen()"
+  (click)="toggleChat(true)"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" class="chat-fab__icon" fill="currentColor"><path d="M20 3H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h7v2H8v2h8v-2h-3v-2h7c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM8 14c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm8 0c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z"></path></svg>
+  <div class="chat-fab__pulse"></div>
+</div>
+
+<!-- Chat Window -->
+<div 
+  class="chat-window"
+  [class.is-open]="isOpen()"
+>
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="chat-header__left">
+      <div class="chat-header__avatar-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="chat-header__avatar-icon" fill="currentColor"><path d="M20 3H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h7v2H8v2h8v-2h-3v-2h7c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM8 14c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm8 0c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z"></path></svg>
+      </div>
+      <div>
+        <div class="chat-header__title">EV bot</div>
+        <div class="chat-header__status">
+          <span class="chat-header__status-indicator"></span>
+          Đang hoạt động
+        </div>
+      </div>
+    </div>
+    <div class="chat-header__right">
+      <!-- <button
+        class="chat-header__button"
+        (click)="openFullScreenChat()"
+        title="Mở trang chat đầy đủ"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="chat-header__button-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"/></svg>
+      </button> -->
+      <button
+        class="chat-header__button"
+        (click)="toggleChat(false)"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512" class="chat-header__button-icon--close" fill="currentColor"><path d="M289.94 256l95-95A24 24 0 00351 127l-95 95l-95-95a24 24 0 00-34 34l95 95l-95 95a24 24 0 1034 34l95-95l95 95a24 24 0 0034-34z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div #messagesContainer class="chat-messages">
+    @if (showSuggestions()) {
+    <div class="chat-suggestions">
+      @for (s of suggestions; track s.title) {
+      <button
+        (click)="handleSuggestionClick(s.title)"
+        class="chat-suggestion"
+      >
+        <div class="chat-suggestion__icon">{{ s.icon }}</div>
+        <div class="chat-suggestion__title">{{ s.title }}</div>
+      </button>
+      }
+    </div>
+    }
+
+    @for (m of messages(); track m; let i = $index) {
+      <div class="chat-message" [class.is-me]="m.sender === 'me'">
+        @if (m.sender === 'model') {
+          <div class="chat-message__avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="chat-message__avatar-icon" fill="currentColor"><path d="M20 3H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h7v2H8v2h8v-2h-3v-2h7c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM8 14c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm8 0c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z"></path></svg>
+          </div>
+        }
+        <div class="chat-message__bubble">
+          <div class="message-content" [innerHTML]="m.contentAsHtml"></div>
+          @if (m.timestamp) {
+            <div class="chat-message__timestamp">
+              {{ m.timestamp | date:'HH:mm' }}
+            </div>
+          }
+        </div>
+        @if (m.sender === 'me') {
+          <div class="chat-message__avatar is-me">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 448 512" class="chat-message__avatar-icon" fill="currentColor"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
+          </div>
+        }
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="chat-message">
+        <div class="chat-message__avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="chat-message__avatar-icon" fill="currentColor"><path d="M20 3H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h7v2H8v2h8v-2h-3v-2h7c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM8 14c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm8 0c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z"></path></svg>
+        </div>
+        <div class="chat-message__bubble is-typing">
+          <div class="typing-indicator">
+            <div class="typing-indicator__dot" style="animation-delay: 0ms;"></div>
+            <div class="typing-indicator__dot" style="animation-delay: 150ms;"></div>
+            <div class="typing-indicator__dot" style="animation-delay: 300ms;"></div>
+          </div>
+        </div>
+      </div>
+    }
+    <div #messageEnd></div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <div class="chat-input-wrapper">
+      <textarea
+        #textarea
+        [ngModel]="inputValue()"
+        (ngModelChange)="inputValue.set($event); adjustTextareaHeight()"
+        (keydown)="handleEnter($event)"
+        class="chat-input"
+        placeholder="Nhập câu hỏi của bạn..."
+        rows="1"
+      ></textarea>
+      <button
+        (click)="handleSendMessage(inputValue())"
+        [disabled]="isLoading() || inputValue().trim() === ''"
+        class="send-button"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512" class="send-button__icon" fill="currentColor"><path d="M470.3 271.15L43.16 447.31a7.83 7.83 0 01-11.16-7V327a8 8 0 016.51-7.86l247.62-47c17.36-3.29 17.36-28.15 0-31.44l-247.62-47a8 8 0 01-6.51-7.86V72.56a7.83 7.83 0 0111.16-7L470.3 241.76a16 16 0 010 29.39z"/></svg>
+      </button>
+    </div>
+    <div class="chat-input-hint">
+      Nhấn Enter để gửi • Shift + Enter để xuống dòng
+    </div>
+  </div>
+</div>

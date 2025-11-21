@@ -36,6 +36,7 @@ import { InterTransferList } from './features/staff/inter-transfer-list/inter-tr
 import { StaffProfile } from './features/staff/staff-profile/staff-profile';
 import { FaceAdd } from './features/staff/face-add/face-add';
 import { FaceVerified } from './features/staff/face-verified/face-verified';
+import { StatisticDashboardComponent } from './features/admin/statistic/statistic-dashboard';
 @Component({ template: '<h2>About Page</h2>', standalone: true })
 export class About {}
 
@@ -67,6 +68,13 @@ export const routes: Routes = [
   { path: '2fa-setup', component: Setup2FAComponent },
   { path: 'two-factor', component: TwoFactorComponent },
   { path: 'disable-2fa', component: Disable2FAComponent },
+  { path: 'station', component: MapComponent },
+  { path: 'reservations', component: ReservationsPageComponent },
+  { path: 'admin/users/promote', component: PromoteUserComponent },
+  { path: 'admin/users/battery-health', component: BatteryHealthLogsComponent },
+  { path: 'admin/users/assign-staff', component: AssignStationStaffComponent},
+  { path: 'admin/users/list-station-staff', component: StationStaffListComponent},
+  { path: 'admin/statistic', component: StatisticDashboardComponent },
 
   { path: 'reservations', component: ReservationsPageComponent },
   { path: 'admin/users/subscription-package', component: PackageManagementComponent},

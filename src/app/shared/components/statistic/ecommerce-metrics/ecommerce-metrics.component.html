@@ -1,0 +1,61 @@
+@if (metrics) {
+<div class="ecommerce-metrics">
+  <!-- Metric Item Start -->
+  <div class="metric-item">
+          <div
+            class="metric-item__icon-wrapper"
+            [innerHTML]="icons.moneyIcon | safeHtml"
+          ></div>
+    <div class="metric-item__content">
+      <div>
+        <span class="metric-item__label">Revenue</span>
+        <h4 class="metric-item__value">{{ metrics.customers.count | number }}</h4>
+      </div>
+      @if(metrics.customers.percentageChange) {
+      <app-badge
+        [color]="metrics.customers.percentageChange > 0 ? 'success' : 'error'"
+        [variant]="'solid'"
+      >
+        <span
+          [innerHTML]="
+            (metrics.customers.percentageChange > 0 ? icons.arrowUpIcon : icons.arrowDownIcon)
+              | safeHtml
+          "
+        ></span>
+        {{ metrics.customers.percentageChange | number : '1.2-2' }}%
+      </app-badge>
+      }
+    </div>
+  </div>
+  <!-- Metric Item End -->
+
+  <!-- Metric Item Start -->
+  <div class="metric-item">
+          <div
+            class="metric-item__icon-wrapper"
+            [innerHTML]="icons.batteryIcon | safeHtml"
+          ></div>
+    <div class="metric-item__content">
+      <div>
+        <span class="metric-item__label">Swap</span>
+        <h4 class="metric-item__value">{{ metrics.orders.count | number }}</h4>
+      </div>
+      @if(metrics.orders.percentageChange) {
+      <app-badge
+        [color]="metrics.orders.percentageChange > 0 ? 'success' : 'error'"
+        [variant]="'solid'"
+      >
+        <span
+          [innerHTML]="
+            (metrics.orders.percentageChange > 0 ? icons.arrowUpIcon : icons.arrowDownIcon)
+              | safeHtml
+          "
+        ></span>
+        {{ metrics.orders.percentageChange | number : '1.2-2' }}%
+      </app-badge>
+      }
+    </div>
+  </div>
+  <!-- Metric Item End -->
+</div>
+}

@@ -111,6 +111,8 @@ export class FaceVerified implements OnInit, OnDestroy {
       customerId: trx.customerUserId,
       staffId: staffId,
       fee: trx.price ?? 0,
+      outgoingBatteryId: trx.outgoingBatteryId,
+      incomingBatteryId: trx.incomingBatteryId,
       swapStatus: "Completed"
     };
 

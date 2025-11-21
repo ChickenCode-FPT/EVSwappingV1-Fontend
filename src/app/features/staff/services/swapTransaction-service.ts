@@ -1,3 +1,4 @@
+// src\app\features\staff\services\swapTransaction-service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -8,7 +9,7 @@ import { TransactionFull } from '../../models/transaction.model';
 export class SwapTransactionService {
   private apiUrl = `${environment.apiBase}/swapTransactions`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getAllFullTransactions(): Observable<TransactionFull[]> {
     return this.http.get<TransactionFull[]>(`${this.apiUrl}/full`);
@@ -20,5 +21,13 @@ export class SwapTransactionService {
 
   updateTransaction(id: number, data: any) {
     return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
+
+  confirmSwapByStaff(data: any) {
+    return this.http.post(`${this.apiUrl}/v2/confirm`, data);
+  }
+
+  completeSwap(data: any) {
+    return this.http.post(`${this.apiUrl}/v2/complete`, data);
   }
 }

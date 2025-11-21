@@ -1,154 +1,180 @@
+// src/app/features/staff/battery-transaction-detail/battery-transaction-detail.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 import { firstValueFrom } from 'rxjs';
+
 import { SwapTransactionService } from '../services/swapTransaction-service';
 import { BatteryService } from '../services/battery-service';
-import { PaymentService } from '../services/payment-service';
-import { PaymentPopup } from '../payment-popup/payment-popup';
 import { StaffService } from '../services/staff.service';
-
+import { TransactionFull } from '../../models/transaction.model';
+import { BatteryDto } from '../../station/models/battery.types';
+import { Battery } from '../../models/battery.model';
 
 @Component({
   selector: 'app-battery-transaction-detail',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatCardModule,
     MatChipsModule,
     MatDividerModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-    PaymentPopup
+    MatProgressSpinnerModule
   ],
   templateUrl: './battery-transaction-detail.html',
   styleUrls: ['./battery-transaction-detail.css']
 })
 export class BatteryTransactionDetail implements OnInit {
-  transaction: any;
+
+  transaction!: TransactionFull;
   outgoingBattery: any;
   incomingBattery: any;
-  payment: any;
+
+  // OUTGOING: list từ API available-outgoing (BatteryDto)
+  availableOutgoingBatteries: BatteryDto[] = [];
+
+  // INCOMING: lấy ALL batteries (giống FE cũ)
+  availableIncomingBatteries: Battery[] = [];
+
   loading = true;
   mode: 'view' | 'confirm' = 'view';
 
-  showPaymentPopup = false;
-  showConfirmSwapPopup = false;
+  // popups
+  showOutgoingPopup = false;
+  showCompleteSwapPopup = false;
   showMissingFacePopup = false;
-  pendingReturnUrl: string | null = null;
 
+  outgoingBatteryId: number | null = null;
+  incomingBatteryId: number | null = null;
+
+  pendingReturnUrl: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private swapService: SwapTransactionService,
     private batteryService: BatteryService,
-    private paymentService: PaymentService,
     private staffService: StaffService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
+
+    // Sau khi face verification redirect về → auto mở popup
+    this.route.queryParams.subscribe(params => {
+      const verifiedParam = params['verified'] === 'true';
+      const alreadyVerified = localStorage.getItem('staff_fid_verified') === 'true';
+
+      if (verifiedParam || alreadyVerified) {
+        localStorage.setItem('staff_fid_verified', 'true');
+
+        const openFlag = params['open'];
+        if (openFlag === 'outgoing') {
+          this.showOutgoingPopup = true;
+        }
+        if (openFlag === 'incoming') {
+          this.showCompleteSwapPopup = true;
+        }
+      }
+    });
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) this.loadTransaction(+id);
     });
 
-    this.route.queryParams.subscribe(params => {
-      if (params['showPopup'] === 'true') {
-        this.showConfirmSwapPopup = true;
-      }
-    });
-
-    const routeData = this.route.snapshot.data;
-    this.mode = routeData['mode'] || 'view';
+    this.mode = this.route.snapshot.data['mode'] || 'view';
   }
-
 
   async loadTransaction(id: number) {
     this.loading = true;
+
     try {
-      const res: any = await firstValueFrom(this.swapService.getFullTransactionById(id));
+      const res = await firstValueFrom(
+        this.swapService.getFullTransactionById(id)
+      );
       this.transaction = res;
+
       await this.loadBatteries(res);
-      await this.loadPayment(res.swapTransactionId);
-    } catch (err) {
-      console.error('Error loading transaction:', err);
+      await this.loadBatteryListsForTransaction(res);
+
     } finally {
       this.loading = false;
     }
   }
 
-  private async loadBatteries(res: any) {
+  /** pin đã gán trong transaction (outgoing/incoming hiện tại) */
+  private async loadBatteries(res: TransactionFull) {
     const tasks: Promise<any>[] = [];
 
     if (res.outgoingBatteryId) {
       tasks.push(
-        firstValueFrom(this.batteryService.getBatteryById(res.outgoingBatteryId)).then(
-          (data) => (this.outgoingBattery = data)
-        )
+        firstValueFrom(this.batteryService.getBatteryById(res.outgoingBatteryId))
+          .then(b => this.outgoingBattery = b)
       );
     }
 
     if (res.incomingBatteryId) {
       tasks.push(
-        firstValueFrom(this.batteryService.getBatteryById(res.incomingBatteryId)).then(
-          (data) => (this.incomingBattery = data)
-        )
+        firstValueFrom(this.batteryService.getBatteryById(res.incomingBatteryId))
+          .then(b => this.incomingBattery = b)
       );
     }
 
     await Promise.all(tasks);
   }
 
-  private async loadPayment(transactionId: number) {
-    try {
-      this.payment = await firstValueFrom(this.paymentService.getFilteredPayment(transactionId));
-    } catch (err) {
-      console.warn('No payment found for transaction:', transactionId);
+  /**
+   * OUTGOING: dùng API available-outgoing
+   * INCOMING: lấy ALL batteries (staff tự chọn)
+   */
+  private async loadBatteryListsForTransaction(res: TransactionFull) {
+    const stationId = res.stationId;
+    // const userId = res.customerUserId; // không dùng nữa cho INCOMING
+
+    const batteryModelId: number | null = null;
+
+    const tasks: Promise<any>[] = [];
+
+    // OUTGOING list: pin FULL ở station
+    if (stationId) {
+      tasks.push(
+        firstValueFrom(
+          this.batteryService.getAvailableOutgoingBatteries(stationId, batteryModelId)
+        ).then(list => {
+          this.availableOutgoingBatteries = list ?? [];
+        })
+      );
     }
+
+    // INCOMING list: lấy tất cả batteries (FE cũ)
+    tasks.push(
+      firstValueFrom(this.batteryService.getBatteries())
+        .then(list => {
+          this.availableIncomingBatteries = list ?? [];
+        })
+    );
+
+    await Promise.all(tasks);
   }
 
-  openPaymentPopup() {
-    if (this.payment) {
-      const userId = this.payment.transcation?.customerUserId;
-
-      if (!this.payment.userId && userId) {
-        this.payment.userId = userId;
-      }
-
-      if (!this.payment.transactionRef && this.payment.transcation?.swapTransactionId) {
-        this.payment.transactionRef = 'CASH-' + this.payment.transcation.swapTransactionId;
-      }
-    }
-
-    this.showPaymentPopup = true;
+  // =======================================================
+  // STEP 1 — Confirm Swap (Outgoing Battery)
+  // =======================================================
+  canShowConfirmButton() {
+    return this.mode === 'confirm' && this.transaction.swapStatus === 'Pending';
   }
 
-  closePaymentPopup() {
-    this.showPaymentPopup = false;
-  }
-
-  handlePaymentUpdated(updatedPayment: any) {
-    this.payment = updatedPayment;
-    this.showPaymentPopup = false;
-    if (this.transaction?.swapTransactionId) {
-      this.loadPayment(this.transaction.swapTransactionId);
-    }
-  }
-
-  async confirmSwap() {
-    if (this.transaction.swapStatus === 'Completed' || this.transaction.swapStatus === 'Cancelled') return;
-
-    const cachedFid = localStorage.getItem('staff_fid');
-    if (cachedFid) {
-      this.showConfirmSwapPopup = true;
-      return;
-    }
+  async confirmSwap(): Promise<void> {
 
     const userId = localStorage.getItem('userId');
     if (!userId) {
@@ -156,64 +182,116 @@ export class BatteryTransactionDetail implements OnInit {
       return;
     }
 
-    try {
-      const staff: any = await firstValueFrom(this.staffService.getStaffProfile(userId));
+    const staff: any = await firstValueFrom(this.staffService.getStaffProfile(userId));
 
-      if (!staff) {
-        alert('Không lấy được thông tin nhân viên.');
-        return;
-      }
-
-      if (!staff.fId) {
-        this.pendingReturnUrl = `/staff/battery/transaction/${this.transaction?.swapTransactionId ?? ''}`;
-        this.showMissingFacePopup = true;
-        return;
-      }
-
-      localStorage.setItem('staff_fid', staff.fId);
-      this.showConfirmSwapPopup = true;
-
-    } catch (err) {
-      console.error('Lỗi khi lấy profile staff:', err);
-      alert('Có lỗi khi kiểm tra khuôn mặt.');
+    // staff chưa đăng ký mặt
+    if (!staff?.fId) {
+      this.pendingReturnUrl =
+        `/staff/battery/transaction/${this.transaction.swapTransactionId}`;
+      this.showMissingFacePopup = true;
+      return;
     }
+
+    // lưu fId để FaceVerified dùng
+    localStorage.setItem('staff_fid', staff.fId);
+
+    // staff có FaceID nhưng chưa verify session này
+    const verified = localStorage.getItem('staff_fid_verified') === 'true';
+    if (!verified) {
+      this.router.navigate(['/staff/face/verify'], {
+        queryParams: {
+          next: `/staff/battery/transaction/${this.transaction.swapTransactionId}`,
+          open: 'outgoing'
+        }
+      });
+      return;
+    }
+
+    // đã verify → mở popup
+    this.showOutgoingPopup = true;
   }
 
-  onConfirmSwapPopup() {
-    this.showConfirmSwapPopup = false;
-    this.router.navigate(['staff/face/verify'], {
-      queryParams: { swapTransactionId: this.transaction.swapTransactionId }
-    });
+  async submitOutgoingBattery() {
+    if (!this.outgoingBatteryId) {
+      alert('Vui lòng chọn OUTGOING battery');
+      return;
+    }
+
+    const payload = {
+      swapTransactionId: this.transaction.swapTransactionId,
+      staffUserId: localStorage.getItem('userId'),
+      outgoingBatteryId: this.outgoingBatteryId
+    };
+
+    await firstValueFrom(this.swapService.confirmSwapByStaff(payload));
+
+    this.showOutgoingPopup = false;
+
+    // refresh
+    await this.loadTransaction(this.transaction.swapTransactionId);
   }
 
-  canShowConfirmButton() {
-    return (
-      this.mode === 'confirm' &&
-      this.transaction.swapStatus !== 'Cancelled' &&
-      this.transaction.swapStatus !== 'Completed'
-    );
+  // =======================================================
+  // STEP 2 — Complete Swap (Incoming Battery)
+  // =======================================================
+  canShowCompleteSwapButton() {
+    return this.mode === 'confirm' && this.transaction.swapStatus === 'InProgress';
   }
 
-  canShowPaymentButton() {
-    console.log('--- Check payment visibility ---');
-    console.log('Mode:', this.mode);
-    console.log('Payment:', this.payment);
-    console.log('Payment status:', this.payment?.status);
-    console.log('Transaction status:', this.transaction?.swapStatus);
-    return (
-      this.mode === 'confirm' &&
-      this.payment &&
-      this.payment.status !== 'Completed' &&
-      this.transaction.swapStatus !== 'Cancelled' &&
-      this.transaction.swapStatus !== 'Completed'
-    );
+  async openCompleteSwapPopup() {
+
+    const verified = localStorage.getItem('staff_fid_verified') === 'true';
+    const fId = localStorage.getItem('staff_fid');
+
+    // Có FaceID nhưng session này chưa verify → yêu cầu verify lại
+    if (!verified && fId) {
+      this.router.navigate(['/staff/face/verify'], {
+        queryParams: {
+          next: `/staff/battery/transaction/${this.transaction.swapTransactionId}`,
+          open: 'incoming'
+        }
+      });
+      return;
+    }
+
+    this.showCompleteSwapPopup = true;
   }
 
+  closeCompleteSwapPopup() {
+    this.showCompleteSwapPopup = false;
+  }
+
+  async completeSwap() {
+    if (!this.incomingBatteryId) {
+      alert('Vui lòng chọn INCOMING battery');
+      return;
+    }
+
+    const payload = {
+      swapTransactionId: this.transaction.swapTransactionId,
+      incomingBatteryId: this.incomingBatteryId
+    };
+
+    await firstValueFrom(this.swapService.completeSwap(payload));
+
+    this.showCompleteSwapPopup = false;
+
+    // Sau khi swap xong, clear verify flag để lần sau phải xác thực lại nếu cần
+    localStorage.removeItem('staff_fid_verified');
+
+    await this.loadTransaction(this.transaction.swapTransactionId);
+  }
+
+  // =======================================================
+  // FACE REGISTER
+  // =======================================================
   goToAddFace() {
     this.showMissingFacePopup = false;
+
     this.router.navigate(['/staff/face/add'], {
-      queryParams: { returnTo: this.pendingReturnUrl }
+      queryParams: {
+        returnTo: this.pendingReturnUrl
+      }
     });
   }
-
 }

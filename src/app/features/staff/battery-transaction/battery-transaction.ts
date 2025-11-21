@@ -1,3 +1,4 @@
+// src\app\features\staff\battery-transaction\battery-transaction.ts
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';

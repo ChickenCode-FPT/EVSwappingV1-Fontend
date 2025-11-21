@@ -1,3 +1,4 @@
+// src\app\features\staff\services\battery-model-service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';

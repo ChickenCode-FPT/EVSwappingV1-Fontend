@@ -6,6 +6,7 @@ import { StatisticsChartComponent } from '../../../shared/components/statistic/s
 import { StatisticService } from './services/statistic.service';
 import { firstValueFrom } from 'rxjs';
 import { ApexChartData, EcommerceMetrics, HeatmapData } from './models/statistic.model';
+import { ChatComponent } from '../../../shared/components/statistic/chat/chat.component';
 
 // Define default empty data objects
 const defaultEcommerceMetrics: EcommerceMetrics = {
@@ -95,6 +96,7 @@ const defaultHeatmapData: HeatmapData = {
     HeatmapComponent,
     EcommerceMetricsComponent,
     StatisticsChartComponent,
+    ChatComponent,
   ],
   templateUrl: './statistic-dashboard.html',
   styleUrls: ['./statistic-dashboard.css'],
@@ -209,7 +211,13 @@ export class StatisticDashboardComponent implements OnInit {
       }
 
       const newChartData: ApexChartData = {
-        categories: revenue.dataPoints.map((p: any) => p.lable),
+        categories: revenue.dataPoints.map((p: any) => {
+          if (params.period === 'month') {
+            const date = new Date(p.lable);
+            return date.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+          }
+          return p.lable;
+        }),
         series: [
           {
             name: 'Battery Swaps',

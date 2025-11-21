@@ -1,3 +1,4 @@
+// src\app\features\models\battery.model.ts
 export interface Battery {
   batteryId: number;
   serialNumber: string;
@@ -33,8 +34,14 @@ export interface BatteriesDto {
 export interface BatteryModelDto {
   batteryModelId: number;
   modelCode: string;
+  displayName?: string;
   manufacturer: string;
   capacityKwh: number;
+  capacityWh?: number;
   chemistry: string;
   compatibleVehicleTypes: string;
+  voltage?: number;
+  maxDischargeCurrent?: number;
+  maxChargeCurrent?: number;
+  description?: string;
 }

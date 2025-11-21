@@ -1,3 +1,4 @@
+// src\app\features\vehicle\pages\vehicle-list\vehicle-list.component.ts
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehicleService } from '../../services/vehicle.service';

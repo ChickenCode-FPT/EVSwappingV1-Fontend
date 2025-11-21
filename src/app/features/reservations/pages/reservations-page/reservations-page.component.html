@@ -27,8 +27,10 @@
       </select>
 
       <select class="select" [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)">
-        <option value="startDesc">Gần nhất</option>
-        <option value="startAsc">Cũ nhất</option>
+        <option value="createdDesc">Mới tạo (mới nhất)</option>
+        <option value="createdAsc">Mới tạo (cũ nhất)</option>
+        <option value="startDesc">Theo giờ bắt đầu (gần nhất)</option>
+        <option value="startAsc">Theo giờ bắt đầu (cũ nhất)</option>
         <option value="status">Theo trạng thái</option>
       </select>
 
@@ -47,8 +49,7 @@
         [stationId]="defaultStationId"
         [vehicleId]="defaultVehicleId"
         (created)="onCreated($event)"
-      >
-      </app-reservation-form>
+      ></app-reservation-form>
 
       <div class="messages">
         <div class="msg msg--info" *ngIf="infoMsg()">{{ infoMsg() }}</div>
@@ -76,48 +77,68 @@
 
           <div class="grid">
             <div class="row">
-              <span>Trạm</span><b>{{ it.stationId }}</b>
+              <span>Trạm</span>
+              <b>
+                {{ it.station?.name ?? '#' + it.stationId }}
+              </b>
             </div>
+
             <div class="row">
-              <span>Model pin</span><b>{{ it.reservedBatteryModelId ?? '—' }}</b>
+              <span>Địa chỉ</span>
+              <b>{{ it.station?.address ?? '—' }}</b>
             </div>
+
+            <div class="row">
+              <span>Model pin</span>
+
+              <b *ngIf="it.batteryModel; else idOnly">
+                {{ it.batteryModel.displayName ?? it.batteryModel.modelCode }}
+                ({{ it.batteryModel.capacityWh ?? it.batteryModel.capacityKwh * 1000 }} Wh)
+              </b>
+
+              <ng-template #idOnly>
+                {{ it.reservedBatteryModelId ?? '—' }}
+              </ng-template>
+            </div>
+
             <div class="row">
               <span>Bắt đầu</span><b>{{ toLocal(it.reservedFrom) }}</b>
             </div>
             <div class="row">
               <span>Kết thúc</span><b>{{ toLocal(it.reservedTo) }}</b>
             </div>
+
+            <div class="row">
+              <span>Tạo lúc</span><b>{{ toLocal(it.createdAt) }}</b>
+            </div>
+
             <div class="row" *ngIf="it.allocation?.holdUntil">
               <span>Giữ đến</span><b>{{ toLocal(it.allocation?.holdUntil) }}</b>
             </div>
           </div>
 
           <div class="card__actions">
-<!-- Nút thanh toán -->
-<button
-  class="btn btn--primary"
-  *ngIf="isPendingStatus(it.status) && it.paymentCheckoutUrl"
-  (click)="openPayment(it)"
->
-  💳 Thanh toán đặt cọc
-</button>
+            <button
+              class="btn btn--primary"
+              *ngIf="isPendingStatus(it.status) && it.paymentCheckoutUrl"
+              (click)="openPayment(it)"
+            >
+              💳 Thanh toán đặt cọc
+            </button>
 
-<!-- Nút hủy (luôn hiển thị cho Pending, dù có payment URL hay không) -->
-<button
-  class="btn btn--danger"
-  *ngIf="isPendingStatus(it.status)"
-  (click)="askCancel(it)"
-  [disabled]="cancellingIds().has(it.reservationId)"
->
-  <ng-container *ngIf="!cancellingIds().has(it.reservationId); else spin">
-    ❌ Hủy lịch
-  </ng-container>
-  <ng-template #spin> <span class="spinner"></span> Đang hủy… </ng-template>
-</button>
-
+            <button
+              class="btn btn--danger"
+              *ngIf="isPendingStatus(it.status)"
+              (click)="askCancel(it)"
+              [disabled]="cancellingIds().has(it.reservationId)"
+            >
+              <ng-container *ngIf="!cancellingIds().has(it.reservationId); else spin">
+                ❌ Hủy lịch
+              </ng-container>
+              <ng-template #spin><span class="spinner"></span> Đang hủy…</ng-template>
+            </button>
 
             <span *ngIf="it.status === 'Completed'" class="text-success">✅ Hoàn tất</span>
-
             <span *ngIf="it.status === 'Confirmed'" class="text-info">💠 Đã xác nhận</span>
           </div>
         </div>

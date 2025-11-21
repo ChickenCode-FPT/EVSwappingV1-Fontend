@@ -39,13 +39,11 @@
 
         <div class="meta">
           <div>📍 {{ s.address || '—' }}</div>
-          <div>
-            🔋 Pin sẵn có: <b>{{ s.availableBatteries }}</b> / {{ s.capacity }}
-          </div>
+          <div>🔋 Pin sẵn có: <b>{{ s.availableBatteries }}</b> / {{ s.capacity }}</div>
           <div class="metrics">
-            <span *ngIf="s.distanceKm !== undefined"
-              >📏 {{ s.distanceKm | number : '1.0-2' }} km</span
-            >
+            <span *ngIf="s.distanceKm !== undefined">
+              📏 {{ s.distanceKm | number : '1.0-2' }} km
+            </span>
             <span *ngIf="s.durationMin !== undefined">⏱ {{ s.durationMin }} min</span>
           </div>
         </div>
@@ -61,11 +59,13 @@
         </div>
       </div>
 
+      <!-- CHI TIẾT TRẠM -->
       <div class="item-details" *ngIf="expandedId === s.stationId">
         <div><b>Mã:</b> {{ s.stationId }}</div>
         <div><b>Điện thoại:</b> {{ s.phone || '—' }}</div>
         <div><b>Tọa độ:</b> [{{ s.longitude }}, {{ s.latitude }}]</div>
 
+        <!-- MODEL PIN -->
         <div class="models">
           <div class="models-header">
             <b>Model pin còn hàng</b>
@@ -76,26 +76,20 @@
             <div *ngIf="entry.loading" class="hint">Đang tải model…</div>
             <div *ngIf="entry.error" class="error">{{ entry.error }}</div>
 
-            <div *ngIf="!entry.loading && !entry.error">
-              <ng-container *ngIf="entry.options.length > 0; else noModel">
-                <label>Chọn model:</label>
-                <select class="select" [(ngModel)]="entry.selected">
-                  <option *ngFor="let opt of entry.options" [value]="opt.id">
-                    Model #{{ opt.id }} ({{ opt.count }})
-                  </option>
-                </select>
-                <small class="hint">Số trong ngoặc là số lượng pin Full còn trong trạm.</small>
-              </ng-container>
-              <ng-template #noModel>
-                <div class="hint">Chưa có model nào còn hàng tại trạm.</div>
-              </ng-template>
+            <ul *ngIf="!entry.loading && !entry.error && entry.options.length > 0" class="model-list">
+              <li *ngFor="let opt of entry.options">
+                🔋 {{ opt.displayName }} — <b>{{ opt.count }}</b> pin
+              </li>
+            </ul>
+
+            <div *ngIf="!entry.loading && !entry.error && entry.options.length === 0" class="hint">
+              Không có model nào còn hàng.
             </div>
           </ng-container>
         </div>
 
         <div class="tips">
-          Gợi ý: Chọn model (nếu cần) rồi nhấn “Đặt lịch”. Nếu không chọn, hệ thống có thể chọn bất
-          kỳ model còn hàng.
+          Hệ thống sẽ tự chọn model phù hợp khi đặt lịch.
         </div>
       </div>
     </div>

@@ -40,7 +40,10 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
 
   q = signal('');
   status = signal<Status | 'All'>('All');
-  sortBy = signal<'startAsc' | 'startDesc' | 'status'>('startDesc');
+
+  sortBy = signal<'createdDesc' | 'createdAsc' | 'startAsc' | 'startDesc' | 'status'>(
+    'createdDesc'
+  );
 
   confirmOpen = signal(false);
   itemToCancel = signal<ReservationDto | null>(null);
@@ -62,15 +65,24 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
     if (st !== 'All') {
       arr = arr.filter((x) => this.normalizeStatus(x.status) === this.normalizeStatus(st));
     }
+
     if (text) {
       arr = arr.filter(
         (x) =>
           String(x.stationId).includes(text) ||
           String(x.reservationId).includes(text) ||
-          (x.reservedBatteryModelId != null && String(x.reservedBatteryModelId).includes(text))
+          (x.reservedBatteryModelId != null &&
+            String(x.reservedBatteryModelId).includes(text))
       );
     }
+
     switch (sort) {
+      case 'createdDesc':
+        arr.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+        break;
+      case 'createdAsc':
+        arr.sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt));
+        break;
       case 'startAsc':
         arr.sort((a, b) => +new Date(a.reservedFrom) - +new Date(b.reservedFrom));
         break;
@@ -87,6 +99,7 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
         break;
       }
     }
+
     return arr;
   });
 
@@ -164,9 +177,11 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
   onStatusChange(v: 'All' | Status) {
     this.status.set(v);
   }
-  onSortChange(v: 'startAsc' | 'startDesc' | 'status') {
+
+  onSortChange(v: 'createdDesc' | 'createdAsc' | 'startAsc' | 'startDesc' | 'status') {
     this.sortBy.set(v);
   }
+
   openPayment(res: ReservationDto) {
     if (!res.paymentCheckoutUrl) return;
     window.location.href = res.paymentCheckoutUrl;
@@ -190,7 +205,8 @@ export class ReservationsPageComponent implements OnInit, OnDestroy {
 
   toLocal(iso?: string | null): string {
     if (!iso) return '—';
-    return new Date(iso).toLocaleString('vi-VN', { hour12: false });
+    const normalized = iso.endsWith('Z') ? iso : iso + 'Z';
+    return new Date(normalized).toLocaleString('vi-VN', { hour12: false });
   }
 
   trackById = (_: number, it: ReservationDto) => it.reservationId;

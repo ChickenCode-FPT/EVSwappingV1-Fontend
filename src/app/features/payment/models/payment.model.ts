@@ -1,3 +1,4 @@
+// src\app\features\payment\models\payment.model.ts
 export interface Payment {
   paymentId: number;
   userId: string;

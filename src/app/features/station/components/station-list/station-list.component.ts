@@ -8,7 +8,12 @@ import { BatteryService } from '../../services/battery.service';
 
 type SortKey = 'nearest' | 'name' | 'batteries' | 'duration';
 
-type ModelOpt = { id: number; count: number };
+// Model summary FE dùng sau khi grouping từ battery list
+type ModelOpt = {
+  id: number;
+  displayName: string;
+  count: number;
+};
 
 @Component({
   selector: 'app-station-list',
@@ -25,7 +30,6 @@ export class StationListComponent {
 
   @Output() requestNearest = new EventEmitter<void>();
   @Output() selectStation = new EventEmitter<Station>();
-
   @Output() reserve = new EventEmitter<{ station: Station; batteryModelId: number | null }>();
 
   constructor(private batteryApi: BatteryService) {}
@@ -43,7 +47,7 @@ export class StationListComponent {
       loaded: boolean;
       error?: string;
       options: ModelOpt[];
-      selected: number | null;
+      selected: number | null; 
     }
   > = {};
 
@@ -64,10 +68,11 @@ export class StationListComponent {
 
     entry.loading = true;
     entry.error = undefined;
+
     this.batteryApi.getAvailableModelsSummary(stationId).subscribe({
       next: (opts) => {
         entry.options = opts.sort((a, b) => b.count - a.count);
-        entry.selected = entry.options.length ? entry.options[0].id : null;
+        entry.selected = null; 
         entry.loaded = true;
         entry.loading = false;
       },
@@ -92,9 +97,7 @@ export class StationListComponent {
   }
 
   onReserve(st: Station) {
-    const entry = this.modelCache[st.stationId];
-    const modelId = entry?.selected ?? null;
-    this.reserve.emit({ station: st, batteryModelId: modelId });
+    this.reserve.emit({ station: st, batteryModelId: null });
   }
 
   get filtered(): Station[] {
@@ -104,7 +107,8 @@ export class StationListComponent {
     if (q) {
       list = list.filter(
         (s) =>
-          (s.name || '').toLowerCase().includes(q) || (s.address || '').toLowerCase().includes(q)
+          (s.name || '').toLowerCase().includes(q) ||
+          (s.address || '').toLowerCase().includes(q)
       );
     }
 
@@ -114,16 +118,11 @@ export class StationListComponent {
 
     list.sort((a, b) => {
       switch (this.sortBy) {
-        case 'nearest':
-          return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
-        case 'duration':
-          return (a.durationMin ?? Infinity) - (b.durationMin ?? Infinity);
-        case 'batteries':
-          return (b.availableBatteries ?? 0) - (a.availableBatteries ?? 0);
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '');
-        default:
-          return 0;
+        case 'nearest': return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
+        case 'duration': return (a.durationMin ?? Infinity) - (b.durationMin ?? Infinity);
+        case 'batteries': return (b.availableBatteries ?? 0) - (a.availableBatteries ?? 0);
+        case 'name': return (a.name || '').localeCompare(b.name || '');
+        default: return 0;
       }
     });
 

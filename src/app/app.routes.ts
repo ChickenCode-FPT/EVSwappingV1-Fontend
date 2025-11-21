@@ -65,11 +65,16 @@ export const routes: Routes = [
   { path: 'payments', component: PaymentListComponent, canActivate: [CustomerGuard] },
 
   {
-    path: 'payment-result',
-    loadComponent: () =>
-      import('./features/payment/pages/payment-result/payment-result.component').then(
-        (m) => m.PaymentResultComponent
-      ),
+    path: 'payment',
+    children: [
+      {
+        path: 'result',
+        loadComponent: () =>
+          import('./features/payment/pages/payment-result/payment-result.component').then(
+            (m) => m.PaymentResultComponent
+          ),
+      },
+    ],
   },
 
   // Driver

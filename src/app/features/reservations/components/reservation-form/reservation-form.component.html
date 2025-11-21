@@ -2,10 +2,7 @@
 <form [formGroup]="form" (ngSubmit)="submit()" class="card">
   <h3>Đặt lịch đổi pin</h3>
 
-  <!-- Component chọn trạm -->
   <app-station-select [control]="f.stationId"></app-station-select>
-
-  <!-- Component chọn xe -->
   <app-vehicle-select [control]="f.vehicleId"></app-vehicle-select>
 
   <div class="row">
@@ -30,6 +27,11 @@
     </button>
   </div>
 
-  <div class="info" *ngIf="infoMsg">{{ infoMsg }}</div>
-  <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="error" *ngIf="errorMsg">
+    ⚠️ {{ errorMsg }}
+  </div>
+
+  <div class="info" *ngIf="infoMsg">
+    ✅ {{ infoMsg }}
+  </div>
 </form>

@@ -1,3 +1,6 @@
+import { StationDto } from "../../../core/station-staff.service";
+import { BatteryModelDto } from "../../models/battery.model";
+
 // src\app\features\reservations\models\reservation.types.ts
 export interface CreateReservationRequest {
   stationId: number;
@@ -10,12 +13,16 @@ export interface ReservationDto {
   reservationId: number;
   userId: string;
   stationId: number;
-  vehicleId?: number | null;
 
-  reservedFrom: string; // ISO
-  reservedTo: string;   // ISO
+  station?: StationDto;  
+  batteryModel?: BatteryModelDto | null;
+
+  vehicleId?: number | null;
+  reservedFrom: string;
+  reservedTo: string;
   status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Expired';
-  paymentCheckoutUrl?: string; 
+
+  paymentCheckoutUrl?: string;
   paymentId?: number;
   reservedBatteryModelId?: number | null;
 
@@ -23,10 +30,19 @@ export interface ReservationDto {
     reservationAllocationId: number;
     reservationId: number;
     batteryId: number;
-    allocatedAt: string; // ISO
-    holdUntil: string;   // ISO
+    allocatedAt: string;
+    holdUntil: string;
     status: string;
+    battery?: {
+      serialNumber: string;
+      batteryModelId: number;
+      modelName?: string;
+      capacity?: number;
+    };
   } | null;
+
+  createdAt: string;
+  updatedAt?: string | null;
 }
 
 export interface ApiProblem {

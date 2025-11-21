@@ -8,22 +8,28 @@ import { CreateReservationRequest, ReservationDto } from '../../models/reservati
 import { StationSelectComponent } from '../station-select/station-select.component';
 import { VehicleSelectComponent } from '../vehicle-select/vehicle-select.component';
 
-/**
- * Convert input datetime-local → chuẩn ISO local (không timezone)
- * Example:
- * "2025-11-19T11:20" → "2025-11-19T11:20:00"
- */
 function localDatetimeToIso(datetimeLocal: string): string {
   return datetimeLocal + ":00";
 }
-
-/**
- * Giữ nguyên thời gian người dùng nhập, chỉ chuẩn hóa format.
- * KHÔNG làm tròn xuống/up để tránh sai lệch.
- * Nếu bạn muốn làm tròn theo 15 phút, tôi có thể gửi version riêng.
- */
 function snapTo15Minutes(localIso: string): string {
-  return localIso; // giữ nguyên – đúng nhất với người dùng
+  return localIso;
+}
+
+function cleanError(raw: string): string {
+  if (!raw) return 'Đặt lịch thất bại';
+
+  let msg = raw.split('\n')[0].trim();
+  msg = msg.replace(/^.*Exception:/, '').trim();
+  msg = msg.replace(/^Http failure response.*/i, '').trim();
+
+  return msg || 'Đặt lịch thất bại';
+}
+
+function extractFriendlyError(err: any): string {
+  if (err?.error?.detail) return cleanError(err.error.detail);
+  if (typeof err?.error === 'string') return cleanError(err.error);
+  if (typeof err?.message === 'string') return cleanError(err.message);
+  return 'Đặt lịch thất bại';
 }
 
 @Component({
@@ -58,12 +64,8 @@ export class ReservationFormComponent {
   });
 
   ngOnInit() {
-    if (this.stationId != null) {
-      this.form.patchValue({ stationId: this.stationId });
-    }
-    if (this.vehicleId !== undefined) {
-      this.form.patchValue({ vehicleId: this.vehicleId });
-    }
+    if (this.stationId != null) this.form.patchValue({ stationId: this.stationId });
+    if (this.vehicleId !== undefined) this.form.patchValue({ vehicleId: this.vehicleId });
   }
 
   get f() {
@@ -80,12 +82,9 @@ export class ReservationFormComponent {
     }
 
     const v = this.form.value;
-
-    // Không dùng UTC – giữ nguyên giờ người dùng nhập
     const fromIso = snapTo15Minutes(localDatetimeToIso(v.reservedFromLocal!));
     const toIso = snapTo15Minutes(localDatetimeToIso(v.reservedToLocal!));
 
-    // Validate độ dài thời gian
     const spanMs = new Date(toIso).getTime() - new Date(fromIso).getTime();
     if (spanMs <= 0 || spanMs > 90 * 60 * 1000) {
       this.errorMsg = 'Khoảng thời gian phải > 0 và ≤ 90 phút.';
@@ -107,13 +106,11 @@ export class ReservationFormComponent {
       .subscribe({
         next: (res) => {
           this.created.emit(res);
-          this.infoMsg = `Đã tạo lịch #${res.reservationId} (status: ${res.status}).`;
+          this.infoMsg = `Đã tạo lịch #${res.reservationId}.`;
           this.form.markAsPristine();
         },
         error: (err) => {
-          const detail =
-            err?.error?.detail || err?.error?.title || err?.message || 'Đặt lịch thất bại';
-          this.errorMsg = detail;
+          this.errorMsg = extractFriendlyError(err);
         },
       });
   }

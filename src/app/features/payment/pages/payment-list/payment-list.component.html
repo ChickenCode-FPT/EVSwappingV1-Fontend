@@ -1,7 +1,14 @@
+<!-- src\app\features\payment\pages\payment-list\payment-list.component.html -->
 <section class="page">
   <div class="container">
 
     <h1 class="title">Lịch sử thanh toán</h1>
+    <div class="toolbar">
+      <select [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)" class="select">
+        <option value="createdDesc">Mới nhất</option>
+        <option value="createdAsc">Cũ nhất</option>
+      </select>
+    </div>
 
     <div *ngIf="loading()" class="loading">
       <div class="spinner"></div>
@@ -14,9 +21,8 @@
 
     <div class="payment-grid" *ngIf="!loading() && !errorMsg()">
       
-      <div class="payment-card" *ngFor="let p of payments()">
-        
-        <!-- Header -->
+      <div class="payment-card" *ngFor="let p of view()">
+
         <div class="card-top">
           <div class="left">
             <div class="icon-wrapper" [ngClass]="p.type.toLowerCase()">
@@ -33,21 +39,21 @@
           </span>
         </div>
 
-        <!-- Amount -->
         <div class="amount">
           {{ p.amount | number }} <span>{{ p.currency }}</span>
         </div>
 
-        <!-- Details -->
         <div class="details">
           <div><strong>Phương thức:</strong> {{ p.method }}</div>
-          <div><strong>Thời gian:</strong> {{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div><strong>Thời gian tạo:</strong> {{ toLocal(p.createdAt) }}</div>
+          <div *ngIf="p.paidAt">
+            <strong>Thanh toán lúc:</strong> {{ toLocal(p.paidAt) }}
+          </div>
           <div><strong>Mô tả:</strong> {{ p.description || '—' }}</div>
           <div *ngIf="p.reservationId"><strong>Đơn đặt chỗ:</strong> #{{ p.reservationId }}</div>
           <div *ngIf="p.swapTransactionId"><strong>Giao dịch đổi pin:</strong> #{{ p.swapTransactionId }}</div>
         </div>
 
-        <!-- Pay button -->
         <a 
           *ngIf="p.status.toLowerCase() === 'pending'"
           class="pay-action"

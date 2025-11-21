@@ -1,3 +1,4 @@
+// src\app\features\battery-model\models\battery-model.model.ts
 export interface BatteryModel {
   batteryModelId: number;
   modelCode: string;

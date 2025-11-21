@@ -71,20 +71,23 @@ export class PackageManagementComponent implements OnInit {
     });
   }
 
-  loadPackages() {
-    this.loading = true;
-    this.subscriptionPackage.getAllPackages().subscribe({
-      next: (res) => {
-        this.packages = res;
-        this.totalPages = Math.ceil(this.packages.length / this.itemsPerPage);
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        this.showToast('error', 'Error', err?.error?.message || err.message || 'Failed to load packages');
-      }
-    });
-  }
+ loadPackages() {
+  this.loading = true;
+  this.subscriptionPackage.getAllPackages().subscribe({
+    next: (res) => {
+      console.log('API response packages:', res); // ✅ in ra toàn bộ mảng package
+      res.forEach(pkg => console.log('Package status:', pkg.status)); // ✅ in ra status từng package
+
+      this.packages = res;
+      this.totalPages = Math.ceil(this.packages.length / this.itemsPerPage);
+      this.loading = false;
+    },
+    error: (err) => {
+      this.loading = false;
+      this.showToast('error', 'Error', err?.error?.message || err.message || 'Failed to load packages');
+    }
+  });
+}
 
   get paginatedPackages() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -237,14 +240,15 @@ export class PackageManagementComponent implements OnInit {
     };
   }
 
-  statusLabel(status: string) {
-    switch (status) {
-      case "Draft": return 0;
-      case "Active": return 1;
-      case "Inactive": return 2;
-      default: return -1;
-    }
+ statusLabel(status: string): string {
+  switch (status) {
+    case "Draft": return "Draft";
+    case "Active": return "Active";
+    case "Inactive": return "Inactive";
+    default: return "Unknown";
   }
+}
+
 
   getStatusText(status: number): string {
     switch (status) {

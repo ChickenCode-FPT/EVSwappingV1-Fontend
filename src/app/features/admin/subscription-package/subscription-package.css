@@ -1,12 +1,1 @@
-.assign-container {
-  display: flex;
-  min-height: 100vh;
-  background: #f8f9fa;
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 250px;
-  padding: 2rem;
-  transition: margin-left 0.3s ease;
-}
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');

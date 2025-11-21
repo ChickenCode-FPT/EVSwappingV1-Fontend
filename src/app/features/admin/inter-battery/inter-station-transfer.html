@@ -195,13 +195,11 @@
               </td>
               <td class="px-4 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-2">
-                  <button 
-                    *ngIf="transfer.canApprove"
-                    (click)="showApproveDialog(transfer)"
-                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                    title="Approve">
-                    <i class="pi pi-check"></i>
-                  </button>
+  <button *ngIf="transfer.canApprove" (click)="showApproveDialog(transfer)" 
+          class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+    Approve
+  </button>
+
                   <button 
                     (click)="viewDetails(transfer)"
                     class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"

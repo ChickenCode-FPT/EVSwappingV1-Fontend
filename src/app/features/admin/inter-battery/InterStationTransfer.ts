@@ -196,6 +196,7 @@ export class InterStationTransferComponent implements OnInit {
           this.loadTransfers();
         },
         error: (err) => {
+          console.error('Approval error:', err);
           this.showToast('error', 'Error', err.error || 'Cannot approve request');
           this.submitting = false;
         }

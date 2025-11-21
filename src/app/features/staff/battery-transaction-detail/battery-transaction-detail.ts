@@ -215,5 +215,4 @@ export class BatteryTransactionDetail implements OnInit {
       queryParams: { returnTo: this.pendingReturnUrl }
     });
   }
-
 }

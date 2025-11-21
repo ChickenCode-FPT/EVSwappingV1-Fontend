@@ -1,10 +1,14 @@
+// src/app/features/models/transaction.model.ts
 export interface TransactionFull {
   swapTransactionId: number;
   reservationId: number;
   stationId: number;
   customerUserId: string;
   customerName: string;
+
   staffUserId: string;
+  staffName?: string;            
+
   outgoingBatteryId: number;
   incomingBatteryId: number;
   swapStartedAt: string;
@@ -18,6 +22,7 @@ export interface TransactionFull {
     stationId: number;
     name: string;
     address: string;
+    phone?: string;              
   };
 
   reservation: {

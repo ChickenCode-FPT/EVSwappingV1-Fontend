@@ -190,7 +190,7 @@ export const routes: Routes = [
       { path: 'inter/transfers/create', component: InterTransferCreate },
       { path: 'profile', component: StaffProfile },
       { path: 'face/add', component: FaceAdd },
-      { path: 'face/verify', component: FaceVerified }
+      { path: 'face/verify', component: FaceVerified },
     ]
   },
 

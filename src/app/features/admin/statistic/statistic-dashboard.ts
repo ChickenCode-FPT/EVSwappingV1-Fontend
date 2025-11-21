@@ -125,8 +125,10 @@ export class StatisticDashboardComponent implements OnInit {
     this.loadingMetrics.set(true);
     try {
       const now = new Date();
-      const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const startOfCurrentMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
+      console.log(startOfCurrentMonth.toISOString() + '- Current month');
+      const startOfPreviousMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth() - 1, 1));
+      console.log(startOfPreviousMonth.toISOString() + '- Current month');
       const endOfPreviousMonthComparable = new Date(
         now.getFullYear(),
         now.getMonth() - 1,

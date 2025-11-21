@@ -30,7 +30,7 @@ export interface ApiResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class InterStationTransferService {
   private apiUrl = `https://localhost:7292/api/InterStationTransfers`; // Adjust base URL as needed
@@ -40,7 +40,7 @@ export class InterStationTransferService {
   /**
    * Get all inter-station transfers
    * GET /api/inter-station-transfer
-   * 
+   *
    * @returns Observable<InterStationTransferAdminDto[]>
    * @produces List of InterStationTransferAdminDto
    */
@@ -51,21 +51,18 @@ export class InterStationTransferService {
   /**
    * Approve a transfer request
    * POST /api/inter-station-transfer/{transferId}/approve
-   * 
+   *
    * @param transferId - The transfer ID to approve
    * @param dto - ApproveTransferDto containing approvedByUserId
    * @returns Observable<string> - Success message
    */
   approveTransfer(transferId: number, dto: ApproveTransferDto): Observable<string> {
-    return this.http.post<string>(
-      `${this.apiUrl}/${transferId}/approve`,
-      dto,
-      {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json'
-        })
-      }
-    );
+    return this.http.post<string>(`${this.apiUrl}/${transferId}/approve`, dto, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      responseType: 'text' as 'json',
+    });
   }
 
   /**
@@ -82,9 +79,7 @@ export class InterStationTransferService {
    * @param status - "Pending", "Approved", "Rejected", "Completed"
    */
   getTransfersByStatus(status: string): Observable<InterStationTransferAdminDto[]> {
-    return this.http.get<InterStationTransferAdminDto[]>(
-      `${this.apiUrl}/status/${status}`
-    );
+    return this.http.get<InterStationTransferAdminDto[]>(`${this.apiUrl}/status/${status}`);
   }
 
   /**
@@ -93,9 +88,7 @@ export class InterStationTransferService {
    * @param stationId - The station ID
    */
   getTransfersByStation(stationId: number): Observable<InterStationTransferAdminDto[]> {
-    return this.http.get<InterStationTransferAdminDto[]>(
-      `${this.apiUrl}/station/${stationId}`
-    );
+    return this.http.get<InterStationTransferAdminDto[]>(`${this.apiUrl}/station/${stationId}`);
   }
 
   /**
@@ -104,9 +97,7 @@ export class InterStationTransferService {
    * @param batteryId - The battery ID
    */
   getTransfersByBattery(batteryId: number): Observable<InterStationTransferAdminDto[]> {
-    return this.http.get<InterStationTransferAdminDto[]>(
-      `${this.apiUrl}/battery/${batteryId}`
-    );
+    return this.http.get<InterStationTransferAdminDto[]>(`${this.apiUrl}/battery/${batteryId}`);
   }
 
   /**
@@ -122,14 +113,18 @@ export class InterStationTransferService {
    * (Optional - implement if you have this endpoint)
    * POST /api/inter-station-transfer/{transferId}/reject
    */
-  rejectTransfer(transferId: number, rejectedByUserId: string, reason?: string): Observable<string> {
+  rejectTransfer(
+    transferId: number,
+    rejectedByUserId: string,
+    reason?: string
+  ): Observable<string> {
     return this.http.post<string>(
       `${this.apiUrl}/${transferId}/reject`,
       { rejectedByUserId, reason },
       {
         headers: new HttpHeaders({
-          'Content-Type': 'application/json'
-        })
+          'Content-Type': 'application/json',
+        }),
       }
     );
   }
@@ -145,8 +140,8 @@ export class InterStationTransferService {
       {},
       {
         headers: new HttpHeaders({
-          'Content-Type': 'application/json'
-        })
+          'Content-Type': 'application/json',
+        }),
       }
     );
   }
@@ -157,9 +152,6 @@ export class InterStationTransferService {
    * GET /api/inter-station-transfer/export
    */
   exportTransfers(format: 'csv' | 'excel' = 'csv'): Observable<Blob> {
-    return this.http.get(
-      `${this.apiUrl}/export?format=${format}`,
-      { responseType: 'blob' }
-    );
+    return this.http.get(`${this.apiUrl}/export?format=${format}`, { responseType: 'blob' });
   }
 }

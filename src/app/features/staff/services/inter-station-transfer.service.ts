@@ -21,7 +21,17 @@ export class InterStationTransferService {
     return this.http.post(`${this.api}/InterStationTransfers/create`, payload);
   }
 
-  completeTransfer(transferId: number): Observable<any> {
-    return this.http.post(`${this.api}/InterStationTransfers/${transferId}/complete`, {});
+  completeTransfer(transferId: number, targetSlot: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.api}/InterStationTransfers/${transferId}/complete`,
+      { targetSlot }
+    );
   }
+
+  getAvailableSlots(stationId: number): Observable<string[]> {
+    return this.http.get<string[]>(
+      `${this.api}/InterStationTransfers/station/${stationId}/available-slots`
+    );
+  }
+
 }
